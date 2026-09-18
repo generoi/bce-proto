@@ -1,0 +1,3 @@
+# Keskeneräinen prototyyppi, ei hakukoneisiin.
+User-agent: *
+Disallow: /
