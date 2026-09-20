@@ -703,25 +703,26 @@
                   -MAA[2].paksuus - MAA[1].paksuus / 2,
                   -MAA[2].paksuus - MAA[1].paksuus - MAA[0].paksuus / 2];
       var rivit = [
+        /* Selitteen viive on sen **kaistan** viive, jossa ankkurilauta on, eikä
+           laudoituksen ensimmäisen kaistan. Ankkuri osoittaa laudoituksen
+           vasempaan nurkkaan (y suurin), joka on viimeisen kaistan lauta —
+           ensimmäisen kaistan viiveellä selite saapui paikalleen ennen sitä
+           lautaa, johon se osoittaa, ja johtoviiva irtosi kärjestään. */
         {p: [-o.ylitys, o.pituus + o.ylitys, A.lautaZ + A.LA.b],
-         nosto: A.nostoLauta, viive: 0.55,
-         t: "Terassilauta " + A.LA.nimi, alt: S.laudat.length + " kpl"},
+         nosto: A.nostoLauta,
+         viive: 0.55 + Math.floor((S.laudat.length - 1) / kaistaKoko) * kaistaAskel,
+         t: "Terassilauta " + A.LA.nimi},
         {p: [0, o.pituus + o.ylitys, A.palkkiZ + A.PK.h],
          nosto: A.nostoKenka, viive: 0,
-         t: "Palkki " + A.PK.nimi,
-         alt: S.palkit.length + " kpl · tuenta " + Math.round(G.valiY) + " mm"},
+         t: "Palkki " + A.PK.nimi},
         {p: [-A.TK.lev / 2, o.pituus, A.kenkaZ + A.TK.kork * 0.6],
          nosto: A.nostoKenka, viive: 0,
-         t: A.TK.koodi, alt: G.n + " kpl · palkki urassa"},
+         t: A.TK.koodi},
         {p: [0, o.pituus + A.PM.D1 / 2, A.PM.H1 * 0.55], nosto: 0, viive: 0,
-         t: window.tuotekuva.koodi(o.perhe, o.koko),
-         alt: G.n + " kpl · " + G.sarakkeet + " × " + G.rivit},
-        {p: [maaAnkkuri(0), S.maa.y1, maaZ[0]], nosto: 0, viive: 0, t: MAA[2].nimi,
-         alt: MAA[2].paksuus + " mm"},
-        {p: [maaAnkkuri(1), S.maa.y1, maaZ[1]], nosto: 0, viive: 0, t: MAA[1].nimi,
-         alt: MAA[1].paksuus + " mm"},
-        {p: [maaAnkkuri(2), S.maa.y1, maaZ[2]], nosto: 0, viive: 0, t: MAA[0].nimi,
-         alt: MAA[0].paksuus + " mm"}
+         t: window.tuotekuva.koodi(o.perhe, o.koko)},
+        {p: [maaAnkkuri(0), S.maa.y1, maaZ[0]], nosto: 0, viive: 0, t: MAA[2].nimi},
+        {p: [maaAnkkuri(1), S.maa.y1, maaZ[1]], nosto: 0, viive: 0, t: MAA[1].nimi},
+        {p: [maaAnkkuri(2), S.maa.y1, maaZ[2]], nosto: 0, viive: 0, t: MAA[0].nimi}
       ];
 
       /* ---- Rivien asettelu lasketaan KOOTUSTA asennosta ----
@@ -748,6 +749,24 @@
         rivi.ty = ty - rivi.nosto * K;           /* piirretään räjäytettyyn */
       });
 
+      /* ---- Ryhmän keskitys kuvan keskilinjalle ----
+         Törmäyksenesto työntää rivejä vain alaspäin, joten ryhmä asettuu sinne
+         missä ylin ankkuri sattuu olemaan — käytännössä kuvan yläreunaan, ja
+         alle jää tyhjää. Siirto on yhteinen kaikille riveille, joten se ei
+         muuta rivivälejä eikä siksi voi rikkoa törmäyksenestoa.
+
+         Keskilinja luetaan **kappaleiden** laajuudesta eikä kankaasta: kangas
+         on venytetty selitteiden alle, joten sen keskikohta seuraisi
+         selitteitä ja keskitys jäisi kiertämään itseään. */
+      var ryhmaYla = Infinity, ryhmaAla = -Infinity;
+      rivit.forEach(function (rivi) {
+        ryhmaYla = Math.min(ryhmaYla, rivi.ty - fontti * 0.5);
+        ryhmaAla = Math.max(ryhmaAla, rivi.ty + fontti * 0.5);
+      });
+      var kuvaKeski = reuna + (R.y1 - R.y0) * K / 2;
+      var siirto = kuvaKeski - (ryhmaYla + ryhmaAla) / 2;
+      rivit.forEach(function (rivi) { rivi.ty += siirto; });
+
       var xR = reuna + selitetila - 40;
       rivit.forEach(function (rivi) {
         /* Kankaan korkeus on laskettu kappaleiden laatikoista, eivätkä
@@ -755,7 +774,7 @@
            kankaan alapuolelle ja sen mm-luku katoaa. Siksi alin käytetty
            kohta kirjataan ja kangas venytetään lopuksi. */
         selitePohja = Math.max(selitePohja,
-          rivi.ty + rivi.nosto * K + fontti * 2.2);
+          rivi.ty + rivi.nosto * K + fontti * 0.9);
         kerros(rivi.nosto, rivi.viive, function () {
           /* Kolmiosainen johtoviiva: vaakapätkä tekstistä, kaarto ankkurin
              korkeudelle, vaakapätkä ankkuriin. */
@@ -768,8 +787,6 @@
           out.push('<circle cx="' + N(rivi.ax) + '" cy="' + N(rivi.ay) + '" r="' +
             N(viiva * 1.8) + '" fill="' + V.merkki + '" opacity=".6"/>');
           C.teksti([xR, rivi.ty + fontti * 0.34], rivi.t, fontti, V.teksti, "end", 600);
-          C.teksti([xR, rivi.ty + fontti * 1.42], rivi.alt, fontti * 0.8,
-                   V.merkki, "end", 400);
         });
       });
     }
