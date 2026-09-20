@@ -280,6 +280,44 @@ window.SPECSHELL=function(E,o){
     '<span class="tools">'+
       '<a class="btn btn-1 btn-s hdr-cta" href="'+E(SPECLINK(SPEC.navCta[1]))+'" data-event="'+E(SPEC.navCta[2])+'" data-sijainti="kuori">'+E(SPEC.navCta[0])+"</a>"+
     "</span>";
+  /* ---- Snap vain alaspäin --------------------------------------------------
+     CSS:n scroll-snap ei tunne suuntaa: `scroll-snap-type` vetää yhtä lailla
+     silloin kun palataan alhaalta ylös, jolloin konfiguraattorilohko nappaa
+     lukijan kiinni matkalla ulos. Suunta on siis pakko lukea itse.
+
+     Kaksi yksityiskohtaa, jotka eivät ole itsestään selviä:
+
+       kynnys        alle kahden pikselin liikkeet ohitetaan. Ilman sitä snapin
+                     oma pehmennys lasketaan suunnanvaihdoksi ja snap kytkeytyy
+                     pois juuri silloin kun se olisi tekemässä työnsä.
+       paluuehto     alaspäin mentäessä snap kytketään takaisin vasta kun
+                     snap-kohta on ruudun alapuolella (`top > 0`), eli lukija on
+                     sen yläpuolella. Jos se kytkettäisiin heti suunnan
+                     vaihtuessa, uudelleenkytkentä nykäisisi kesken lohkon.
+
+     `scrollSnapType = ""` palauttaa tyylitiedoston arvon eikä kovakoodaa sitä,
+     joten `prefers-reduced-motion`-sääntö (snap pois) pysyy voimassa. */
+  (function () {
+    const html = document.documentElement;
+    let edellinen = window.scrollY, paalla = true;
+    const aseta = function (uusi) {
+      if (uusi === paalla) return;
+      paalla = uusi;
+      html.style.scrollSnapType = uusi ? "" : "none";
+    };
+    window.addEventListener("scroll", function () {
+      const y = window.scrollY, dy = y - edellinen;
+      if (Math.abs(dy) < 2) return;
+      edellinen = y;
+      if (dy < 0) { aseta(false); return; }
+      /* Ainoa snap-kohta sivuilla. `.matala` on Mistä ostat -sivun variantti,
+         jolla on `scroll-snap-align:none` — se ei ole snap-kohta eikä siis saa
+         ohjata kytkentää. */
+      const kohta = document.querySelector(".cfg:not(.matala)");
+      aseta(!kohta || kohta.getBoundingClientRect().top > 0);
+    }, {passive: true});
+  })();
+
   const b=q("#menub"),n=q("#mainnav");
   b.addEventListener("click",()=>{const o2=n.getAttribute("data-open")==="true";
     n.setAttribute("data-open",String(!o2));b.setAttribute("aria-expanded",String(!o2));});
