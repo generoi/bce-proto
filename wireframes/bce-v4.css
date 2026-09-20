@@ -1524,6 +1524,18 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kapeilla ruuduilla. */
 .serie .im.piirros{aspect-ratio:auto;align-items:flex-end}
 
+/* Tarvikerivi: sama syy kuin perhekortilla. Kuvapaikan 4:3 on paikanpitäjän
+   mitta, ja asennuskuva on pystysuuntainen — pilarin pää, tarvike ja puu
+   päällekkäin. 4:3-laatikossa max-height puristaisi jokaisen kuvan samaan
+   112 pikseliin, eli yhteinen mittakaava hajoaisi juuri sen säännön kohdalla,
+   jota varten kuvat piirretään yhdelle kankaalle (TUOTEKUVAT.md sääntö 4).
+   Korkeus tulee kuvasta (DET_KORKEUS bce_tp_spec.html:ssä), ei tästä.
+
+   Alareunaan tasaus, koska neljällä kuvalla on yhteinen alataso: pilarin
+   rajaus. Se on myös yhteisen kankaan tasaus, joten rivit ovat samassa
+   linjassa myös silloin kun kuva skaalautuu kapeaan sarakkeeseen. */
+.pitem .im.piirros{aspect-ratio:auto;align-items:flex-end}
+
 /* Pikkukuva, jossa on aito kuva. Kehys jää, koska se on painikkeen valintatila
    (aria-pressed="true" = yhtenäinen viiva): ilman kehystä valinta ei näy. Vain
    levy sen takaa lähtee ja kuva saa koko ruudun. */

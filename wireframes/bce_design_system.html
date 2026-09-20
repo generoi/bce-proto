@@ -16,6 +16,7 @@
 <script src="palkkikuva.js"></script>
 <script src="tarvikekuva.js"></script>
 <script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
 <script src="tuotevalitsin.js"></script>
 <style>
 /* Katalogin oma kehys. Nämä eivät kuulu bce-v4.css:ään: ne kuvaavat komponentteja,
@@ -176,6 +177,18 @@ const kuvaDemo=(function(){
                 YKU({pari:"pak-100x150",korkeus:200,koriste:true,id:"dsy2"}),
                 YKU({pari:"tl-150x150",korkeus:200,koriste:true,id:"dsy3"})],
                ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta"]),
+    /* Asennuskuvat yhteiseen mittakaavaan ja yhdelle kankaalle. Tasaus «ala»,
+       koska neljällä kuvalla on nyt yhteinen alataso: pilarin rajaus. */
+    asennus:(function(){
+      const kuvaukset=[{pari:"pik-50-70"},{pari:"pak-100x150"},
+                       {pari:"tl-150x150"},{osa:"nostokorva-m20"}];
+      const AK=window.asennuskuva;
+      const sk=190/Math.max.apply(null,kuvaukset.map(k=>AK.laajuus(k)));
+      return rivi(KAN(kuvaukset.map((k,i)=>AK(Object.assign({},k,
+               {skaala:sk,koriste:true,id:"dsa"+i}))),"ala"),
+        ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta",
+         "Nostokorva M20"]);
+    })(),
     /* Oma piirtokutsu eikä sama SVG kahdesti: kuvan sisäiset id:t (rakeisuus,
        valoliuku, varjosuodin) muodostetaan id-etuliitteestä, ja sama kuva kahdesti
        samassa dokumentissa tarkoittaa 14 kaksoiskappaletta — silloin toisen kuvan
@@ -379,6 +392,10 @@ sect("kuvat","Kuvat","Viisi generaattoria ja yksi kamera: <code>tuotekuva.projek
    rule:"Tarvike ja siihen kuuluva puu samassa kuvassa: vastaa kysymykseen <strong>miten päin puu menee kiinni</strong>. Ei piirrä itse mitään vaan asettaa kaksi generaattoria samaan kankaaseen. Piirtojärjestys ratkaistaan koukulla (<code>C.puu()</code>), koska puu on tarvikkeen <em>sisällä</em> eikä kutsuja voi päätellä sitä. Puun paikka lasketaan <code>tarvikekuva.tieto()</code>:n mitoista.",
    merge:"Kuusi paria, joista <strong>P-PIK 50×70 on ristiriidassa lähteidensä kanssa eikä ole käytössä</strong>: copy sanoo piilokiinnike, geometria panee levyn tolpan kylkeen eli näkyviin. Teräslaatta on ainoa pari räjäytettynä — paikalleen laskettuna lauta peittää koko tarvikkeen.",
    demo:kuvaDemo.parit,paper:true},
+  {id:"asennus",n:"Asennuskuva",c:"asennuskuva({pari|osa,perhe,koko,nakyva}) · .laajuus() · .oletus()",on:on("tp"),status:["ok","20.9."],
+   rule:"Pilarin pää, siihen kierretty tarvike ja siihen tuleva puu. Vastaa kysymykseen <strong>mihin osa kiinnittyy</strong> — tarvikekuva kertoo miltä osa näyttää, yhdistelmäkuva miten päin puu menee siihen. Kuvaus on sama olio kuin lohkon riveillä (<code>{pari:…}</code> tai <code>{osa:…}</code>), joten sivulla vaihtuu generaattorin nimi eikä datamalli. Kosketustaso tulee osalta (<code>tarvikekuva.tieto().pilariZ</code>), ja kierretappi jää pilarin sisään <code>piilotaso</code>-parametrilla: maalarin algoritmi ei sitä hoida, koska tappi on kameraan päin pilarin yläpinnasta katsottuna.",
+   merge:"<strong>Pilarista näkyy vain pää, ja rajaus tehdään kankaasta eikä geometriasta.</strong> Koko pilari piirretään ja viewBox jättää alaosan näkymättä, joten pää on oikean pilarin pää eikä lyhennetty tynkä. Kokonainen TP-400 pohjalaattoineen veisi kuvan leveyden ja kenkä olisi rivin kuvapaikassa parinkymmenen pikselin kokoinen. Säätömutteri jää yhä piiloon: kamera on yhteinen kaikille generaattoreille, joten matalampi kulma olisi toinen kamera samalla sivulla.",
+   demo:kuvaDemo.asennus,paper:true},
   {id:"tk",n:"Piirretty kuva kuvapaikassa",c:".ph.piirros · .im.piirros · .thumbs button.piirros · .pick-how .ph.piirros",on:on("pil","a"),status:["ok","lisätty 18.9."],
    rule:"Modifier sanoo, että paikassa on aito kuva eikä paikanpitäjää: katkoviiva, <code>--paper-2</code>-täyttö ja keskitys pois. Kuva on läpinäkyvä, joten levy sen alla lupaisi taustan jota kuvassa ei ole. Ei koske kuvasuhdetta — kortin ruudukko pysyy samana, vaikka sisältö vaihtuu.",
    merge:"Saman lohkon kuvat saavat saman mittakaavan ja <strong>saman kankaan</strong> (<code>tuotekuva.rivi</code> pilareille, <code>tuotekuva.kangas</code> mille tahansa generaattorille). Eri kokoisilla kankailla CSS skaalaa jokaisen omalla kertoimellaan heti kun laatikko on kuvaa kapeampi — mittakaava olisi oikein vain työpöydällä. Nimi ei ole <code>.tk</code>, koska <code>.tcard .tk</code> on tarvikesivun tuotekoodi.",

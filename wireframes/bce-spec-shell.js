@@ -134,7 +134,16 @@ window.SPEC={
    prototyyppi, riville vaihdetaan sen tiedostonimi — muuta ei tarvita. */
 window.SPEC.map={
   "/":"bce_etusivu_spec.html",
-  "/konfiguraattori/":"bce_sivu_spec.html?s=konfiguraattori",
+  /* Konfiguraattori osoittaa oikeaan laskuriin eikä luurankoon (20.9.2026).
+     Laskuri on prototyyppinä olemassa, joten jokainen «Laske pilarien määrä»
+     päätyi «[SUUNNITTELEMATTA]»-sivulle vaikka toimiva versio oli naapuri-
+     hakemistossa. Korjaus on tässä eikä sivuilla: kaikki kaksikymmentäviisi
+     linkkiä yhdellätoista sivulla kulkevat SPECLINKin kautta.
+     Polku on suhteellinen ja hakemistot ovat sisaruksia myös julkaisukopiossa
+     (generoi/bce-proto), joten se ratkeaa molemmissa. Luurankosivu on yhä
+     olemassa osoitteessa bce_sivu_spec.html?s=konfiguraattori — sivukartan
+     kohta ei kadonnut, se ei vain ole enää linkkien kohde. */
+  "/konfiguraattori/":"../pilarilaskuri/bce-pilarilaskuri.html",
   "/bce-pilarit/":"bce_pilarit_spec.html",
   "/bce-pilarit/kp-pilari/":"bce_sivu_spec.html?s=kp",
   "/bce-pilarit/tp-pilari/":"bce_tp_spec.html",

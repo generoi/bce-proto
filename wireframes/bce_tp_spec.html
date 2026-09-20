@@ -19,14 +19,16 @@
      tuotevalitsin on lohkon 3 kokovalinta, joka morffaa kuvan korkeutta valinnan
      mukana. Ks. TUOTEKUVAT.md luku 3.5. -->
 <script src="tuotekuva.js"></script>
-<!-- Tarvikekuva ja yhdistelmakuva: lohkon 5 neljä detaljikuvaa ja gallerian
-     kolmas pikkukuva. Lataamisjärjestys on riippuvuusjärjestys — tarvikekuva
-     lukee kameran tuotekuvasta, palkkikuva piirtää puun ja yhdistelmakuva
-     asettaa tarvikkeen ja puun samaan kankaaseen. Sama järjestys kuin
-     tarvikesivulla. (TUOTEKUVAT.md luvut 11 ja 12.) -->
+<!-- Tarvike-, yhdistelmä- ja asennuskuva: lohkon 5 neljä detaljikuvaa ja
+     gallerian kolmas pikkukuva. Lataamisjärjestys on riippuvuusjärjestys —
+     tarvikekuva lukee kameran tuotekuvasta, palkkikuva piirtää puun,
+     yhdistelmakuva asettaa tarvikkeen ja puun samaan kankaaseen ja asennuskuva
+     lisää alle pilarin pään. Sama järjestys kuin tarvikesivulla.
+     (TUOTEKUVAT.md luvut 11, 12 ja 15.) -->
 <script src="palkkikuva.js"></script>
 <script src="tarvikekuva.js"></script>
 <script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
 <script src="tuotevalitsin.js"></script>
 </head>
 <body>
@@ -204,38 +206,48 @@ const C={
        ja siihen kuuluvan puun samaan kuvaan (yhdistelmakuva.js), `osa` pelkän
        tarvikkeen (tarvikekuva.js).
 
-       **Pilaria ei ole kuvissa, vaikka paikanpitäjä pyysi sitä.** Tarviketta ja
-       pilaria samaan kankaaseen asettavaa generaattoria ei ole, ja se vaatisi
-       myös matalamman kulman, jotta pilarikengän säätömutteri näkyisi
-       (TUOTEKUVAT.md luku 12). Se mitä lohko oikeasti selittää — miten päin
-       rakenne kiinnittyy — on kuvassa: kenkä ja siihen tuleva puu. Pilarin pää
-       on kuvassa yhden lohkon päässä (lohko 3) ja kuvatekstissä.
+       **Pilari on kuvissa 20.9.2026 alkaen** (`asennuskuva.js`, TUOTEKUVAT.md
+       luku 15). Se oli kuvapaikan alkuperäinen pyyntö ja jäi aiemmin tekemättä,
+       koska tarviketta ja pilaria samaan kankaaseen asettavaa generaattoria ei
+       ollut. Nyt on, ja lohkon kysymys — *miten rakenne liittyy pilariin* — on
+       kokonaan kuvassa: pilarin pää, siihen kierretty tarvike ja siihen tuleva
+       puu. Rivin ingressi lupaa juuri tämän, ja aiemmin kuva vastasi siitä vain
+       jälkimmäiseen puoleen.
+
+       Pilarista näkyy vain pää. Kokonainen TP-400 pohjalaattoineen veisi kuvan
+       leveyden ja kenkä olisi 150 pikselin paikassa parinkymmenen pikselin
+       kokoinen. Pilari jatkuu kuvan alareunan ali, ja rajaus on sama kaikissa
+       neljässä, joten pilarin pää on jokaisella rivillä samankokoinen.
 
        Nostokorvalle ei ole paria: siinä ei ole kiinnitettävää puuta, vaan tanko
-       asennuksen ajaksi. Sama poikkeus ja sama syy kuin tarvikesivulla.
+       asennuksen ajaksi. Sama poikkeus ja sama syy kuin tarvikesivulla. Pilari
+       sillä on, ja se on rivin koko sisältö — nostokorva kierretään pilarin
+       päähän, eikä sitä voi näyttää ilman pilaria.
 
-       **Palkkikenkä ja teräslaatta näyttävät koko liitoksen 18.9.2026:** kiinnike,
-       palkki ja laudoitus samassa kuvassa (`-terassi`-parit). Ne vastaavat eri
-       kysymykseen kuin pelkkä pari — pari kertoo miten päin puu menee
-       kiinnikkeeseen, täysi liitos kertoo mihin se johtaa. Laudoitus on nostettu
-       irti, koska paikalleen laskettuna se peittää juuri sen liitoksen, joka on
-       kuvan aihe; teräslaatalla myös palkki on nostettu samasta syystä.
+       **Palkkikenkä ja teräslaatta palasivat `-terassi`-pareista pelkkiin
+       pareihin.** Täysi liitos oli kolme kerrosta (kiinnike, palkki, laudoitus);
+       pilarin kanssa se olisi neljä, ja rivin kuvapaikassa ylin kerros jäisi
+       muutamaan pikseliin. Kerros, joka tässä lohkossa kannattaa ottaa mukaan,
+       on pilari eikä laudoitus: lohkon otsikko on *TP-pilariin sopivat
+       tarvikkeet*. `-terassi`-parit ovat yhä olemassa ja ovat oikea valinta
+       siellä, missä kysymys on terassin pinnasta.
 
-       **Pilarikenkä on yhä pari eikä täysi liitos, ja syy on ristiriita lähteissä.**
-       Tämän rivin teksti sanoo «Pystytolpalle», mutta laskurin sääntö
-       (`fixing='nakyva'` + palkki 48 × 148 → PIK 50-70) ja tarvikesivun kortti
-       («Terassin runkopalkki») sanovat runkopalkkia. Ura on 70 mm kummassakin
-       luennassa eikä geometria ratkaise asiaa. Kuva `pik-50-70-terassi` on
-       olemassa runkopalkkiversiona, muttei käytössä täällä ennen kuin BCE
-       vastaa — muuten rivin teksti ja kuva väittäisivät eri asiaa. */
+       **Pilarikenkä on yhä pystytolppa eikä runkopalkki, ja syy on ristiriita
+       lähteissä.** Tämän rivin teksti sanoo «Pystytolpalle», mutta laskurin
+       sääntö (`fixing='nakyva'` + palkki 48 × 148 → PIK 50-70) ja tarvikesivun
+       kortti («Terassin runkopalkki») sanovat runkopalkkia. Ura on 70 mm
+       kummassakin luennassa eikä geometria ratkaise asiaa. Kuva
+       `pik-50-70-terassi` on olemassa runkopalkkiversiona, muttei käytössä
+       täällä ennen kuin BCE vastaa — muuten rivin teksti ja kuva väittäisivät
+       eri asiaa. */
     items:[
       ["Pilarikenkä",{pari:"pik-50-70"},
        "Pystytolpalle.","Puutolppa asetetaan kengän sisään ja pultataan kiinni: liitos pysyy irti maasta ja kuivana.",
        "pilarikengat","Katso pilarikenkä"],
-      ["Palkkikenkä PAK",{pari:"pak-100x150-terassi"},
+      ["Palkkikenkä PAK",{pari:"pak-100x150"},
        "Vaakapalkille.","Niskapalkki lasketaan pilarin päälle kengän varaan, esimerkiksi terassin tai autokatoksen kantavaksi rakenteeksi.",
        "palkkikengat","Katso palkkikenkä"],
-      ["Teräslaatta",{pari:"tl-150x150-terassi"},
+      ["Teräslaatta",{pari:"tl-150x150"},
        "Tasaiselle rakenteelle.","Levy pilarin päässä antaa suoran tukipinnan, kun rakennetta ei kiinnitetä kenkään.",
        "teraslaatat","Katso teräslaatta"],
       ["Nostokorva",{osa:"nostokorva-m20"},
@@ -370,16 +382,40 @@ const C={
      Kolme generaattoria, yksi sääntö: kuva piirretään siihen paikkaan, jonka
      kysymykseen se vastaa, eikä mihinkään muuhun.
 
-     DETALJI  lohkon 5 tarvikerivit. `pari` = tarvike ja siihen tuleva puu
-              (yhdistelmakuva), `osa` = pelkkä tarvike (tarvikekuva).
+     DETALJI  lohkon 5 tarvikerivit: pilarin pää, tarvike ja puu (asennuskuva).
+              Rivin kuvaus menee generaattorille sellaisenaan — `pari` = tarvike
+              ja siihen tuleva puu, `osa` = tarvike yksin.
      GALLERIA heron pikkukuvat. Kaksi neljästä on piirros, kaksi valokuvaa —
               ks. C.hero.thumbs.
 
      Jokaisella on oma `id`, koska sivulla on nyt kuusi inline-SVG:tä eikä
      kahdella voi olla samaa sisäistä id:tä (TUOTEKUVAT.md sääntö 3). */
-  const DETALJI=a=>a.pari
-    ? window.yhdistelmakuva({pari:a.pari,korkeus:118,koriste:true,id:"det-"+a.pari})
-    : window.tarvikekuva({osa:a.osa,korkeus:118,koriste:true,id:"det-"+a.osa});
+
+  /* Neljä tarvikeriviä **yhteisessä mittakaavassa ja yhteisellä kankaalla**
+     (TUOTEKUVAT.md sääntö 4). Kaksi erillistä asiaa, ja molempia tarvitaan:
+
+       yhteinen mittakaava   suurin silhuetti täyttää korkeuden, muut ovat siitä
+                             osuutensa. Ilman tätä jokainen kuva täyttäisi oman
+                             laatikkonsa ja nostokorva piirtyisi yli kaksi
+                             kertaa suurempana kuin palkkikenkä — juuri niin
+                             kuin tällä sivulla oli 18.–20.9.2026.
+       yhteinen kangas       sama width ja height kaikille. Mittakaava syntyy
+                             generaattorissa mutta säilyy vain, jos CSS skaalaa
+                             kuvat samalla kertoimella — ja se vaatii saman
+                             kankaan. Eri kokoisilla kankailla mittakaava on
+                             oikein työpöydällä ja rikki 96 pikselin sarakkeessa
+                             eli siellä missä 80,9 % istunnoista on.
+
+     Tasaus on «ala»: neljällä kuvalla on nyt yhteinen alataso, pilarin rajaus.
+     Yhdistelmäkuvilla sitä ei ollut — ne eivät seisoneet missään — ja siksi
+     tarvikesivun kortit tasattiin keskelle. */
+  const DET_KORKEUS=140;
+  const DET_SKAALA=DET_KORKEUS/Math.max.apply(null,
+    C.parts.items.map(p=>window.asennuskuva.laajuus(p[1])));
+  const DETALJI_KUVAT=window.tuotekuva.kangas(
+    C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
+      {skaala:DET_SKAALA,koriste:true,id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
+  const DETALJI=(a,i)=>DETALJI_KUVAT[i];
 
   /* Gallerian piirros pyydetyssä koossa ja pyydetyllä id:llä. **Funktio eikä
      valmis merkkijono**, koska sama kuva tarvitaan kahdesti — pikkukuvana ja
@@ -487,8 +523,8 @@ const C={
 
   /* 4 · Tähän perheeseen sopivat tarvikkeet */
   sect(head(C.parts.h2,C.parts.ing)+
-    '<div class="plist">'+C.parts.items.map(p=>'<div class="pitem">'+
-      '<div class="im piirros">'+DETALJI(p[1])+"</div>"+
+    '<div class="plist">'+C.parts.items.map((p,i)=>'<div class="pitem">'+
+      '<div class="im piirros">'+DETALJI(p[1],i)+"</div>"+
       "<div><h3>"+E(p[0])+"</h3><p><b>"+E(p[2])+"</b> "+E(p[3])+"</p>"+
       '<p class="plinks">'+
         '<a class="more" href="'+L("/pilarien-kiinnitystarvikkeet/")+"#"+E(p[4])+

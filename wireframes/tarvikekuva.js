@@ -30,6 +30,14 @@
            {CX: 0.866, CY: 0.42, katse: [1, 1, 0.84]};
   var CX = PR.CX, CY = PR.CY, KATSE = PR.katse, RT2 = Math.SQRT2;
 
+  /* Juokseva numero kierteen leikkausmaskille. Maskin id oli ennen johdettu
+     hid:stä ja tapin alapäästä, ja se riitti niin kauan kuin yksi hid tarkoitti
+     yhtä osaa. Terassikuva piirtää saman kengän yhdeksän kertaa samalla hid:llä,
+     jolloin dokumenttiin tuli yhdeksän kertaa sama id — löydetty 20.9.2026
+     tarvikesivulta mittaamalla (sääntö 3). Laskuri on moduulin tasolla, koska
+     sama dokumentti voi sisältää useita kuvia. */
+  var maski = 0;
+
   /* Pinta näkyy kun sen ulkonormaali osoittaa katsojaan. Tämä yksi funktio korvaa
      kaiken käsin päättelyn siitä, mikä levyn reuna piirretään ja mikä ei. */
   function nakyy(n) {
@@ -207,10 +215,11 @@
       if (piilossa(z1)) return null;
       var t = C.tanko(x, y, z0, z1, r, M.sivu, false);
       var nousu = 6, n = Math.max(3, Math.round((z1 - z0) / nousu));
-      out.push('<clipPath id="' + hid + '-k' + N(z0) + '"><rect x="' +
+      var mid = hid + "-k" + (++maski);
+      out.push('<clipPath id="' + mid + '"><rect x="' +
         N(t.ala[0] - t.rx) + '" y="' + N(t.yla[1]) + '" width="' + N(2 * t.rx) +
         '" height="' + N(t.ala[1] - t.yla[1]) + '"/></clipPath>');
-      out.push('<g clip-path="url(#' + hid + '-k' + N(z0) + ')" stroke="' + M.viiva +
+      out.push('<g clip-path="url(#' + mid + ')" stroke="' + M.viiva +
         '" stroke-width="' + N(lev * 0.8) + '" opacity=".75">');
       for (var i = 0; i <= n; i++) {
         var yy = t.yla[1] + (t.ala[1] - t.yla[1]) * i / n;
