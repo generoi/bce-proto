@@ -500,9 +500,10 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 /* Konfiguraattorilohkon kuva on inline-SVG eikä <img>, koska vierityksen
    aikajana ei ylety toisen dokumentin sisään. Mitat tulevat samasta
    säännöstä kuin ennenkin, jotta lohkon asettelu ei muutu. */
-/* Kuva täyttää sen mitan, joka ensin rajoittaa. Lohko on ruudun korkuinen, ja
-   kuva on piirretty pystympään kuin palsta, joten korkeus on yleensä se raja. */
-.cfg .shot{display:flex;align-items:center;justify-content:center;min-height:0}
+/* Kuva täyttää sen mitan, joka ensin rajoittaa, ja keskittyy toiseen. Korkeutta
+   ei saa rajata nollaan: se voittaisi sticky-palstan `min-height:100svh`:n ja
+   jättäisi kuvan ruudun ylälaitaan tyhjän päälle. */
+.cfg .shot{display:flex;align-items:center;justify-content:center}
 .cfg .shot>svg{display:block;width:auto;height:auto;max-width:100%;max-height:100%}
 /* Ratkaisijat ja konfiguraattori ovat sama tarve, joten ne ovat samassa lohkossa. */
 .cfg .steps{margin:26px 0 0}
@@ -905,7 +906,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
    bodyssa estää vaakavierityksen, jonka 100vw muuten aiheuttaa pystypalkin
    levyisenä — clip eikä hidden, koska hidden tekisi bodystä vierittäjän ja
    rikkoisi sivun scroll-snapin. */
-/* Lohko on 250 svh korkea **vieritysmatka**, jonka sisällä molemmat palstat ovat
+/* Lohko on 200 svh korkea **vieritysmatka**, jonka sisällä molemmat palstat ovat
    sticky ja täyttävät ruudun. Siitä seuraa kolme asiaa, jotka kaikki tarvittiin:
 
      1  animaatiolla on pitkä matka eikä se siksi reagoi vierittämiseen äkisti.
@@ -914,13 +915,19 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
      2  liike tapahtuu paikallaan pysyvässä kuvassa eikä ohi kiitävässä.
      3  snap osuu matkan alkuun (`start`), ja animaatio alkaa vasta sen jälkeen.
 
+   Korkeus oli ensin 250 svh. Se lyhennettiin 200:aan, koska lohkon ohi pääseminen
+   kesti 2 375 px eikä sitä kompensoinut mikään: alalaidassa ei ole snap-vetoa
+   lainkaan (mitattu: 0 px kolmesta kohdasta, kun sisääntulossa veto on 204 px),
+   joten raskaus oli pelkkää matkaa. Nyt matka on 1 900 px ja siitä 950 px
+   kiinnityksessä.
+
    **Aikajana on tässä eikä kuvassa.** Sticky-elementin oma kulku ruudun läpi
    pysähtyy juuri siksi ajaksi, jonka pitäisi olla animaation ydin, joten
    `view()` kuvan päällä antaisi lähes vakion. Nimi `--te-cfg` tulee
    terassikuva.js:n id:stä «cfg», ja kuva viittaa siihen nimellä
    (`ulkoinenAikajana:true`). */
-.cfg{display:grid;grid-template-columns:minmax(0,32%) minmax(0,1fr);gap:clamp(32px,4vw,72px);
-  align-items:start;min-height:250svh;scroll-snap-align:start;
+.cfg{display:grid;grid-template-columns:minmax(0,27%) minmax(0,1fr);gap:clamp(32px,4vw,64px);
+  align-items:start;min-height:200svh;scroll-snap-align:start;
   width:100vw;margin-inline:calc(50% - 50vw);
   border-radius:0;border-left:0;border-right:0;padding:0 clamp(24px,5vw,88px);
   view-timeline-name:--te-cfg;view-timeline-axis:block}
@@ -936,6 +943,26 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
   scroll-snap-align:none;padding:32px 24px;view-timeline-name:none}
   .cfg>*{position:static;min-height:0;display:block}
   .cfg .shot{order:-1;display:flex}}
+
+/* Matala variantti: sama lohko ilman vierityksen runwaytä. Käytössä sivulla,
+   jolla konfiguraattori on toissijainen nosto eikä sivun tehtävä — ostopaikka-
+   sivun ensisijainen toiminto on *Katso mistä ostat*, ja 1 900 px vieritys-
+   matkaa on liikaa lohkolle, joka ei ole sivun asia. Kuvapari on
+   `terassikuva.cfgMatala`: koottu rakenne, ei kerroksia joita animoida.
+
+   Palstat ovat 38/62 eivätkä 27/73: koottu terassi on matala, joten leveä
+   palsta venyttäisi sen nauhaksi ja jättäisi tekstin kapeaksi ilman syytä.
+
+   Kaksi luokkaa eikä yksi (`.cfg.matala`) on tahallista. Miro-kääre injektoi
+   kaappausta varten `<style>.cfg{min-height:860px}</style>` (ks. CLAUDE.md,
+   «Kaappauksen pahin ansa»). Yhden luokan variantti häviäisi sille ja venyisi
+   kaappauksissa 860 px:iin; kaksi luokkaa voittaa. */
+.cfg.matala{min-height:0;scroll-snap-align:none;view-timeline-name:none;
+  grid-template-columns:minmax(0,38%) minmax(0,1fr);align-items:center;
+  padding:clamp(34px,4vw,60px) clamp(24px,5vw,88px)}
+.cfg.matala>*{position:static;min-height:0;display:block}
+.cfg.matala .shot{display:flex}
+@media(max-width:820px){.cfg.matala{grid-template-columns:1fr}}
 
 /* Referenssinosto nykysivuston keissimuodossa: sitaatti, nimi ja paikka. */
 .quote .acts{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin:18px 0 0;
@@ -1242,9 +1269,18 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
 
    Kuva on täysleveä kortin yläreunassa kuten .pick .im, joten kortin oma padding
    siirtyy tekstiosaan .tx. Selektorit ovat kahden luokan mittaisia, jotta ne
-   voittavat ylemmän .pick-how span -säännön ilman !importantia. */
+   voittavat ylemmän .pick-how span -säännön ilman !importantia.
+
+   `display:flex` toistetaan tässä, ja se on koko säännön tärkein rivi. .ph on
+   span, ja .pick-how span{display:block} on (0,1,1) eli vahvempi kuin .ph (0,1,0)
+   — kuvapaikka menetti siis keskityksensä sillä hetkellä kun se laitettiin
+   kortin sisään, ja kuva asettui vasempaan ylänurkkaan normaalina virtana.
+   Tyhjänä kuvapaikkana se ei näkynyt, koska paikanpitäjän teksti on keskitetty
+   `text-align`illa. Vika paljastui vasta 18.9.2026 kun paikoissa oli kuva.
+   Koskee vain näitä viittä: tuoterivien .ph ei ole .pick-how:n sisällä. */
 .pick-how a{padding:0;overflow:hidden}
-.pick-how .ph{border-width:0 0 1px;border-radius:0}
+.pick-how .ph{display:flex;align-items:center;justify-content:center;
+  border-width:0 0 1px;border-radius:0}
 .pick-how .tx{display:block;padding:16px 18px;font-size:inherit;color:inherit}
 .pick-how .tx b{display:block;font-family:var(--ff-d);text-transform:uppercase;
   font-size:19px;font-weight:600;line-height:1.15;margin:0 0 8px}

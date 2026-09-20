@@ -153,7 +153,7 @@ document.getElementById("main").innerHTML=
  '<p style="font-size:var(--fs-small);color:var(--ink-2);max-width:62ch;margin-top:var(--s6)">Varsinainen käyttöpaikka on laskurin valintakortti, ja siellä kuva on pieni. Näin se lukee 64 pikselissä — muoto ja korkeusero erottuvat, syykuvio ei, ja se riittää.</p>'+
  '<div class="tk-pieni" id="palkkioptiot"></div>'+
  '</section></div>'+
- '<div class="w"><section id="tarvikkeet"><div class="head"><h2>Tarvikkeet</h2>'+ '<p>Yhdeksän nimikettä, sama kamera kuin pilareilla. Materiaali on eri, ja siksi valo on eri: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista. Sävy tulee pinnan normaalista neljänä portaana, joten ohutlevyn jokainen taite erottuu ilman että sitä piirretään erikseen.</p>'+ '<p style="font-size:var(--fs-small);color:var(--ink-3)">Kaikki yhdeksän ovat samassa mittakaavassa keskenään. PAK-100×200 on kuvassa kaksi kertaa PIK 50-70:n korkuinen, koska se on sitä.</p></div>'+ '<div class="tk-ruudukko tk-metalli" id="tarvikerivi"></div></section></div>'+ '<div class="w"><section id="yhdistelmat"><div class="head"><h2>Tarvike ja puu samassa kuvassa</h2>'+
+ '<div class="w"><section id="tarvikkeet"><div class="head"><h2>Tarvikkeet</h2>'+ '<p>Kymmenen nimikettä, sama kamera kuin pilareilla. Materiaali on eri, ja siksi valo on eri: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista. Sävy tulee pinnan normaalista neljänä portaana, joten ohutlevyn jokainen taite erottuu ilman että sitä piirretään erikseen.</p>'+ '<p style="font-size:var(--fs-small);color:var(--ink-3)">Kaikki kymmenen ovat samassa mittakaavassa keskenään. PAK-100×200 on kuvassa kaksi kertaa PIK 50-70:n korkuinen, koska se on sitä.</p></div>'+ '<div class="tk-ruudukko tk-metalli" id="tarvikerivi"></div></section></div>'+ '<div class="w"><section id="yhdistelmat"><div class="head"><h2>Tarvike ja puu samassa kuvassa</h2>'+
  '<p>Erillinen tarvikekuva kertoo miltä osa näyttää. Se ei kerro sitä, mikä asiakkaan kysymys oikeasti on: miten päin puu menee siihen kiinni. Puu on kengän <em>sisällä</em>, joten piirtojärjestys ratkaisee — <code>tarvikekuva.js</code> kutsuu koukkua siinä kohtaa, johon puu kuuluu, eikä puuta voi piirtää tarvikkeen päälle.</p></div>'+
  '<div class="tk-ruudukko" id="yhdistelmakuvat"></div>'+
  '</section></div>'+
@@ -249,7 +249,7 @@ function piirra(){
   /* Ikonit. Yksi per ryhmä, kolmessa koossa ja tummalla pohjalla. */
   const IKONIT=[["pik-50-70","Pilarikengät"],["p-pik-50x70","Pilarikenkä, puolikas"],
                 ["pak-100x150","Palkkikengät"],["tl-150x150","Teräslaatat, neljä reikää"],
-                ["tl-100x100","Teräslaatta, kaksi reikää"],["nostokorva-m20","Nostokorva"]];
+                ["tl-100x100","Teräslaatta, kaksi reikää"],["nostokorva-m20","Nostokorva"],["sakkeli","Sakkeli"]];
   document.getElementById("ikonirivi").innerHTML=IKONIT.map(o=>
     '<figure><div class="koot">'+tarvikekuva.siluetti(o[0],64)+
     tarvikekuva.siluetti(o[0],24)+tarvikekuva.siluetti(o[0],18)+'</div>'+

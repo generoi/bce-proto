@@ -78,6 +78,7 @@ code{background:var(--paper-2);padding:0 4px;border-radius:2px;font-size:.92em}
   letter-spacing:.02em;padding:14px var(--s5);border:2px solid transparent;
   border-radius:var(--r-ctl);text-decoration:none;cursor:pointer;
 }
+a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydellä */
 .btn-1{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
 .btn-2{background:var(--surface);color:var(--ink);border-color:var(--rule-2)}
@@ -219,7 +220,16 @@ code{background:var(--paper-2);padding:0 4px;border-radius:2px;font-size:.92em}
   border-radius:var(--r-ctl);background:var(--surface);color:var(--ink);
   -moz-appearance:textfield}
 .step .val::-webkit-outer-spin-button,.step .val::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.step .unit{font-size:var(--fs-small);color:var(--ink-3);min-width:14px}
+.step .unit{font-size:var(--fs-small);color:var(--ink-3)}
+/* Vaakasäätimessä yksikkö on kentän ALLA eikä sen oikealla puolella: rivissä se työnsi
+   +-painiketta sivuun ja rikkoi kolmen neliön sarjan. Absoluuttinen sijoitus pitää
+   kentän samassa linjassa painikkeiden kanssa, ja rivin alapehmuste varaa sille tilan.
+   Pystysäätimessä yksikkö saa jäädä oikealle: siellä laatikot ovat päällekkäin eikä
+   sivulla oleva yksikkö häiritse mitään. */
+.step:not(.pysty) .ctl{padding-bottom:18px}
+.step:not(.pysty) .arvo{position:relative;display:block}
+.step:not(.pysty) .arvo .unit{position:absolute;left:50%;top:100%;transform:translateX(-50%);
+  margin-top:3px;line-height:1}
 .derived{margin:10px 0 var(--s5);color:var(--ink-2);font-size:var(--fs-small)}
 /* Ruudukossa pinta-ala on kuvan yläpuolella eikä kaipaa omia marginaalejaan. */
 .m-ala .derived{margin:0 0 var(--s2)}
@@ -731,7 +741,10 @@ var FI = {
   'r.how':'Näin laskimme',
   'r.install':'Asennusjärjestys',
   'r.cta.mail':'Lähetä lista sähköpostiini',
-  'r.cta.store':'Näytä lähin myymälä',
+  /* Sivukartan sääntö: "Mistä ostat", ei "Jälleenmyyjät" — käyttäjän kysymys hänen
+     sanoillaan. Osoite on prototyypin tiedosto; tuotannossa se on /mista-ostat/. */
+  'r.cta.store':'Katso mistä ostat',
+  'r.cta.store.url':'../wireframes/bce_mista-ostat_spec.html',
   'r.cta.expert':'Epävarma? Kysy asiantuntijalta',
   'r.cta.refine':'Tarkenna palkkikoko',
 
@@ -754,9 +767,6 @@ var FI = {
   's.snow':'Tarkistimme lumikuorman postinumerollasi: {n} pilaria',
   's.cta':'Laske toinen rakennus',
   's.showlist':'Näytä lista uudelleen',
-  's.h.stores':'Mistä saat nämä tuotteet',
-  's.lead.stores':'Näytä lista myymälässä tai tilaa tuotteet jälleenmyyjältä.',
-  's.back':'Takaisin listaan',
 
   'h.h':'Tähän kannattaa kysyä ihmiseltä',
   'h.lead':'Jätä yhteystietosi, niin asiantuntijamme ehdottaa sopivat pilarit. Vastaamme tunnin sisällä arkisin.',
@@ -1372,9 +1382,9 @@ function stepper(key, label, val, min, max, stepv, unit){
   return '<div class="step"><label class="slbl" for="' + id + '">' + esc(label) + '</label><div class="ctl">'
     + '<button type="button" data-act="bump" data-key="' + key + '" data-d="-' + stepv + '" aria-label="' + esc(t('ui.less')) + '"'
     + (val <= min ? ' disabled' : '') + '>&#8722;</button>'
-    + '<input class="val" id="' + id + '" type="text" inputmode="decimal" data-num="' + key + '"'
+    + '<span class="arvo"><input class="val" id="' + id + '" type="text" inputmode="decimal" data-num="' + key + '"'
     + ' aria-label="' + esc(label) + ' ' + esc(min) + '-' + esc(max) + '" value="' + esc(num(val)) + '">'
-    + (unit ? '<span class="unit">' + esc(unit) + '</span>' : '')
+    + (unit ? '<span class="unit">' + esc(unit) + '</span>' : '') + '</span>'
     + '<button type="button" data-act="bump" data-key="' + key + '" data-d="' + stepv + '" aria-label="' + esc(t('ui.more')) + '"'
     + (val >= max ? ' disabled' : '') + '>+</button></div></div>';
 }
@@ -1769,7 +1779,12 @@ function rResult(){
   o += '</ol></details>';
   if (r.refine) o += '<button class="btn btn-2 wide" type="button" data-act="goto" data-scr="palkki">' + esc(t('r.cta.refine')) + '</button>';
   o += '<button class="btn btn-1 wide" type="button" data-act="goto" data-scr="lead">' + esc(t('r.cta.mail')) + '</button>'
-    +  '<button class="btn btn-2 wide" type="button" data-act="stores">' + esc(t('r.cta.store')) + '</button>'
+    /* Linkki ulos eikä laskurin oma ruutu: /mista-ostat/ on neutraali välisivu ennen
+       verkkokauppaa, ja se omistaa ostopaikkakysymyksen. Laskurin oma myymälälista oli
+       placeholder-dataa (T11: jälleenmyyjärekisteriä eikä karttaa ole), joten se olisi
+       ollut keksitty vastaus oikean vieressä. Tapahtuma on sama kuin muilla sivuilla. */
+    +  '<a class="btn btn-2 wide" href="' + esc(t('r.cta.store.url')) + '" data-act="mistaostat">'
+    +  esc(t('r.cta.store')) + '</a>'
     +  '<button class="more" type="button" data-act="expert">' + esc(t('r.cta.expert')) + '</button>'
     /* Vastuulauseke toiminnon jälkeen: ennen sitä se oli kuuden rivin lista siitä,
        mikä voi mennä pieleen, juuri ennen ensisijaista painiketta. */
@@ -1813,16 +1828,6 @@ function rSent(){
     + '<button class="more" type="button" data-act="restart">' + esc(t('s.cta')) + '</button></div>';
   return o;
 }
-function rStores(){
-  return '<div class="scr">' + nav('stores')
-    + '<h2>' + esc(t('s.h.stores')) + '</h2><p class="lede">' + esc(t('s.lead.stores')) + '</p>'
-    + '<div class="group"><h3 class="lbl">' + esc(state.postcode ? t('s.stores', { postcode:state.postcode }) : t('s.stores.nopost')) + '</h3>'
-    + storeCards() + '</div>'
-    + '<div class="spacer"></div>'
-    + '<button class="btn btn-1 wide" type="button" data-act="goto" data-scr="lead">' + esc(t('r.cta.mail')) + '</button>'
-    + '<button class="more" type="button" data-act="back">' + esc(t('s.back')) + '</button></div>';
-}
-
 /* --- ohjaus ihmiselle ----------------------------------------------------- */
 function handoffPlaceholder(){
   if (!state.building) return '';
@@ -2145,7 +2150,7 @@ function swimNodes(){
   /* Sarakkeet ovat vaiheita eivätkä ruutuja: ruutuja on kahdesta seitsemään, mutta
      kaavion pitää pysyä luettavana ja samanlaisena rakennustyypistä riippumatta. */
   var cur = ({ rakennus:0, lisa:0, kaltevuus:1, maapohja:1, liitos:2, palkki:2, mitat:3,
-               result:4, lead:4, sent:4, stores:4, handoff:4 })[SCREEN];
+               result:4, lead:4, sent:4, handoff:4 })[SCREEN];
   if (cur === undefined) cur = -1;
   var hf = (r && r.handoff) ? r.handoff.code : null;
   /* tavallinen solmu: odottaa · päätetty · käsillä nyt */
@@ -2343,7 +2348,7 @@ function renderWS(){
   wsEl.hidden = !WS;
   document.getElementById('stage').classList.toggle('ws-on', WS);
   if (!WS) return;
-  var key = (SCREEN === 'stores') ? 'sent' : SCREEN;
+  var key = SCREEN;
   var a = ANNOTATIONS[key], o = testPicker() + '<h3>Päätöspuu</h3>' + swimlane();
   if (a){
     o += '<h2>' + esc(a.title) + '</h2>';
@@ -2358,7 +2363,7 @@ function renderWS(){
       return '<li>' + (d.id ? '<span class="tid">' + esc(d.id) + '</span>' : '') + esc(d.text) + '</li>';
     }).join('') + '</ul>';
   }
-  if (RESULT && ['result','lead','sent','stores','handoff'].indexOf(SCREEN) >= 0) o += howBlock() + formulaBlock() + engBlock();
+  if (RESULT && ['result','lead','sent','handoff'].indexOf(SCREEN) >= 0) o += howBlock() + formulaBlock() + engBlock();
   o += tunePanel();
   o += '<details><summary>Tuotesäännöt v0.2</summary><table><thead><tr><th>Rakennus</th><th>Pilari</th><th>Jakoväli</th><th>Kiinnike</th></tr></thead><tbody>'
     + PRODUCT_RULES.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('')
@@ -2410,12 +2415,12 @@ var TESTCASES = [
 function renderPhone(){
   var m = { start:rStart, rakennus:rRakennus, lisa:rLisa, kaltevuus:rKaltevuus,
             maapohja:rMaapohja, liitos:rLiitos, palkki:rPalkki, paksuus:rPaksuus, mitat:rMitat,
-            result:rResult, lead:rLead, sent:rSent, stores:rStores, handoff:rHandoff };
+            result:rResult, lead:rLead, sent:rSent, handoff:rHandoff };
   phone.innerHTML = (m[SCREEN] || rStart)();
 }
 function render(){ renderPhone(); renderWS(); }
 function recalc(){
-  if (['result','lead','sent','stores','handoff'].indexOf(SCREEN) < 0) return;
+  if (['result','lead','sent','handoff'].indexOf(SCREEN) < 0) return;
   RESULT = compute(state, RULES, LANG);
   if (RESULT.handoff && SCREEN !== 'handoff') SCREEN = 'handoff';
   else if (!RESULT.handoff && SCREEN === 'handoff' && SENT !== 'handoff') SCREEN = 'result';
@@ -2466,7 +2471,9 @@ phone.addEventListener('click', function(e){
     render();
     return;
   }
-  if (a === 'stores'){ push('laskuri_store_view'); go('stores'); return; }
+  /* Linkki saa navigoida itse: tässä vain mitataan. Sama tapahtumanimi kuin sivuston
+     muilla Mistä ostat -linkeillä, jotta ne laskeutuvat samaan mittariin. */
+  if (a === 'mistaostat'){ push('cta_mista_ostat', { from:'laskuri_tulos' }); return; }
   if (a === 'expert'){
     push('laskuri_handoff', { code:'epavarma', building:state.building, area:RESULT ? RESULT.area : null });
     if (RESULT) RESULT.handoff = null;
@@ -2663,6 +2670,17 @@ var DEMOT = {
   katos:   { building:'katos',   w:6, l:8, poles:8,      terrain:'20-40',  soil:'kantava', post:'90-140' },
   tolppa:  { building:'tolppa',  poles:4 }
 };
+/* Kieltäytymissarake: sama polku, yksi vastaus muutettuna niin että laskuri ohjaa
+   ihmiselle. Yksi edustava syy per polku, ei kaikkia neljää: kaavio näyttää missä
+   kohtaa polku voi katketa, ei kieltäytymissääntöjen luetteloa. Tolpalla ei ole
+   yhtään tarkistusta, joten sille ei ole riviä. */
+var OHJAUKSET = {
+  terassi: { terrain:'yli60' },                    /* korkeusero yli 60 cm */
+  mokki:   { heated:'ympari', soil:'pehmea' },     /* ympärivuotinen ja routiva maa */
+  sauna:   { w:6, l:6 },                           /* 36 m² ylittää 30 m² rajan */
+  piha:    { w:6, l:6 },
+  katos:   { w:8, l:8 }                            /* 64 m² ylittää 50 m² rajan */
+};
 (function demo(){
   var q = {}, hae = String(location.search || '').replace(/^\?/, '');
   hae.split('&').forEach(function(pari){
@@ -2682,6 +2700,12 @@ var DEMOT = {
   var d = DEMOT[q.polku], k;
   for (k in d) state[k] = d[k];
   var ruutu = q.ruutu || 'result';
+  if (ruutu === 'ohjaus'){
+    var o = OHJAUKSET[q.polku] || {}, ok;
+    for (ok in o) state[ok] = o[ok];
+    toResult();
+    return;
+  }
   if (ruutu === 'result'){ toResult(); return; }
   SCREEN = ruutu;
   render();

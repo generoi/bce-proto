@@ -155,7 +155,7 @@ const kuvaDemo=(function(){
   const perheet=window.tuotekuva.rivi(window.tuotekuva.perheet,
     {korkeus:200,koriste:true,merkinta:false,id:"dsp"});
 
-  /* Yhdeksän tarviketta, yksi mittakaava. Silhuetit ovat 150…371 mm, joten
+  /* Kymmenen tarviketta, yksi mittakaava. Silhuetit ovat 150…371 mm, joten
      pienin ei katoa isoimman viereen. */
   const tavaimet=TKU.osat();
   const tskaala=150/Math.max.apply(null,tavaimet.map(k=>TKU.laajuus(k)));
@@ -368,7 +368,7 @@ sect("kuvat","Kuvat","Viisi generaattoria ja yksi kamera: <code>tuotekuva.projek
    merge:"Neljä perhettä on tässä samassa mittakaavassa (<code>tuotekuva.rivi</code>): AP-400 ei saa näyttää KP-1000:n kokoiselta, koska perhe valitaan koon mukaan.",
    demo:kuvaDemo.pilarit,paper:true},
   {id:"tarvikekuva",n:"Tarvikekuva",c:"tarvikekuva({osa,korkeus,skaala,koriste,id}) · .osat() · .tieto() · .laajuus()",on:on("a"),status:["ok","18.9."],
-   rule:"Yhdeksän nimikettä. Kamera luetaan <code>tuotekuva.projektio</code>-oliosta, mutta <strong>valo on eri ja se on tarkoitus</strong>: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista — neliportainen cel-varjostus ja kiiltojuova särmän vieressä. Sävy lasketaan <strong>pinnan normaalista</strong> eikä anneta parametrina, joten ohutlevyn jokainen taite erottuu itsestään. Teräkset <code>--met-*</code>.",
+   rule:"Kymmenen nimikettä. Kamera luetaan <code>tuotekuva.projektio</code>-oliosta, mutta <strong>valo on eri ja se on tarkoitus</strong>: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista — neliportainen cel-varjostus ja kiiltojuova särmän vieressä. Sävy lasketaan <strong>pinnan normaalista</strong> eikä anneta parametrina, joten ohutlevyn jokainen taite erottuu itsestään. Teräkset <code>--met-*</code>.",
    merge:"Ei <code>kiintea</code>-valitsinta, koska perheitä ei ole: yhteinen mittakaava tehdään <code>laajuus()</code>-suhteella. Varjo ei ole oletus — tarvike ei seiso maassa vaan kiertyy pilarin päähän, joten kontaktivarjo väittäisi alustaa jota ei ole.",
    demo:kuvaDemo.tarvikkeet,paper:true},
   {id:"palkkikuva",n:"Palkkikuva",c:"palkkikuva({koko,korkeus,kiintea,syyt,oksat,koriste,id}) · .rivi() · .koot()",on:"",status:["todo","ei vielä sivulla"],

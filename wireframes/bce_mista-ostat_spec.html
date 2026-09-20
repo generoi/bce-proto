@@ -176,12 +176,15 @@ const C={
     '<p class="cmp"><b>'+E(C.haul.cmpQ)+"</b> "+T(C.haul.cmp)+"</p></div>"+
     '<div class="im">'+E(C.haul.img)+"</div></div>","nouto")+
 
-  /* 5 · Konfiguraattori, kahdessa palstassa kuten muilla sivuilla */
-  sect('<div class="cfg"><div>'+head(C.cfg.h2,C.cfg.ing)+
+  /* 5 · Konfiguraattori, kahdessa palstassa kuten muilla sivuilla — mutta
+     matalana: tämän sivun ensisijainen toiminto on *Katso mistä ostat*, ja
+     vieritysanimaatio antaisi toissijaiselle nostolle kaksi ruutua matkaa.
+     `.cfg.matala` + `terassikuva.cfgMatala` = koottu rakenne, ei runwaytä. */
+  sect('<div class="cfg matala"><div>'+head(C.cfg.h2,C.cfg.ing)+
     '<ol class="steps">'+C.cfg.steps.map(x=>"<li><b>"+E(x[0])+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
     '<p class="act"><a class="btn btn-1" href="'+L(C.url.konf)+'" data-event="cta_konfiguraattori" data-sijainti="lopetus">'+
     E(C.cfg.cta)+'</a><span class="sub">'+E(C.cfg.sub)+"</span></p></div>"+
-    '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
+    '<div class="shot">'+terassikuva.cfgMatala(C.cfg.alt)+'</div>'+
     "</div>","mitoita")+
 
   /* 6 · Usein kysytyt */

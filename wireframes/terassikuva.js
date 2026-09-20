@@ -123,6 +123,7 @@
        että kokoaisi rakenteen. Vain vieritystilassa — kellon kanssa suunta on
        aikajanassa eikä sitä tarvitse kääntää erikseen. */
     kaanteinen: false,
+    keskitys: false,      /* vastaliike, ks. alempana — oletuksena pois */
     /* Kun sivu itse julistaa vierityksen aikajanan (`view-timeline-name`),
        kuva ei julista omaansa vaan viittaa siihen nimellä. Tarvitaan aina kun
        kuva on sticky-elementin sisällä: silloin sen oma kulku ruudun läpi
@@ -424,7 +425,15 @@
          Porrastus kääntyy mukana: kootessa laudat tulevat viimeisenä (suurin
          viive), avatessa ne lähtevät ensimmäisenä. Ilman kääntöä rakenne
          purkautuisi alhaalta ylös, mikä ei ole minkään purkamisen näköistä. */
-      var Tv = J.t0 + J.vaihe + 1.0, i2, d2, A2, B2, kaanto = !!o.kaanteinen;
+      /* Loppupito on lyhyt (0,2 s vs kellon 1,0 s): kellossa se on katseluaika,
+         vierityksessä se on pelkkää matkaa jonka aikana ei tapahdu mitään — ja
+         juuri se teki lohkon ohi pääsemisestä raskasta. Nyt se on 5,7 % matkasta
+         eli noin 55 px.
+
+         Alkupito jää pitkäksi (22,6 %, noin 215 px), koska se on snapin
+         vetoalueen kate: sisääntulossa snap vetää mitatusti 204 px, ja niin
+         kauan kuin mikään ei liiku, veto ei näy kuvassa. */
+      var Tv = J.t0 + J.vaihe + 0.2, i2, d2, A2, B2, kaanto = !!o.kaanteinen;
       var alkuT = kaanto ? "translateY(var(--d))" : "translateY(0)";
       var loppuT = kaanto ? "translateY(0)" : "translateY(var(--d))";
       function pv(t) { return Math.round(t / Tv * 1e6) / 1e4; }
@@ -454,22 +463,24 @@
           "animation-iteration-count:1;" +
           "animation-fill-mode:both;" +
           "animation-timeline:--" + juuri + ";" +
-          /* Alue on lohkon kiinnijäämisen sisällä. Lohko on 250 svh korkea
-             vieritysmatka, jonka sisällä sisältö on sticky ja täyttää ruudun:
-             se kiinnittyy kun cover-eteneminen on ~29 % ja irtoaa ~71 %:ssa.
-             Alue 34–68 % alkaa siis vasta kun lohko on asettunut ruutuun ja
-             päättyy ennen kuin se lähtee — koko liike tapahtuu paikallaan
-             pysyvässä kuvassa.
+          /* `contain` eikä `cover`: contain-alue on täsmälleen se jakso, jonka
+             ajan lohko peittää ruudun — eli sama kuin sticky-palstojen
+             kiinnityksen kesto. Prosentteja ei siis tarvitse arvata, ja alue
+             seuraa ruudun korkeutta itsestään.
 
-             Samalla liike hidastui: 250 svh:n matkasta 34 % on noin 1,3 ruudun
-             verran vierittämistä, kun aiemmin koko animaatio mahtui 0,4
-             ruutuun. Vieritysajetussa animaatiossa «hitaampi» on nimenomaan
-             pidempi matka — kestoa ei ole, on vain matka.
+             Tämä korjasi myös tahmeuden, ja syy kannattaa tietää.
+             `scroll-snap-align:start` asettaa snap-kohdan kiinnityksen alkuun,
+             eli täsmälleen sinne mistä liike lähti. Pieni vieritys sai snapin
+             vetämään takaisin, ja animaatio kelautui mukana — se nykäisi joka
+             kerta. Nyt aikajanan alussa on keyframejen oma tauko (`t0`, noin
+             19 % matkasta), ja snapin vetoalue jää kokonaan sen sisään: veto ei
+             näy kuvassa lainkaan. Lopussa on vastaava tauko, joten räjäytys on
+             valmis ennen kuin lohko irtoaa.
 
-             Kolme hylättyä: `8 … 62 %` oli ohi ennen kuin lohkosta näkyi
-             puoltakaan, `30 … 88 %` valmistui vasta 400 px snap-kohdan jälkeen,
-             ja `8 … 52 %` oli 95-prosenttisesti ohi jo snap-hetkellä. */
-          "animation-range:cover 34% cover 68%}");
+             Kolme hylättyä alkua: `cover 8 … 62 %` oli ohi ennen kuin lohkosta
+             näkyi puoltakaan, `30 … 88 %` valmistui vasta 400 px snap-kohdan
+             jälkeen, ja `8 … 52 %` oli 95-prosenttisesti ohi jo snap-hetkellä. */
+          "animation-range:contain 0% contain 100%}");
       for (i2 = 0; i2 < viiveet.length; i2++) {
         r.push("." + juuri + "-k" + i2 + "{animation-name:" + juuri + "-v" + i2 + "}");
       }
@@ -605,55 +616,65 @@
       if (o.animaatio) out.push("</g>");
     }
 
-    /* ---- 5 · palkit ----
-       Kauimmainen ensin: pienin x on kauimpana kamerasta. */
+    /* ---- 5 · palkit ja niiden kengät, sarake kerrallaan ----
+       Yksi animoitu ryhmä per sarake, ei per kappale. Syy on suorituskyvyssä:
+       jokainen animoitu `<g>` on selaimelle oma kompositointikerros, ja 1500
+       yksikön levyisestä SVG:stä rasteroitu kerros ei ole ilmainen. Ensimmäinen
+       versio teki 42 kerrosta (3 palkkia + 9 kenkää + 22 lautaa + kääre), ja
+       vieritys tahmesi ensimmäisellä ohituksella niiden rasteroinnissa.
+
+       Ryhmittely ei muuta piirtojärjestystä: sarakkeen kengät piirtyvät oman
+       palkkinsa jälkeen ja seuraava sarake niiden jälkeen, mikä on sama järjestys
+       kuin ennen — suurempi x on lähempänä kameraa. Kenkä ja palkki nousevat
+       muutenkin samassa vaiheessa, joten niillä ei ollut eri viivettäkään. */
     S.palkit.forEach(function (p, i) {
       kerros(A.nostoKenka, i * o.porras, function () {
-      window.palkkikuva.piirra(out, {
-        koko: o.palkki, akselit: "yxz",
-        siirto: [p.x, o.pituus / 2, A.palkkiZ], pituus: p.pituus,
-        siemen: i * 31, K: K, ox: ox, oy: oy, hid: hP, cid: "-p" + i,
-        viiva: viiva, varjo: false,
-        syyt: o.syyt !== false, oksat: o.oksat !== false,
-        rakeisuus: o.rakeisuus !== false, merkinta: false
-      });
-      });
-    });
-
-    /* ---- 6 · pilarikengät ----
-       Palkkien jälkeen, koska kengän etulevy on palkin edessä: uran levyt ovat
-       x-välillä ±35…40 ja palkki ±24, joten lähempi levy kuuluu päälle. Takalevy
-       piirtyy samalla palkin päälle, mutta se on 5 mm eli yksi kuvapiste — ja se
-       piste lukee kengän kaulukseksi palkin ympäri, ei virheeksi. Erillinen
-       piirtojärjestys levyä kohden ei ole tämän arvoinen. */
-    S.solmut.forEach(function (p, i) {
-      kerros(A.nostoKenka, (i % S.G.sarakkeet) * o.porras, function () {
-        var q = paikka(p[0], p[1], A.kenkaZ);
-        window.tarvikekuva.piirra(out, {
-          osa: o.kenka, K: K, ox: q.ox, oy: q.oy, hid: hV, viiva: viiva
+        window.palkkikuva.piirra(out, {
+          koko: o.palkki, akselit: "yxz",
+          siirto: [p.x, o.pituus / 2, A.palkkiZ], pituus: p.pituus,
+          siemen: i * 31, K: K, ox: ox, oy: oy, hid: hP, cid: "-p" + i,
+          viiva: viiva, varjo: false,
+          syyt: o.syyt !== false, oksat: o.oksat !== false,
+          rakeisuus: o.rakeisuus !== false, merkinta: false
+        });
+        /* Saman sarakkeen kengät, takaa eteen. Etulevy on palkin edessä, ks.
+           tarvikekuva.js:n uran geometria. */
+        S.solmut.forEach(function (q) {
+          if (Math.abs(q[0] - p.x) > 1) return;
+          var t = paikka(q[0], q[1], A.kenkaZ);
+          window.tarvikekuva.piirra(out, {
+            osa: o.kenka, K: K, ox: t.ox, oy: t.oy, hid: hV, viiva: viiva
+          });
         });
       });
     });
 
-    /* ---- 7 · laudat ----
-       Pienin y kauimpana. Jokaisella oma siemen, muuten koko terassi on sama
-       lauta kaksikymmentä kertaa — ja sen huomaa heti. */
-    S.laudat.forEach(function (p, i) {
-      /* Laudat lähtevät liikkeelle vasta kun palkit ovat paikallaan, ja
-         porrastuvat takaa eteen — siitä syntyy se aaltoliike, joka kertoo
-         että ne asennetaan yksi kerrallaan eikä levynä. */
-      kerros(A.nostoLauta, 0.55 + i * o.porras, function () {
-      window.palkkikuva.piirra(out, {
-        koko: o.lauta, akselit: "xzy",
-        siirto: [o.leveys / 2, p.y, A.lautaZ + A.LA.b / 2],
-        pituus: S.lautaPituus,
-        siemen: i * 17 + 3, K: K, ox: ox, oy: oy, hid: hP, cid: "-l" + i,
-        viiva: viiva, varjo: false,
-        syyt: o.syyt !== false, oksat: o.oksat !== false,
-        rakeisuus: o.rakeisuus !== false, merkinta: false
-      });
-      });
-    });
+    /* ---- 6 · laudat kaistoittain ----
+       Sama syy: 22 lautaa oli 22 kerrosta. Kaistoja on kahdeksan, joten aalto
+       on kahdeksanportainen eikä 22-portainen — tässä koossa (lauta on noin
+       20 px leveä) porrasta ei erota, mutta kerrosten määrä putosi kolmasosaan.
+       Kaistan laudat ovat vierekkäisiä, joten piirtojärjestys säilyy. */
+    var kaistoja = Math.min(8, S.laudat.length);
+    var kaistaKoko = Math.ceil(S.laudat.length / kaistoja);
+    var kaistaAskel = kaistaKoko * o.porras;
+    for (var kb = 0; kb < S.laudat.length; kb += kaistaKoko) {
+      (function (alkuIx) {
+        kerros(A.nostoLauta, 0.55 + (alkuIx / kaistaKoko) * kaistaAskel, function () {
+          var loppuIx = Math.min(alkuIx + kaistaKoko, S.laudat.length), j;
+          for (j = alkuIx; j < loppuIx; j++) {
+            window.palkkikuva.piirra(out, {
+              koko: o.lauta, akselit: "xzy",
+              siirto: [o.leveys / 2, S.laudat[j].y, A.lautaZ + A.LA.b / 2],
+              pituus: S.lautaPituus,
+              siemen: j * 17 + 3, K: K, ox: ox, oy: oy, hid: hP,
+              cid: "-l" + j, viiva: viiva, varjo: false,
+              syyt: o.syyt !== false, oksat: o.oksat !== false,
+              rakeisuus: o.rakeisuus !== false, merkinta: false
+            });
+          }
+        });
+      })(kb);
+    }
 
     /* ---- 8 · selitteet ----
        Vasempaan reunaan, koska siellä on tyhjää: projektiossa vasen laita on
@@ -766,19 +787,25 @@
 
     /* ---- Vastaliike: sommittelu pysyy keskellä molemmissa päissä ----
        Kangas on mitoitettu räjäytettyyn asentoon, joten kootussa asennossa
-       sisältö painuu sen alalaitaan ja yläpuolelle jää puolet kankaasta tyhjää.
-       Mitä isompi räjäytys, sitä pahempi — ja korkeutta tarvitaan juuri siihen,
-       että räjäytys mahtuu.
+       sisältö painuu sen alalaitaan ja yläpuolelle jää tyhjää — sitä enemmän
+       mitä isompi räjäytys. Kääre koko sisällön ympärillä siirtää kaiken ylös
+       puolella laudan matkasta kun rakenne on koottu ja nollaan kun se on auki.
 
-       Korjaus on yksi kääntäen liikkuva kääre koko sisällön ympärille. Se
-       siirtää kaiken — myös maan — ylös puolella laudan matkasta silloin kun
-       rakenne on koottu, ja nollaan kun se on auki. Siirto on yhteinen, joten
-       se ei muuta minkään kappaleen suhdetta toiseen: pysähdyskuva on yhä
-       geometrisesti sama kuin `rajahdys:0`, vain eri kohdassa kangasta.
+       **Oletuksena pois päältä (`keskitys`).** Se korjaa sommittelun mutta maksaa
+       kalliimman asian: kääre siirtää myös maan ja pilarit, eli kuva itse
+       ajelehtii pystysuunnassa animaation aikana. Kun räjäytysväli on pieni,
+       kuten konfiguraattorilohkossa (700 mm), tyhjää syntyy niin vähän ettei
+       korjausta tarvita — ja silloin ajelehtiminen on ainoa mitä siitä jää
+       jäljelle. Maan pitää pysyä paikallaan: se on ainoa kappale, joka ei
+       todellisuudessakaan liiku.
 
-       Viive on porrastuksen keskikohta, jolloin kääre liikkuu sisällön mukana
-       eikä sen edellä tai perässä. */
-    if (o.animaatio && o.rajahdys) {
+       Siirto on yhteinen, joten se ei muuta minkään kappaleen suhdetta toiseen:
+       pysähdyskuva on yhä geometrisesti sama kuin `rajahdys:0`, vain eri kohdassa
+       kangasta. Viive on porrastuksen keskikohta, jolloin kääre liikkuu sisällön
+       mukana eikä sen edellä tai perässä.
+
+       Kytke päälle vain jos räjäytysväli on suuri suhteessa kankaaseen. */
+    if (o.animaatio && o.rajahdys && o.keskitys) {
       var siirtyma = -A.nostoLauta * K / 2;
       var keskiViive = viiveet.length
         ? Math.max.apply(null, viiveet) / 2000 : 0;
@@ -827,18 +854,58 @@
      Kuva on inline-SVG eikä `<img>`, ja se on vierityksen ehto: aikajana ei
      ylety toisen dokumentin sisään, joten erillisenä tiedostona sitä ei voi
      ajaa sivun vierityksellä. Hinta on ~230 kB merkkausta per sivu. */
-  terassikuva.cfg = function (nimike) {
-    return terassikuva({
-      leveys: 3000, pituus: 2400, rajahdys: 700, leveysPx: 1500,
-      animaatio: true, vieritys: true, kaanteinen: true,
-      /* Aikajana on lohkolla (.cfg), ei kuvalla: kuva on sticky ja pysyy
-         paikallaan juuri sen ajan, jonka animaation pitäisi kestää.
-         Nimi --te-cfg johdetaan id:stä «cfg» ja se on bce-v4.css:ssä. */
-      ulkoinenAikajana: true,
-      selitteet: true, selitevali: 2.6, fonttikerroin: 1.35,
+  /* Lohkon yhteiset asetukset. Variantteja on kaksi, ja ne lukevat terassin koon
+     ja koristeettomuuden tästä — muuten kahden paikan luvut karkaavat erilleen
+     ensimmäisellä säädöllä, ja juuri sitä varten tämä funktio on olemassa. */
+  function cfgPohja(nimike) {
+    return {
+      leveys: 3000, pituus: 2400, leveysPx: 1500,
       mitat: false, syyt: false, oksat: false, rakeisuus: false,
       nimike: nimike, id: "cfg"
-    });
+    };
+  }
+
+  terassikuva.cfg = function (nimike) {
+    var o = cfgPohja(nimike);
+    o.rajahdys = 700;
+    /* Suunta: alaspäin vierittäminen KOKOAA rakenteen — laudat laskeutuvat
+       paikoilleen. Lohko alkaa siis räjäytettynä ja päättyy valmiiseen
+       terassiin. Käänteinen (`kaanteinen:true`) kokeiltiin 18.9. ja hylättiin:
+       laskeutuminen on luettavampi kuin purkautuminen, koska se on sama
+       suunta kuin asentamisessa. Optio jää generaattoriin. */
+    o.animaatio = true; o.vieritys = true; o.kaanteinen = false;
+    /* Aikajana on lohkolla (.cfg), ei kuvalla: kuva on sticky ja pysyy
+       paikallaan juuri sen ajan, jonka animaation pitäisi kestää.
+       Nimi --te-cfg johdetaan id:stä «cfg» ja se on bce-v4.css:ssä. */
+    o.ulkoinenAikajana = true;
+    o.selitteet = true; o.selitevali = 2.6; o.fonttikerroin = 1.35;
+    return terassikuva(o);
+  };
+
+  /* ---- Matala variantti: koottu rakenne ilman vieritystä ------------------
+     Sivulle, jolla konfiguraattori on toissijainen nosto eikä sivun tehtävä.
+     Ostopaikkasivun ensisijainen toiminto on *Katso mistä ostat*, ja 1 900 px
+     vieritysmatkaa on liikaa lohkolle, joka ei ole sivun asia.
+
+     Kolme seurausta, jotka kaikki tulevat samasta valinnasta `rajahdys:0`:
+
+       matala       kangas mitoitetaan kappaleiden rajoista, ja koottu terassi
+                    on murto-osa räjäytetyn korkeudesta. Matalaa kuvaa ei siis
+                    rajata erikseen — se on koottu rakenne
+       ei tyylejä   tyylit() ajetaan vain kun `animaatio && rajahdys`, joten
+                    @keyframes-sääntöjä ei synny lainkaan
+       alt korjautuu itse  nimike() lukee «koottu rakenne» samasta lipusta
+
+     Selitteet pois: ne osoittavat kerroksiin, ja kootussa rakenteessa sora ja
+     routaeriste ovat maapedin sisällä. Osoitin umpinaiseen kylkeen on väärä
+     tieto, ei vain turha. Samalla katoaa 22 %:n selitekaista, mikä tekee
+     kuvasta leveämmän ja matalamman — sama suunta kuin lohkon tehtävä. */
+  terassikuva.cfgMatala = function (nimike) {
+    var o = cfgPohja(nimike);
+    o.rajahdys = 0;
+    o.animaatio = false; o.vieritys = false; o.ulkoinenAikajana = false;
+    o.selitteet = false;
+    return terassikuva(o);
   };
 
   terassikuva.ruudukko = function (o) {

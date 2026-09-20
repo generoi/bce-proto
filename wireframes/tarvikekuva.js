@@ -238,6 +238,39 @@
         '" stroke-dasharray="' + N(w * 0.9) + " " + N(w * 3.4) + '" opacity=".85"' + e);
     };
 
+    /* ---- Taivutettu pyöröteräs ----
+       Sakkelin kaari ei ole pyörähdyskappale eikä levy vaan vakiopaksuinen
+       puikko, jonka keskilinja kaartaa. Pintoina se olisi kymmeniä
+       nelikulmioita; paksuna vetona projisoidun keskilinjan yli se on yksi
+       polku. Sama päättely kuin C.rengas'ssa — ero on vain siinä, että polku
+       on auki, ja että leveys kerrotaan tässä suoraan K:lla: P() vie jo
+       pikseleihin, joten matriisin kerrointa ei ole jaettavana pois.
+
+       Kiilto on suoralla puikolla yhtenäinen viiva ja taivutetulla katkoviiva.
+       Se ei ole tyylivalinta: suora pyöröteräs heijastaa yhden juovan koko
+       pituudeltaan, taivutettu vain siellä missä pinta kääntyy valoon. */
+    C.kaari = function (pisteet, paksuus, paat) {
+      var d = pisteet.map(function (p, i) {
+        var q = P(p); return (i ? "L" : "M") + N(q[0]) + " " + N(q[1]);
+      }).join("");
+      var w = paksuus * K, suora = pisteet.length === 2;
+      function veto(vari, lw, lisa) {
+        out.push('<path d="' + d + '" fill="none" stroke="' + vari +
+          '" stroke-width="' + N(lw) + '" stroke-linecap="' + (paat || "round") +
+          '" stroke-linejoin="round"' + (lisa || "") + '/>');
+      }
+      veto(M.viiva, w + 2 * lev);
+      veto(M.sivu, w);
+      /* Samat kaksi liukua kuin C.tanko'n rungossa. Ilman niitä puikko on
+         tasainen harmaa nauha, ja kolme eripaksuista pätkää peräkkäin — korva,
+         tappi, kanta — sulautuvat yhdeksi laudaksi. Liuku antaa jokaiselle
+         oman pyöreytensä, ja porrastus näkyy vasta silloin. */
+      veto("url(#" + hid + "-cel)", w);
+      veto("url(#" + hid + "-kiilto)", w);
+      veto(M.yla, w * 0.3, suora ? ' opacity=".8"'
+        : ' stroke-dasharray="' + N(w * 0.9) + " " + N(w * 3.4) + '" opacity=".85"');
+    };
+
     C.varjo = function (laatikko) {
       var x = laatikko.x, y = laatikko.y;
       var p = [[x[0], y[0], 0], [x[1], y[0], 0], [x[1], y[1], 0], [x[0], y[1], 0]].map(P);
@@ -331,6 +364,27 @@
       arvio: "kaikki mitat paitsi M20-kierre",
       laatikko: {x: [-20, 20], y: [-20, 20], z: [-38, 78]},
       piirra: function (C, o) { nostokorva(C, o); }
+    },
+    /* ⚠️ Sakkeli on tässä taulukossa ainoa nimike, jolla ei ole lähdettä
+       lainkaan. Kahdeksan muuta ovat asiakkaan omasta esitteestä (2023) tai
+       Rakentajan oppaasta (2025); sakkelia ei mainita kummassakaan eikä
+       nykysivustolla, eikä pilari–tarvike-matriisissa ole sille riviä.
+       Se on piirretty pyynnöstä, ja sen mitat ovat EN 13889:n mukaisen
+       2 t:n kaarisakkelin (1/2") vakiomitat — ei siis arvio tuotekuvasta
+       kuten muiden kohdalla, vaan standardista otettu sijainen.
+
+       Mitä tämä tarkoittaa: kuva on oikea sakkelista, mutta se ei ole kuva
+       BCE:n sakkelista ennen kuin BCE kertoo myykö se sellaista ja minkä
+       kokoisen. Kysymys on avoimissa (CLAUDE.md). Mittakaava on kuitenkin
+       oikeaa luokkaa: KP-pilarit painavat 126–187 kg, ja 2 t on tavallisin
+       koko, joka M20-nostokorvan renkaaseen (aukko ⌀36 mm) sopii. */
+    "sakkeli": {
+      nimi: "Sakkeli 2 t", koodi: "Sakkeli 2 t", ryhma: "Sakkeli",
+      runko: 13, tappi: 16, leuka: 21, kaari: 23, suora: 16, nousu: 14,
+      korva: 10, korvaD: 19, paa: 11, paaD: 24,
+      arvio: "kaikki mitat — ei lähdettä, EN 13889 2 t (1/2\")",
+      laatikko: {x: [-32, 34], y: [-13, 13], z: [-13, 61]},
+      piirra: function (C, o) { sakkeli(C, o); }
     }
   };
 
@@ -452,6 +506,61 @@
     C.rengas("yz", [0, 0, o.kh + o.rengas + o.tuubi], o.rengas, o.tuubi * 2);
   }
 
+  /* Sakkeli: taivutettu kaari ja sen läpi menevä kierretappi.
+
+     Piirretään x–z-tasoon, koska nostokorvan rengas on y–z-tasossa: kaari
+     menee renkaan läpi vain jos tasot ovat kohtisuorassa. Tässä kuvassa
+     sakkeli seisoo yksin tappi alaspäin — se on tuotekuvan asento. Nostossa
+     se on ylösalaisin, tappi nostokorvan renkaan läpi ja kaari ylöspäin.
+
+     Keskilinja kolmessa osassa: suora sivu, siirtymä ulospäin ja puoliympyrä.
+     Siirtymä on smoothstep, jonka kaltevuus on nolla molemmissa päissä —
+     alhaalla se jatkaa pystysuoraa sivua, ylhäällä se osuu kaaren leveimpään
+     kohtaan, jossa kaaren tangentti on niin ikään pysty. Ilman sitä liitoksissa
+     olisi kulma, ja taivutetussa teräksessä ei ole kulmia. */
+  function sakkeli(C, o) {
+    var rb = o.runko / 2;               /* puikon säde */
+    var xs = o.leuka / 2 + rb;          /* suoran sivun keskilinja */
+    var R = o.kaari;                    /* kaaren keskilinjan säde */
+    var zk = o.suora + o.nousu;         /* kaaren keskipiste */
+    var p = [], i, t, a, n = 26, m = 8;
+
+    p.push([-xs, 0, 0]);
+    for (i = 1; i <= m; i++) {
+      t = i / m; a = t * t * (3 - 2 * t);
+      p.push([-(xs + (R - xs) * a), 0, o.suora + (zk - o.suora) * t]);
+    }
+    for (i = 1; i <= n; i++) {
+      a = Math.PI * i / n;
+      p.push([-R * Math.cos(a), 0, zk + R * Math.sin(a)]);
+    }
+    for (i = m - 1; i >= 1; i--) {
+      t = i / m; a = t * t * (3 - 2 * t);
+      p.push([xs + (R - xs) * a, 0, o.suora + (zk - o.suora) * t]);
+    }
+    p.push([xs, 0, 0]);
+    C.kaari(p, o.runko);
+
+    /* Korvat, tappi ja kanta — kaikki kolme akselilla x, eli ne ovat
+       lieriöitä tapin ympärillä ja piirtyvät samalla primitiivillä eri
+       paksuisina pätkinä. Porrastus korvasta tappiin ja tapista kantaan on
+       se, mistä sakkelin tunnistaa avattavaksi.
+
+       Päät ovat tässä katkaistut eikä pyöristetyt. Pyöreä pää kasvattaisi
+       jokaista pätkää puolen paksuutensa verran sen omaan suuntaan, jolloin
+       tappi pistäisi 8 mm korvien ulkopuolelle — se ei ole mitta vaan
+       viivatyylin sivuvaikutus. */
+    var ue = o.leuka / 2, uo = ue + o.korva;       /* korvan sisä- ja ulkopinta */
+    C.kaari([[-uo, 0, 0], [-ue, 0, 0]], o.korvaD, "butt");
+    C.kaari([[ue, 0, 0], [uo, 0, 0]], o.korvaD, "butt");
+    C.kaari([[-uo, 0, 0], [uo, 0, 0]], o.tappi, "butt");
+    C.kaari([[uo, 0, 0], [uo + o.paa, 0, 0]], o.paaD, "butt");
+    /* Kannan päätypinta. Se on ainoa lieriöiden päistä, joka on kameraan
+       päin: katselusuunta on +x, ja jokainen muu porras kasvaa siihen
+       suuntaan, joten loput olakkeet jäävät oman pätkänsä taakse. */
+    C.ympyra("yz", [uo + o.paa, 0, 0], o.paaD / 2, savy([1, 0, 0]), true);
+  }
+
   /* ---- Defs ---------------------------------------------------------------
      Cel-varjostus ja kiilto ovat kovareunaisia liukuja: kaksi stoppia samassa
      kohdassa tekee terävän rajan, ja juuri se erottaa metallin betonista. */
@@ -566,6 +675,12 @@
              "a" + N(r) + " " + N(r) + " 0 1 0 " + N(2 * r) + " 0" +
              "a" + N(r) + " " + N(r) + " 0 1 0 " + N(-2 * r) + " 0z");
     }
+    /* Puoliympyrä vasemmalta oikealle keskipisteen yli. Ikonissa kaari
+       piirretään ääriviivana eikä vetona, jotta reikä on aito aukko. */
+    function kupu(cx, cy, r) {
+      return "M" + N(cx - r) + " " + N(cy) +
+             "a" + N(r) + " " + N(r) + " 0 0 1 " + N(2 * r) + " 0";
+    }
     /* Kierretappi: sama osa kaikissa, joten sama muoto ja sama paikka. */
     function tappi(keskiX, y, kork) {
       suorakaide(keskiX - 1.7, y, 3.4, kork);
@@ -616,6 +731,25 @@
         ympyra(x, yl + paksu / 2, rR);
       }
       tappi(W / 2, yl + paksu, G - yl - paksu);
+    } else if (T.ryhma === "Sakkeli") {
+      /* Kaari ja sen poikki menevä tappi. Aukko on pystysuora ja pitkä, ja se
+         erottaa sakkelin kaikista muista: nostokorvan aukko on pyöreä, ja
+         kenkien U on auki yläpäästä.
+
+         Kaari piirretään ikonissa tasapaksuna, vaikka oikeassa sakkelissa
+         sivut ovat kapeammalla kuin kaaren leveimmät kohdat. Levennys on
+         2,4 yksikköä eli alle pikseli 24 px:ssä, ja sen mukana tulisi kaksi
+         S-mutkaa, jotka lukisivat tässä koossa vain epätarkkuutena. Paksuus
+         ja aukon leveys ovat sen sijaan osan omista mitoista. */
+      W = 20;
+      var rU = 8, cx = W / 2, cy = rU;
+      var kp = Math.max(ohuin, 2 * rU * T.runko / (2 * T.kaari + T.runko));
+      var rS = rU - kp;
+      var tp = Math.max(ohuin, 2 * rU * T.tappi / (2 * T.kaari + T.runko));
+      var jalkaY = G - tp;
+      d.push(kupu(cx, cy, rU) + "V" + N(jalkaY) + "H" + N(cx - rU) + "z");
+      d.push(kupu(cx, cy, rS) + "V" + N(jalkaY) + "H" + N(cx - rS) + "z");
+      suorakaide(0, jalkaY, W, tp);                     /* tappi korvien läpi */
     } else {
       /* Nostokorva: rengas, kaulus ja tappi. Renkaan aukko on se tunniste. */
       W = 18;
