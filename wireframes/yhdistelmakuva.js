@@ -70,13 +70,13 @@
       selite: "Tolppa nousee uran pohjalta levyjen välistä. Etulevy jää tolpan " +
               "eteen, ja ruuvit menevät levyn reikien läpi tolppaan molemmilta " +
               "puolilta.",
-      puut: function (T) { return [tolppa(T, 190)]; }
+      puut: function (T, p) { return [tolppa(T, p || 190)]; }
     },
     "pik-90-140": {
       osa: "pik-90-140", otsikko: "PIK 90-140 ja 140 × 140 tolppa",
       selite: "Sama liitos isompana: katoksen kannatintolppa. Kengän pohjassa on " +
               "pyöreä säätölaatta, jolla tolpan korkeus säädetään ennen kiristystä.",
-      puut: function (T) { return [tolppa(T, 240)]; }
+      puut: function (T, p) { return [tolppa(T, p || 240)]; }
     },
     "p-pik-50x70": {
       osa: "p-pik-50x70", otsikko: "P-PIK 50×70 ja 70 × 70 tolppa",
@@ -103,8 +103,8 @@
              "tarvikekuvan geometriassa levy on tolpan kyljessä. Kuva noudattaa " +
              "geometriaa. Jos levy uppoaa tolpan uraan, kuva on väärin päin.",
       /* Pystylevy on x-välillä 0…t, joten tolppa on sen takana (x < 0). */
-      puut: function (T) {
-        var p = tolppa(T, 190);
+      puut: function (T, pit) {
+        var p = tolppa(T, pit || 190);
         p.siirto[0] = -T.ura / 2;
         return [p];
       }
@@ -114,13 +114,13 @@
       selite: "Palkki lasketaan satulaan ja naulataan levyjen reikien läpi. " +
               "148 mm mahtuu 150 mm:n satulaan; 198 mm ei mahdu, ja siihen on " +
               "PAK-100×200.",
-      puut: function (T) { return palkit(T, "48x148", 2, 270); }
+      puut: function (T, p) { return palkit(T, "48x148", 2, p || 270); }
     },
     "pak-100x200": {
       osa: "pak-100x200", otsikko: "PAK-100×200 ja 2 × 48 × 198",
       selite: "Sama kenkä korkeampana. Satulan korkeus on se mitta, joka " +
               "ratkaisee palkkikoon — 198 mm mahtuu tähän, ei 150:een.",
-      puut: function (T) { return palkit(T, "48x198", 2, 270); }
+      puut: function (T, p) { return palkit(T, "48x198", 2, p || 270); }
     },
     /* ---- Kolme täyttä liitosta: kiinnike, palkki ja lauta samassa kuvassa ----
        Nämä vastaavat eri kysymykseen kuin pelkkä pari. Pari kertoo miten päin
@@ -147,7 +147,7 @@
       avoin: "Laskuri ja tarvikesivu sanovat PIK 50-70:n olevan runkopalkille, " +
              "TP-sivun rivi pystytolpalle. Tämä kuva noudattaa ensimmäistä, " +
              "pari «pik-50-70» jälkimmäistä.",
-      puut: function (T) { return palkit(T, "48x148", 1, 300); },
+      puut: function (T, p) { return palkit(T, "48x148", 1, p || 300); },
       nosto: 95,
       paalla: function (T) {
         var M = window.palkkikuva.mitat("48x148");
@@ -159,7 +159,7 @@
       selite: "Niskapalkki lasketaan satulaan ja naulataan levyjen reikien läpi. " +
               "Terassilauta tulee palkin päälle poikittain — tästä liitoksesta " +
               "tulee terassin pinta.",
-      puut: function (T) { return palkit(T, "48x148", 2, 300); },
+      puut: function (T, p) { return palkit(T, "48x148", 2, p || 300); },
       nosto: 95,
       paalla: function (T) {
         var M = window.palkkikuva.mitat("48x148");
@@ -181,9 +181,9 @@
          peittäisi koko tarvikkeen. Kenkäpareissa palkkia ei räjäytetä, koska
          siellä koko asia on se, että palkki on urassa. */
       rajahdys: 85,
-      puut: function (T) {
+      puut: function (T, p) {
         return [{koko: "48x148", akselit: "yxz", siirto: [0, 0, T.t],
-                 pituus: 300, siemen: 11}];
+                 pituus: p || 300, siemen: 11}];
       },
       nosto: 95,
       paalla: function (T) {
@@ -201,7 +201,7 @@
       /* Nostettu 75 mm ja katkoviiva kokoonpanon suuntana. Ilman räjäytystä
          kuvassa näkyisi lauta ja sen alta kierretapin kärki. */
       rajahdys: 75,
-      puut: function (T) { return [lappeellaan(T, "48x148", 300)]; }
+      puut: function (T, p) { return [lappeellaan(T, "48x148", p || 300)]; }
     }
   };
 
@@ -339,11 +339,15 @@
     var P2 = PARIT[o.pari];
     if (!P2 || !window.tarvikekuva || !window.palkkikuva) return null;
     var T = window.tarvikekuva.tieto(P2.osa);
-    var puut = P2.puut ? P2.puut(T) : [];
+    /* `pituus` on näytepalan pituus, ei tuotteen pituus (ks. palkkikuva.js).
+       Asennuskuva pyytää lyhyempää palaa kuin pari: siinä kuvassa on mukana myös
+       pilari, ja täysimittainen palkki vie kuvan leveyden niin, että liitos —
+       kuvan aihe — jää nurkkaan. Parin oma oletus säilyy, kun lukua ei anna. */
+    var puut = P2.puut ? P2.puut(T, o.pituus) : [];
     /* Liitoksen päälle tuleva laudoitus. Eri lista kuin `puut`, koska
        piirtojärjestys on eri: puu on tarvikkeen sisällä ja tulee koukusta,
        laudoitus sen päällä ja tulee viimeisenä. */
-    var paalla = P2.paalla ? P2.paalla(T) : [];
+    var paalla = P2.paalla ? P2.paalla(T, o.pituus) : [];
     /* Laudoitus nostetaan irti palkista. Ilman nostoa se peittää juuri sen
        liitoksen, joka on kuvan aihe — sama havainto ja sama ratkaisu kuin
        parissa «tl-150x150». Nosto on pystysuora eikä muuta mitään muuta:
@@ -388,6 +392,7 @@
        piirtojärjestystä. Kappaleet järjestyksessä kauimmaisesta lähimpään. */
     window.tarvikekuva.piirra(out, {
       osa: KO.P2.osa, K: K, ox: ox, oy: oy, hid: hidT, viiva: viiva,
+      piilotaso: o.piilotaso,
       puu: function () {
         puut.forEach(function (spec, i) {
           window.palkkikuva.piirra(out, {

@@ -136,8 +136,11 @@ const C={
       ["Kuinka iso","Mitä isompi rakennus, sitä suurempi kantavuus. Muista myös myöhemmät lisäykset — esimerkiksi terassin lasitus lisää kuormaa merkittävästi."],
       ["Kuinka korkealle maasta","Korkeus valitaan sen mukaan, kuinka korkealle rakenne halutaan ja kuinka syvälle pilari asennetaan."]],
     alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
-    cta:"Laske pilarien määrä",
-    sub:"Vastaat muutamaan kysymykseen kohteestasi. Et tarvitse kuormalaskelmia."},
+    /* `sub` poistettu 20.9.2026 Ollin pyynnöstä. Teksti oli varauma painikkeen
+       alla («et tarvitse kuormalaskelmia»), ja se vastasi vastaväitteeseen, jota
+       lukija ei ollut vielä ehtinyt esittää — kolme askelta sen yläpuolella
+       kertovat jo mitä konfiguraattori kysyy. Muilla sivuilla `.act .sub` jää. */
+    cta:"Laske pilarien määrä"},
 
   /* 9 · Jälleenmyyjäklikki on sivun mitattavin tapahtuma. Yksi lista, sama kuin
      etusivulla, tasapuolisesti: sama järjestys, sama koko, ei korostuksia. */
@@ -225,10 +228,13 @@ const C={
   /* Kommenttikierros 2 (15.9.2026): .cfg on kahdessa palstassa kaikilla sivuilla,
      koska kuva vei aiemmin koko leveyden. Teksti, vaiheet ja toiminto vasemmalle,
      kuva oikealle. */
-  sect('<div class="cfg"><div>'+head(C.cfg.h2,C.cfg.ing)+
+  /* `ei-snap` 20.9.2026: lohko ei ole enää scroll-snapin kohta. Snap-kohtia on
+     koko CSS:ssä vain tämä yksi, joten sivulta katoaa snap kokonaan. Animaatio
+     jää — se ajetaan vierityksen aikajanalla eikä tarvitse snappia. */
+  sect('<div class="cfg ei-snap"><div>'+head(C.cfg.h2,C.cfg.ing)+
     '<ol class="steps">'+C.cfg.steps.map(x=>"<li><b>"+E(x[0])+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
     '<p class="act"><a class="btn btn-1" href="'+E(SPECLINK(C.url.konf))+'" data-event="cta_konfiguraattori" data-sijainti="lopetus">'+
-    E(C.cfg.cta)+'</a><span class="sub">'+E(C.cfg.sub)+"</span></p></div>"+
+    E(C.cfg.cta)+"</a></p></div>"+
     '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
     "</div>","loyda")+
 

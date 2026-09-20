@@ -449,6 +449,14 @@
       /* Katkoviivat kertovat kokoonpanon suunnasta, joten ne näkyvät
          räjäytetyssä asennossa ja katoavat kootussa — kummassa päässä
          aikajanaa se sitten onkin. */
+      /* Selitekaista vapautuu kun selitteet häipyvät, ja ilman tätä kuva jäisi
+         oikeaan laitaan tyhjän kaistan viereen. Sommittelu sulkeutuu siis
+         vaakasuunnassa samalla aikajanalla: liike on yhteinen koko sisällölle,
+         joten mikään kappale ei siirry suhteessa toiseen. */
+      r.push("@keyframes " + juuri + "-xv{" +
+        "0%," + pv(J.t0) + "%{transform:translateX(0);animation-timing-function:" +
+          ALAS + "}" +
+        pv(J.t0 + J.vaihe) + "%,100%{transform:translateX(var(--dx))}}");
       r.push("@keyframes " + juuri + "-hv{" +
         "0%," + pv(J.t0) + "%{opacity:" + (kaanto ? "0" : "1") +
           ";animation-timing-function:" + ALAS + "}" +
@@ -458,7 +466,7 @@
         (o.ulkoinenAikajana ? "" :
           "." + juuri + "-svg{view-timeline-name:--" + juuri +
           ";view-timeline-axis:block}") +
-        "[class*=\"" + juuri + "-k\"],." + juuri + "-h{" +
+        "[class*=\"" + juuri + "-k\"],." + juuri + "-h,." + juuri + "-x{" +
           "animation-duration:auto;" +
           "animation-iteration-count:1;" +
           "animation-fill-mode:both;" +
@@ -484,10 +492,11 @@
       for (i2 = 0; i2 < viiveet.length; i2++) {
         r.push("." + juuri + "-k" + i2 + "{animation-name:" + juuri + "-v" + i2 + "}");
       }
-      r.push("." + juuri + "-h{animation-name:" + juuri + "-hv}}");
+      r.push("." + juuri + "-h{animation-name:" + juuri + "-hv}");
+      r.push("." + juuri + "-x{animation-name:" + juuri + "-xv}}");
     }
     r.push("@media(prefers-reduced-motion:reduce){[class*=\"" + juuri +
-      "-k\"],." + juuri + "-h{animation:none}}");
+      "-k\"],." + juuri + "-h,." + juuri + "-x{animation:none}}");
     return "<style>" + r.join("") + "</style>";
   }
 
@@ -758,14 +767,37 @@
          Keskilinja luetaan **kappaleiden** laajuudesta eikä kankaasta: kangas
          on venytetty selitteiden alle, joten sen keskikohta seuraisi
          selitteitä ja keskitys jäisi kiertämään itseään. */
-      var ryhmaYla = Infinity, ryhmaAla = -Infinity;
-      rivit.forEach(function (rivi) {
-        ryhmaYla = Math.min(ryhmaYla, rivi.ty - fontti * 0.5);
-        ryhmaAla = Math.max(ryhmaAla, rivi.ty + fontti * 0.5);
-      });
+      function ryhmaKeski(lisaa) {
+        var yla = Infinity, ala = -Infinity;
+        rivit.forEach(function (rivi) {
+          var y = rivi.ty + (lisaa ? rivi.nosto * K : 0);
+          yla = Math.min(yla, y - fontti * 0.5);
+          ala = Math.max(ala, y + fontti * 0.5);
+        });
+        return (yla + ala) / 2;
+      }
       var kuvaKeski = reuna + (R.y1 - R.y0) * K / 2;
-      var siirto = kuvaKeski - (ryhmaYla + ryhmaAla) / 2;
+      var siirto = kuvaKeski - ryhmaKeski(false);
+
+      /* Keskitys lasketaan **avatusta** asennosta, koska selitteet näkyvät vain
+         siinä: ne häivytetään rakenteen sulkeutuessa, ks. alla. Ilman häivytystä
+         keskitys olisi mahdoton yhtälö — selite seuraa kerrostaan, kerrokset
+         liikkuvat eri matkan, ja ryhmä painuisi kootussa asennossa kasaan niin
+         että sen keskikohta valuisi 61 px alas (mitattu). */
       rivit.forEach(function (rivi) { rivi.ty += siirto; });
+
+      /* ---- Selitteet näkyvät vain avatussa rakenteessa ----
+         Ne osoittavat kerroksiin, ja kootussa rakenteessa tasaussora ja
+         routaeriste ovat maapedin sisällä: osoitin umpinaiseen kylkeen on
+         väärää tietoa, ei vain turhaa. Sama perustelu on jo `cfgMatala`-
+         variantissa, jossa selitteet on jätetty kokonaan pois.
+
+         Häivytys ratkaisee samalla sen, ettei ryhmää voi keskittää molempiin
+         asentoihin yhtä aikaa. Sama aikajana ja sama luokka kuin
+         katkoviivoilla, joten selitteet ja kokoonpanon merkinnät katoavat
+         yhdessä — ne kertovat samasta asiasta. */
+      var haipyy = o.animaatio && o.rajahdys;
+      if (haipyy) out.push('<g class="' + juuri + '-h">');
 
       var xR = reuna + selitetila - 40;
       rivit.forEach(function (rivi) {
@@ -789,6 +821,7 @@
           C.teksti([xR, rivi.ty + fontti * 0.34], rivi.t, fontti, V.teksti, "end", 600);
         });
       });
+      if (haipyy) out.push("</g>");
     }
 
     var nimike = o.nimike || ("Terassi " + metri(o.leveys) + " × " + metri(o.pituus) +
@@ -822,6 +855,13 @@
        mukana eikä sen edellä tai perässä.
 
        Kytke päälle vain jos räjäytysväli on suuri suhteessa kankaaseen. */
+    /* Vaakasulkeutuminen: kääre koko sisällön ympärille. Vain vieritystilassa,
+       koska vain siellä selitteet häipyvät sulkeutumisen mukana. */
+    if (o.animaatio && o.rajahdys && o.vieritys && o.selitteet && selitetila) {
+      out = ['<g class="' + juuri + '-x" style="--dx:' + N(-selitetila / 2) +
+        'px">' + out.join("") + "</g>"];
+    }
+
     if (o.animaatio && o.rajahdys && o.keskitys) {
       var siirtyma = -A.nostoLauta * K / 2;
       var keskiViive = viiveet.length

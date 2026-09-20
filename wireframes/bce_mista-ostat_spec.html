@@ -80,7 +80,15 @@ const C={
   order:{h2:"Näin tilaat",
     ing:"Sama kolme askelta kaikilla jälleenmyyjillä.",
     steps:[
-      ["Laske määrä","Konfiguraattori antaa pilarimäärän ja tarvikelistan kappalemäärineen. Ilman listaa myymälässä arvataan."],
+      /* Askel 1 on ainoa, jonka otsikko on linkki. Kolmas alkio on tuotanto-URL
+         ja neljäs tapahtumanimi; ilman niitä otsikko on pelkkää tekstiä.
+         «Laske määrä» on käsky, jota ei voi totella tällä sivulla — askel kertoi
+         mitä tehdä muttei vienyt minnekään, ja konfiguraattorilohko on vasta
+         kaksi lohkoa alempana. `cta_konfiguraattori` on kortin 7 tukimittari
+         («paluu mitoitukseen», ../mittarit-per-sivu.md), joten uutta
+         tapahtumanimeä ei synny — sijainti erottaa tämän lopetuslohkosta. */
+      ["Laske määrä","Konfiguraattori antaa pilarimäärän ja tarvikelistan kappalemäärineen. Ilman listaa myymälässä arvataan.",
+        "konf","cta_konfiguraattori"],
       ["Ota koodit mukaan","Tuotekoodi ja EAN riittävät: niillä myyjä löytää oikean tuotteen, vaikka nimi olisi kaupan omassa järjestelmässä toinen. Koodit ovat kunkin tuotteen omalla sivulla, ja konfiguraattorin tilauslista kokoaa ne valmiiksi."],
       ["Varmista saatavuus ennen käyntiä","Isommat erät ja korkeat pilarit eivät ole joka myymälässä hyllyssä. Verkkokaupasta näet tilanteen ja voit tilata noutoon."]],
     codesCta:"Katso pilarien koodit",
@@ -162,7 +170,9 @@ const C={
 
   /* 3 · Näin tilaat */
   sect(head(C.order.h2,C.order.ing)+
-    '<ol class="steps">'+C.order.steps.map(x=>"<li><b>"+E(x[0])+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
+    '<ol class="steps">'+C.order.steps.map(x=>"<li><b>"+(x[2]
+      ? '<a href="'+L(C.url[x[2]])+'" data-event="'+x[3]+'" data-sijainti="tilaa">'+E(x[0])+"</a>"
+      : E(x[0]))+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
     '<p class="next">'+
       '<a class="more" href="'+L(C.url.pilarit)+'" data-event="cta_tuotteet" data-sijainti="tilaa">'+
       arrow(C.order.codesCta)+"</a> "+

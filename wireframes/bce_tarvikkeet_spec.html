@@ -64,7 +64,7 @@
    alle, ei joka riville: A:n 27 toistuvaa merkintää oli auditin löydös.
 
    Kolme tietoista poikkeamaa speksistä, kuten A:ssa: ei tuotesivulinkkejä (sivukartan
-   luku 0.1), asennuslinkki /ohjeet/oppaat/, FAQPage-schema vasta kun vastaukset ovat.
+   luku 0.1), asennuslinkki /ohjeet/asennus/, FAQPage-schema vasta kun vastaukset ovat.
 
    CTA-hierarkia kortin 4 mukaan: ensisijainen on ostopaikka (Mistä ostat, oma sivu, ei
    ankkuri), toissijainen konfiguraattori. Konfiguraattorin nimi on sama kuin muualla. */
@@ -193,7 +193,7 @@ const C={
   asen:{h2:"Näin asennat tarvikkeet",
     p:"Tarvikkeet asennetaan pilareihin sen jälkeen, kun pilarit ovat paikoillaan ja oikealla korkeudella. Koko perustuksen tekeminen vaihe vaiheelta on Rakentajan oppaassa.",
     vid:"Asennusvideo [TÄYTETTÄVÄ]",
-    cta:"Rakentajan opas"},
+    cta:"Kirjallinen asennusohje"},
 
   cfg:{h2:"Montako tarviketta tarvitset?",
     ing:"Konfiguraattori laskee pilarien lisäksi tarvikkeet kappalemäärineen. Tarvike määräytyy siitä, missä kohtaa ruudukkoa pilari on: kulmassa, reunalla vai keskellä.",
@@ -379,7 +379,7 @@ const C={
   /* 5 · Asennus (A): ohjaa ohjeeseen */
   sect('<div class="side flip">'+
     "<div>"+head(C.asen.h2)+"<p>"+E(C.asen.p)+"</p>"+
-      '<p><a class="more" href="'+L("/ohjeet/oppaat/")+'" data-event="cta_opas">'+
+      '<p><a class="more" href="'+L("/ohjeet/asennus/")+'" data-event="cta_asennusohjeet">'+
       arrow(C.asen.cta)+"</a></p></div>"+
     '<span class="im vid">'+T(C.asen.vid)+"</span></div>")+
 

@@ -58,11 +58,11 @@ window.SPEC={
           ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
           ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]],
        ["Ohjeet","/ohjeet/",[
-          ["Asennus","/ohjeet/asennus/"],
           ["Mitoitus","/ohjeet/mitoitus/"],
+          ["Asennus","/ohjeet/asennus/"],
           ["Usein kysytyt","/ohjeet/usein-kysytyt/"],
           ["Suunnittelijalle","/ohjeet/suunnittelijalle/"],
-          ["Oppaat","/ohjeet/oppaat/"]]],
+          ["Ladattavat materiaalit","/ohjeet/materiaalit/"]]],
        ["Referenssit","/referenssit/"],
        ["Mistä ostat","/mista-ostat/"]],
   /* Jälleenmyyjät, yksi lähde (17.9.2026). Sama neljä ketjua samassa järjestyksessä
@@ -157,7 +157,7 @@ window.SPEC.map={
   "/ohjeet/mitoitus/":"bce_sivu_spec.html?s=mitoitus",
   "/ohjeet/usein-kysytyt/":"bce_sivu_spec.html?s=ukk",
   "/ohjeet/suunnittelijalle/":"bce_sivu_spec.html?s=suunnittelijalle",
-  "/ohjeet/oppaat/":"bce_sivu_spec.html?s=oppaat",
+  "/ohjeet/materiaalit/":"bce_sivu_spec.html?s=materiaalit",
   "/referenssit/":"bce_sivu_spec.html?s=referenssit",
   /* Referenssin detalji-URL on yksikössä (/referenssi/{slug}) ja se PYSYY: sivu tekee
      429 klikkiä sijainnilla 3,6, ja sivukartan ehdotus /referenssit/{kohde}/ olisi

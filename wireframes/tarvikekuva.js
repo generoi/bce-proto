@@ -86,7 +86,7 @@
 
   /* ---- Piirtokonteksti ---------------------------------------------------- */
   function piirto(out, K, ox, oy, hid, lev) {
-    var C = {};
+    var C = {piilo: null};
 
     function P(p) {
       return [ox + (p[0] - p[1]) * CX * K, oy + (p[0] + p[1]) * CY * K - p[2] * K];
@@ -167,7 +167,17 @@
     C.tanko = function (x, y, z0, z1, r, vari, kansi) {
       var rx = RT2 * CX * r * K, ry = RT2 * CY * r * K;
       var ala = P([x, y, z0]), yla = P([x, y, z1]);
-      C.ympyra("xy", [x, y, z0], r, M.tumma, true);                 /* alapää */
+      /* Alapää. Ellipsi sulkee lieriön pohjan: rungon suorakaide ulottuu vain
+         alaellipsin keskiviivaan asti, joten ilman sitä lieriössä on litteä pohja
+         ja sen alta näkyy se, mitä takana on.
+
+         Sävy kertoo kumpi tilanne on. Vapaana roikkuva tappi on katkaistu pää,
+         siis tumma. Pilarin päätä vasten seisova lieriö ei näytä pohjaansa
+         lainkaan — näkyvissä on kyljen alaosa — joten silloin ellipsi saa kyljen
+         sävyn. Ensimmäinen vedos piirsi tumman kummassakin, ja nostokorvan
+         kauluksen alle jäi tumma puolikuu, joka luki reikänä pilarin päässä. */
+      C.ympyra("xy", [x, y, z0], r,
+               piilossa(z0) ? (vari || M.sivu) : M.tumma, true);      /* alapää */
       var runko = [[ala[0] - rx, ala[1]], [ala[0] + rx, ala[1]],
                    [yla[0] + rx, yla[1]], [yla[0] - rx, yla[1]]];
       poly(runko, vari || M.sivu);
@@ -183,9 +193,18 @@
       return {rx: rx, ry: ry, ala: ala, yla: yla};
     };
 
+      /* Piilotaso: se z, jonka alapuolella kappaletta ei piirretä, koska se on
+       pilarin sisällä. `null` = ei pilaria, piirrä kaikki. Maalarin algoritmi ei
+       tätä hoida: kierretappi on kameraan päin pilarin yläpinnasta katsottuna ja
+       piirtyisi sen päälle, jolloin tarvike näyttäisi seisovan tapin varassa
+       pilarin päällä. Asennuskuva asettaa tason osan `pilariZ`:aan. */
+    function piilossa(z) { return C.piilo != null && z <= C.piilo + 1e-9; }
+
     /* Kierre: vinot vedot tangon yli. Ei todellista kierrettä vaan sen konventio —
        sama merkintätapa kuin konepiirustuksessa, ja se luetaan heti. */
     C.kierre = function (x, y, z0, z1, r) {
+      /* Kokonaan piilotason alapuolella oleva kierre on pilarin sisällä. */
+      if (piilossa(z1)) return null;
       var t = C.tanko(x, y, z0, z1, r, M.sivu, false);
       var nousu = 6, n = Math.max(3, Math.round((z1 - z0) / nousu));
       out.push('<clipPath id="' + hid + '-k' + N(z0) + '"><rect x="' +
@@ -796,14 +815,20 @@
      Yhdistelmäkuva piirtää tarvikkeen ja puun samaan kankaaseen, joten se
      tarvitsee osan piirron ilman omaa SVG-kuorta ja omaa mittakaavaa.
        out  taulukko johon SVG-palat työnnetään
-       o    osa · K · ox · oy · hid · viiva · puu (koukku, ks. C.puu)
-     Palauttaa piirtokontekstin, jotta kutsuja voi tarvittaessa jatkaa samalla. */
+       o    osa · K · ox · oy · hid · viiva · puu (koukku, ks. C.puu) · piilotaso
+     Palauttaa piirtokontekstin, jotta kutsuja voi tarvittaessa jatkaa samalla.
+
+     `piilotaso: z` jättää piirtämättä sen, mikä on tason alapuolella. Sitä
+     tarvitsee asennuskuva, jossa osa on pilarin päässä: kierretappi on silloin
+     pilarin sisällä eikä näy, eikä lieriön tumma alapää ole näkyvissä silloin
+     kun lieriö seisoo pilarin päätä vasten. Taso on osan oma `pilariZ`. */
   tarvikekuva.piirra = function (out, o) {
     var T2 = OSAT[o.osa];
     if (!T2) return null;
     var C = piirto(out, o.K, o.ox, o.oy, o.hid || "tv", o.viiva ||
                    Math.max(0.9, Math.min(2, o.K * 90)));
     if (o.puu) C.puu = o.puu;
+    if (o.piilotaso != null) C.piilo = o.piilotaso;
     T2.piirra(C, T2);
     return C;
   };

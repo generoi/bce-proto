@@ -421,8 +421,12 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .flow .st .n{font-family:var(--ff-d);font-size:20px;font-weight:600;color:var(--accent);line-height:1.25}
 .flow .st b{grid-column:2;font-size:17px;display:block;margin-bottom:8px}
 .flow .st p{grid-column:2;font-size:15px;color:var(--ink-2);margin:0;max-width:58ch}
-.flow .st b a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
-.flow .st b a:hover{border-color:var(--ink)}
+/* Linkki lihavoidussa askelotsikossa. Sama käsittely `.flow`-askeleissa ja
+   `.steps`-listassa (ja `.kids`-listassa alempana): ei alleviivausta vaan
+   2 px reunaviiva, joka tummenee osoitettaessa. Otsikko on toiminnon nimi,
+   joten se on myös se sana, jota klikataan — ei erillistä «lue lisää». */
+.flow .st b a,.steps b a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
+.flow .st b a:hover,.steps b a:hover{border-color:var(--ink)}
 .fsub{display:block;margin-top:10px;font-size:14px;color:var(--ink-3)}
 
 /* sarjakortteihin kuva (ss1) */
@@ -967,6 +971,14 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
    kaappausta varten `<style>.cfg{min-height:860px}</style>` (ks. CLAUDE.md,
    «Kaappauksen pahin ansa»). Yhden luokan variantti häviäisi sille ja venyisi
    kaappauksissa 860 px:iin; kaksi luokkaa voittaa. */
+/* Snap pois yhdeltä sivulta. `html{scroll-snap-type:y proximity}` on globaali,
+   mutta snap-kohtia on vain yksi (.cfg) — joten kun tämä lohko lakkaa olemasta
+   snap-kohta, sivulla ei ole snappia lainkaan. Animaatio jää: se ajetaan
+   vierityksen aikajanalla eikä snap ole sen ehto, vaan apu joka asettaa lohkon
+   ruutuun. Ilman snappia lukija voi pysähtyä animaation puoliväliin — se on
+   hyväksytty hinta sivulla, jolla vieritys on muutenkin pitkä. */
+.cfg.ei-snap{scroll-snap-align:none}
+
 .cfg.matala{min-height:0;scroll-snap-align:none;view-timeline-name:none;
   grid-template-columns:minmax(0,38%) minmax(0,1fr);align-items:center;
   padding:clamp(34px,4vw,60px) clamp(24px,5vw,88px)}
@@ -1097,7 +1109,7 @@ h2.lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .uses a{display:inline-block;padding:6px 0;margin:-6px 0}
 footer a{display:inline-block;padding:4px 0;margin:-4px 0}
 .kids a{padding:8px 0 9px;margin:-8px 0}
-.flow .st b a,.serie h3 a{display:inline-block;padding:6px 0;margin:-6px 0}
+.flow .st b a,.serie h3 a,.steps b a{display:inline-block;padding:6px 0;margin:-6px 0}
 .idx a{padding:10px 0}
 /* Apurivi: kielivalinta ja Yhteystiedot 44 px korkeiksi ilman rivin kasvua (rivi on 44). */
 .lang a{padding:11px 9px}
