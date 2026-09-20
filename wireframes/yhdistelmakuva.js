@@ -304,10 +304,42 @@
        koriste, syyt, oksat, rakeisuus */
   function yhdistelma(o) {
     o = o || {};
+    var KO = kappaleet(o);
+    if (!KO) return "";
+
+    var R = rajat(laatikot(KO)), reuna = 18;
+    var K = o.skaala || (o.korkeus || 420) / (R.y1 - R.y0);
+    var CW = Math.round((R.x1 - R.x0) * K + 2 * reuna);
+    var CH = Math.round((R.y1 - R.y0) * K + 2 * reuna);
+    var ox = reuna - R.x0 * K, oy = reuna - R.y0 * K;
+    var viiva = Math.max(0.9, Math.min(2, CW / 320));
+
+    var juuri = "yh-" + String(o.id || o.pari).toLowerCase().replace(/[^a-z0-9-]/g, "");
+    var hidT = juuri + "-t", hidP = juuri + "-p";
+    var out = [];
+    piirraKappaleet(out, KO, o, K, ox, oy, hidT, hidP, viiva);
+
+    var nimike = o.nimike || KO.P2.otsikko + ", havainnekuva vinosti ylhäältä";
+    var a11y = o.koriste ? ' aria-hidden="true" focusable="false"'
+                         : ' role="img" aria-label="' + esc(nimike) + '"';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + CW + " " + CH +
+      '" width="' + CW + '" height="' + CH + '"' + a11y + ">" +
+      (o.koriste ? "" : "<title>" + esc(nimike) + "</title>") +
+      window.tarvikekuva.defs(hidT, CH) +
+      window.palkkikuva.defs(hidP, CH, o.rakeisuus !== false) +
+      out.join("") + "</svg>";
+  }
+
+  /* ---- Kokoonpano: mitä kuvassa on ja missä --------------------------------
+     Eriytetty omaksi funktiokseen 20.9.2026, kun asennuskuva.js alkoi tarvita
+     saman parin pilarin pään päälle. Kokoonpano lasketaan yhdessä paikassa ja
+     piirretään toisessa, jotta kaksi kuvaa ei voi olla eri mieltä siitä, missä
+     lauta on. */
+  function kappaleet(o) {
     var P2 = PARIT[o.pari];
-    if (!P2 || !window.tarvikekuva || !window.palkkikuva) return "";
+    if (!P2 || !window.tarvikekuva || !window.palkkikuva) return null;
     var T = window.tarvikekuva.tieto(P2.osa);
-    var puut = P2.puut(T);
+    var puut = P2.puut ? P2.puut(T) : [];
     /* Liitoksen päälle tuleva laudoitus. Eri lista kuin `puut`, koska
        piirtojärjestys on eri: puu on tarvikkeen sisällä ja tulee koukusta,
        laudoitus sen päällä ja tulee viimeisenä. */
@@ -321,40 +353,41 @@
     /* Räjäytys nostaa puun pystysuoraan irti tarvikkeesta. Se ei muuta mitään
        muuta: mitat, asento ja keskitys ovat samat kuin paikalleen laskettuna. */
     var raj = o.rajahdys == null ? (P2.rajahdys || 0) : o.rajahdys;
-    if (raj) puut = puut.map(function (q) {
-      var r = {}, avain;
-      for (avain in q) r[avain] = q[avain];
-      r.siirto = [q.siirto[0], q.siirto[1], q.siirto[2] + raj];
-      return r;
-    });
+    if (raj) puut = puut.map(nostettu(raj));
     /* Laudoitus nousee palkin räjäytyksen PÄÄLTÄ, ei sen sijaan: muuten
        kolmiportaisessa liitoksessa (laatta · palkki · lauta) lauta laskeutuisi
        palkin sisään heti kun palkkia nostetaan. */
-    if (raj + nosto) paalla = paalla.map(function (q) {
+    if (raj + nosto) paalla = paalla.map(nostettu(raj + nosto));
+    return {P2: P2, T: T, puut: puut, paalla: paalla, nosto: nosto, raj: raj};
+  }
+
+  function nostettu(dz) {
+    return function (q) {
       var r = {}, avain;
       for (avain in q) r[avain] = q[avain];
-      r.siirto = [q.siirto[0], q.siirto[1], q.siirto[2] + raj + nosto];
+      r.siirto = [q.siirto[0], q.siirto[1], q.siirto[2] + dz];
       return r;
-    });
+    };
+  }
 
-    var laatikot = [T.laatikko]
-      .concat(puut.map(window.palkkikuva.laatikko))
-      .concat(paalla.map(window.palkkikuva.laatikko));
-    var R = rajat(laatikot), reuna = 18;
-    var K = o.skaala || (o.korkeus || 420) / (R.y1 - R.y0);
-    var CW = Math.round((R.x1 - R.x0) * K + 2 * reuna);
-    var CH = Math.round((R.y1 - R.y0) * K + 2 * reuna);
-    var ox = reuna - R.x0 * K, oy = reuna - R.y0 * K;
-    var viiva = Math.max(0.9, Math.min(2, CW / 320));
+  /* Silhuetin laatikot maailman millimetreinä: tarvike ja jokainen puukappale. */
+  function laatikot(KO) {
+    return [KO.T.laatikko]
+      .concat(KO.puut.map(window.palkkikuva.laatikko))
+      .concat(KO.paalla.map(window.palkkikuva.laatikko));
+  }
 
-    var juuri = "yh-" + String(o.id || o.pari).toLowerCase().replace(/[^a-z0-9-]/g, "");
-    var hidT = juuri + "-t", hidP = juuri + "-p";
-    var out = [];
+  /* ---- Piirto annettuun kohtaan kangasta -----------------------------------
+     (ox, oy) on tarvikkeen nollataso eli se piste, jossa tarvike kohtaa pilarin
+     pään. Sama sopimus kuin tuotekuva.piirra:lla, palkkikuva.piirra:lla ja
+     tarvikekuva.piirra:lla. */
+  function piirraKappaleet(out, KO, o, K, ox, oy, hidT, hidP, viiva) {
+    var T = KO.T, puut = KO.puut, paalla = KO.paalla;
 
     /* Puu piirtyy koukusta, eli tarvikkeen sisältä oikeaan kohtaan
        piirtojärjestystä. Kappaleet järjestyksessä kauimmaisesta lähimpään. */
     window.tarvikekuva.piirra(out, {
-      osa: P2.osa, K: K, ox: ox, oy: oy, hid: hidT, viiva: viiva,
+      osa: KO.P2.osa, K: K, ox: ox, oy: oy, hid: hidT, viiva: viiva,
       puu: function () {
         puut.forEach(function (spec, i) {
           window.palkkikuva.piirra(out, {
@@ -385,15 +418,15 @@
     /* Kokoonpanon suunta katkoviivana: pilarin kierretapin akseli, joka on myös
        se suunta, jossa osat menevät yhteen. Piirretään päälle, koska se on
        merkintä eikä kappale. */
-    if (nosto) {
+    if (KO.nosto && paalla.length) {
       /* Kaksi viivaa eikä yksi: laudoitus on levy, ja yksi viiva sen keskellä
          lukisi tapiksi. Viivat ovat laudoituksen reunoilla, jolloin ne lukevat
          laskusuuntana. */
-      var lz = paalla.length ? paalla[0].siirto[2] : 0;
+      var lz = paalla[0].siirto[2];
       var lA = window.palkkikuva.mitat(paalla[0].koko);
       [-1, 1].forEach(function (sn) {
         var px = sn * 70;
-        var b0 = [ox + px * CX * K, oy + px * CY * K - (lz - nosto - lA.b / 2) * K];
+        var b0 = [ox + px * CX * K, oy + px * CY * K - (lz - KO.nosto - lA.b / 2) * K];
         var b1 = [ox + px * CX * K, oy + px * CY * K - (lz - lA.b / 2) * K];
         out.push('<line x1="' + b0[0] + '" y1="' + b0[1] + '" x2="' + b1[0] +
           '" y2="' + b1[1] + '" stroke="var(--ink-3,#6f6d6b)" stroke-width="' +
@@ -402,36 +435,44 @@
       });
     }
 
-    if (raj) {
-      var a0 = [ox + 0, oy - T.t * K], a1 = [ox + 0, oy - (T.t + raj) * K];
+    if (KO.raj) {
+      var a0 = [ox + 0, oy - T.t * K], a1 = [ox + 0, oy - (T.t + KO.raj) * K];
       out.push('<line x1="' + a0[0] + '" y1="' + a0[1] + '" x2="' + a1[0] +
         '" y2="' + a1[1] + '" stroke="var(--ink-3,#6f6d6b)" stroke-width="' +
         (viiva * 0.9) + '" stroke-dasharray="' + (viiva * 3) + " " + (viiva * 3) +
         '" opacity=".7"/>');
     }
-
-    var nimike = o.nimike || P2.otsikko + ", havainnekuva vinosti ylhäältä";
-    var a11y = o.koriste ? ' aria-hidden="true" focusable="false"'
-                         : ' role="img" aria-label="' + esc(nimike) + '"';
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + CW + " " + CH +
-      '" width="' + CW + '" height="' + CH + '"' + a11y + ">" +
-      (o.koriste ? "" : "<title>" + esc(nimike) + "</title>") +
-      window.tarvikekuva.defs(hidT, CH) +
-      window.palkkikuva.defs(hidP, CH, o.rakeisuus !== false) +
-      out.join("") + "</svg>";
   }
 
   /* mm-korkeus silhuetille: tarvitaan kun usea pari piirretään samaan
      mittakaavaan ja jokainen saa oman kankaansa. */
   yhdistelma.laajuus = function (avain) {
-    var P2 = PARIT[avain], T = window.tarvikekuva.tieto(P2.osa);
-    var laatikot = [T.laatikko]
-      .concat(P2.puut(T).map(window.palkkikuva.laatikko))
-      .concat((P2.paalla ? P2.paalla(T) : []).map(window.palkkikuva.laatikko));
-    var R = rajat(laatikot);
+    var KO = kappaleet({pari: avain});
+    if (!KO) return 0;
+    var R = rajat(laatikot(KO));
     return R.y1 - R.y0;
   };
   yhdistelma.parit = function () { return Object.keys(PARIT); };
   yhdistelma.tieto = function (avain) { return PARIT[avain]; };
+
+  /* ---- Julkinen: matala taso ----------------------------------------------
+     Asennuskuva (asennuskuva.js) asettaa pilarin pään, tarvikkeen ja puun samaan
+     kankaaseen, joten se tarvitsee parin piirron ilman omaa SVG-kuorta ja omaa
+     mittakaavaa. Sama kuvio kuin tuotekuva.piirra, tarvikekuva.piirra ja
+     palkkikuva.piirra — tämä oli neljäs generaattori, jolta se puuttui.
+
+       kappaleet   pari · nosto · rajahdys · maara → kokoonpano maailman mm:nä
+       laatikot    kokoonpano → silhuetin laatikot, kankaan kokoa varten
+       piirra      out · kappaleet · K · ox · oy · hidT · hidP · viiva
+     (ox, oy) on tarvikkeen nollataso, eli se piste jossa tarvike kohtaa pilarin. */
+  yhdistelma.kappaleet = kappaleet;
+  yhdistelma.laatikot = function (KO) { return laatikot(KO); };
+  yhdistelma.piirra = function (out, o) {
+    var KO = o.kappaleet || kappaleet(o);
+    if (!KO) return null;
+    piirraKappaleet(out, KO, o, o.K, o.ox, o.oy, o.hidT || "yh-t",
+                    o.hidP || "yh-p", o.viiva || 1.2);
+    return KO;
+  };
   window.yhdistelmakuva = yhdistelma;
 })();

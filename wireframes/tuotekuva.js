@@ -144,6 +144,25 @@
             ala: M.D1 * CY};
   }
 
+  /* Puolileveys korkeudella z. Sama porrastus kuin pilari():n kappaleissa ja
+     luettuna samasta M:stä, joten taperi ei voi olla kahdessa paikassa eri.
+     Lisätty 20.9.2026 asennuskuva.js:ää varten: se rajaa kankaan pilarin pään
+     ympärille, jolloin pohjalaatta jää kuvan ulkopuolelle eikä sen leveys
+     kelpaa kankaan leveydeksi. */
+  function puolileveys(M, z) {
+    var d1 = M.D1 / 2, d1y = (M.D1Y || M.D1) / 2, w = M.W / 2, d2 = M.D2 / 2;
+    var d3 = (M.D3 || M.D2) / 2, HR = M.H1 - (M.VK || 0);
+    function v(a, b, z0, z1) {
+      return z1 === z0 ? b : a + (b - a) * (z - z0) / (z1 - z0);
+    }
+    if (z <= 0)     return d1;
+    if (z < M.H2)   return v(d1, d1y, 0, M.H2);
+    if (z < M.H3)   return v(d1y, w, M.H2, M.H3);
+    if (z < HR)     return v(w, d2, M.H3, HR);
+    if (z < M.H1)   return v(d2, d3, HR, M.H1);
+    return d3;
+  }
+
   /* ---- Yhden pilarin piirto ------------------------------------------------
      Kaikki kappaleet ovat neliöisiä katkaistuja pyramideja päällekkäin:
        laatta    z 0…H2,     puolileveys D1/2 → D1Y/2  (kylki on kalteva)
@@ -799,6 +818,9 @@
   /* Silhuetin mitat mm-avaruudessa. Tarvitaan kun eri perheitä piirretään
      samaan mittakaavaan: korkeus jaetaan laajuuksien suhteessa. */
   window.tuotekuva.laajuus = function (perhe, koko) { return laajuus(MITAT(perhe, koko)); };
+  window.tuotekuva.puolileveys = function (perhe, koko, z) {
+    return puolileveys(MITAT(perhe, koko), z);
+  };
   window.tuotekuva.morffi = morffi;
   /* ---- Julkinen: asteikko ---------------------------------------------------
      Missä kohtaa kangasta kunkin koon pää on. Kokovalitsin asettaa vaihtoehdot

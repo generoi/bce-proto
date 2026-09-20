@@ -300,17 +300,38 @@
   var KIERRE = 50;
   var TAPPI = 10;         /* M20, säde */
 
+  /* ---- pilariZ: missä osa koskettaa pilarin päätä --------------------------
+     Se z-taso, jossa osan alin pilaria vasten tuleva pinta on. Sen alapuolella
+     on vain kierretappi, ja tappi on pilarin sisällä eikä näy. Luku ei ole uutta
+     tietoa vaan sama luku, jonka piirtofunktiot jo käyttivät — nyt yhdessä
+     paikassa, koska asennuskuva.js asettaa pilarin pään juuri tähän tasoon.
+     Jos se olisi kahdessa paikassa, kenkä leijuisi tai uppoaisi pilariin heti
+     kun toista muutetaan.
+
+       pilarikengät   säätömutterin alapinta (mutteri on pilarin ja kengän
+                      pohjalevyn välissä, ja sillä korkeus säädetään)
+       palkkikengät   pohjalevyn alapinta, 0
+       teräslaatat    laatan alapinta, 0
+       nostokorva     kauluksen alapinta, 0
+
+     ⚠️ Palkkikengältä puuttuu kierretappi kokonaan, vaikka A-601 sanoo kaikista
+     tarvikkeista «ruuvataan min. 25 mm sisään valuankkuriin». Asennuskuvassa se
+     ei näy — tappi olisi pilarin sisällä — mutta pelkässä tarvikekuvassa näkyy,
+     ja siellä se on nyt piirtämättä. Kysyttävä BCE:ltä: onko PAK:ssa M20-tappi
+     ja onko sen alla säätömutteri kuten pilarikengässä. */
   var OSAT = {
     "pik-50-70": {
       nimi: "Pieni pilarikenkä PIK 50-70", koodi: "PIK 50-70", ryhma: "Pilarikengät",
       /* ura 70 = nimen suurin lankkukoko. Muu on tuotekuvasta. */
       ura: 70, lev: 90, kork: 100, t: 5, pohja: 90, av: 30, arvio: "levyn koko, reikäjako",
+      pilariZ: -21,          /* pohjalevy 5 mm + säätömutteri 16 mm */
       laatikko: {x: [-50, 50], y: [-50, 50], z: [-KIERRE - 24, 100 + 5]},
       piirra: function (C, o) { kenka(C, o, false); }
     },
     "pik-90-140": {
       nimi: "Pilarikenkä PIK 90-140", koodi: "PIK 90-140", ryhma: "Pilarikengät",
       ura: 140, lev: 130, kork: 135, t: 6, pohja: 130, av: 30, laatta: 110,
+      pilariZ: -30,          /* pohjalevy 6 + säätölaatta 8 + mutteri 16 */
       arvio: "levyn koko, reikäjako, pyöreän laatan halkaisija",
       laatikko: {x: [-80, 80], y: [-75, 75], z: [-KIERRE - 30, 135 + 6]},
       piirra: function (C, o) { kenka(C, o, true); }
@@ -319,48 +340,49 @@
       nimi: "Pieni L-mallinen pilarikenkä P-PIK 50×70", koodi: "P-PIK 50×70",
       ryhma: "Pilarikengät",
       ura: 70, lev: 70, kork: 100, t: 5, jalka: 70, av: 30,
+      pilariZ: -16,          /* jalan alapinta on 0, mutteri sen alla */
       arvio: "levyn korkeus, jalan pituus, reikäjako",
       laatikko: {x: [-40, 80], y: [-40, 40], z: [-KIERRE - 24, 100 + 5]},
       piirra: function (C, o) { ppik(C, o); }
     },
     "pak-100x150": {
       nimi: "Palkkikenkä PAK-100×150", koodi: "PAK-100×150", ryhma: "Palkkikengät",
-      palkki: 100, kork: 150, t: 3, syvyys: 70, laippa: 35,
+      palkki: 100, kork: 150, t: 3, syvyys: 70, laippa: 35, pilariZ: 0,
       arvio: "levyn paksuus, syvyys, laipan pituus, reikäjako",
       laatikko: {x: [-90, 90], y: [-50, 50], z: [0, 150]},
       piirra: function (C, o) { pak(C, o); }
     },
     "pak-100x200": {
       nimi: "Palkkikenkä PAK-100×200", koodi: "PAK-100×200", ryhma: "Palkkikengät",
-      palkki: 100, kork: 200, t: 3, syvyys: 70, laippa: 35,
+      palkki: 100, kork: 200, t: 3, syvyys: 70, laippa: 35, pilariZ: 0,
       arvio: "levyn paksuus, syvyys, laipan pituus, reikäjako",
       laatikko: {x: [-90, 90], y: [-50, 50], z: [0, 200]},
       piirra: function (C, o) { pak(C, o); }
     },
     "tl-100x100": {
       nimi: "Teräslaatta TL 100×100×6", koodi: "TL 100×100×6 M20×50", ryhma: "Teräslaatat",
-      a: 100, b: 100, t: 6, reiat: "vastakkaiset", rr: 4.5,
+      a: 100, b: 100, t: 6, reiat: "vastakkaiset", rr: 4.5, pilariZ: 0,
       arvio: "reikien etäisyys nurkasta",
       laatikko: {x: [-55, 55], y: [-55, 55], z: [-KIERRE, 6]},
       piirra: function (C, o) { laatta(C, o); }
     },
     "tl-150x150": {
       nimi: "Teräslaatta TL 150×150×8", koodi: "TL 150×150×8 M20×50", ryhma: "Teräslaatat",
-      a: 150, b: 150, t: 8, reiat: "nelja", rr: 4.5,
+      a: 150, b: 150, t: 8, reiat: "nelja", rr: 4.5, pilariZ: 0,
       arvio: "reikien etäisyys nurkasta. Paksuus 6 vai 8 on avoin (speksi, luku 8)",
       laatikko: {x: [-80, 80], y: [-80, 80], z: [-KIERRE, 8]},
       piirra: function (C, o) { laatta(C, o); }
     },
     "tl-100x175": {
       nimi: "Teräslaatta TL 100×175×6", koodi: "TL 100×175×6 M20×50", ryhma: "Teräslaatat",
-      a: 175, b: 100, t: 6, reiat: "nelja", rr: 4.5,
+      a: 175, b: 100, t: 6, reiat: "nelja", rr: 4.5, pilariZ: 0,
       arvio: "reikien etäisyys nurkasta",
       laatikko: {x: [-95, 95], y: [-55, 55], z: [-KIERRE, 6]},
       piirra: function (C, o) { laatta(C, o); }
     },
     "nostokorva-m20": {
       nimi: "Nostokorva M20", koodi: "Nostokorva M20", ryhma: "Nostokorva",
-      rengas: 25, tuubi: 7, kaulus: 17, kh: 12,
+      rengas: 25, tuubi: 7, kaulus: 17, kh: 12, pilariZ: 0,
       arvio: "kaikki mitat paitsi M20-kierre",
       laatikko: {x: [-20, 20], y: [-20, 20], z: [-38, 78]},
       piirra: function (C, o) { nostokorva(C, o); }
@@ -397,7 +419,10 @@
   function kenka(C, o, pyorea) {
     var g = o.ura / 2, h = o.kork, sy = o.lev / 2, t = o.t, p = o.pohja / 2;
     var laattaH = pyorea ? 8 : 0;
-    var mz = -o.t - laattaH - 16;
+    /* Mutterin alapinta = se taso, jossa kenkä lepää pilarin päätä vasten.
+       Luetaan OSAT-taulukon pilariZ:sta, jotta asennuskuva ja tämä piirto eivät
+       voi olla eri mieltä siitä, missä pilarin pää on. */
+    var mz = o.pilariZ;
 
     /* Alhaalta ylös: kamera on ylhäällä, joten korkeampi osa on lähempänä ja
        piirtyy päälle. Kierretappi on kauimpana, kengän levyt lähimpänä.
@@ -433,8 +458,8 @@
   function ppik(C, o) {
     var sy = o.lev / 2, h = o.kork, t = o.t, jx = o.jalka;
     var tx = t + jx * 0.34;
-    C.kierre(tx, 0, -16 - KIERRE, -16, TAPPI);
-    C.mutteri(tx, 0, -16, o.av, 16);
+    C.kierre(tx, 0, o.pilariZ - KIERRE, o.pilariZ, TAPPI);
+    C.mutteri(tx, 0, o.pilariZ, o.av, 16);
     /* Tolppa on pystylevyn takana (x < 0) ja jalka sen edessä (x > 0), joten
        puu piirtyy jalan ja pystylevyn väliin — ei kummankaan päälle. */
     C.puu();
