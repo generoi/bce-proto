@@ -878,7 +878,17 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 /* Vasen palsta jatkuu kuvan alta: ostolaatikko on pidempi kuin galleria, ja tyhjä
    palsta sen vieressä luki turhana valkoisena tilana. */
 .shop{align-items:start}
-.col{min-width:0}
+/* Galleriapalsta venytetään rivin korkeuteen, vaikka .shop on muuten
+   `align-items:start`. Ilman tätä `.col` on täsmälleen yhtä korkea kuin `.gal`,
+   jolloin `.gal`:n `position:sticky` ei saa liikkumavaraa eikä kuva jää kiinni
+   mihinkään — mitattuna liikkumavara oli 0 px, vaikka sticky oli voimassa.
+   Venytettynä vara on oikean palstan ja gallerian korkeuden erotus, eli kuva
+   pysyy paikallaan niin kauan kuin ostolaatikkoa vieritetään ohi ja irtoaa
+   vasta kun lohko loppuu.
+
+   `align-self` eikä `.shop{align-items:stretch}`: oikea palsta saa jäädä
+   sisältönsä korkuiseksi, eikä sen taustoja tai reunoja venytetä turhaan. */
+.col{min-width:0;align-self:stretch}
 .desc{margin-top:36px}
 .desc .head{margin-bottom:18px}
 
