@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laskukaavat — BCE-pilarilaskuri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<style>
+/* Kaavakokoelman oma kehys. Työkalu kuten bce_paatospuu.html ja bce_tuotekuvat.html,
+   ei sivustokomponentti — siksi omat luokat eivätkä design systemin lohkot.
+
+   Kaksi notaatiota, yksi lähde. Sivu renderöi saman KAAVAT-taulukon joko
+   lujuusopin vakiokirjaimilla tai sanoilla (?notaatio=symbolit|sanat). Kaavaa ei
+   siis voi olla toisessa versiossa ilman toista, eivätkä versiot voi ajautua
+   erilleen — ainoa ero on se, mikä merkkijono ladotaan muuttujan paikalle. */
+:root{
+  --k-yhta:#0d9488;    /* kaava, jota laskuri ajaa */
+  --k-vajaa:#e25d25;   /* kaava, jossa on puuttuva termi */
+}
+
+/* Ylin nauha: mistä tämä on johdettu. Sama sävy kuin päätöspuussa. */
+.k-note{background:var(--dark);color:#fff;font-size:14px}
+.k-note .w{padding:10px 0;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.k-note b{font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em}
+.k-note code{color:#fff;background:rgba(255,255,255,.14)}
+
+.k-kansi{padding:var(--s7) 0 var(--s6)}
+.k-kansi h1{max-width:18ch}
+.k-kansi p{max-width:62ch;font-size:var(--fs-lede);color:var(--ink-2);margin:var(--s4) 0 0}
+
+/* Notaation valitsin. Kaksi tilaa, ei kolmatta: painike on linkki, jotta
+   kumpaankin versioon on oma osoite ja kaappaus on toistettava. */
+.k-valitsin{display:flex;gap:0;border:1px solid var(--rule-2);border-radius:var(--r-ctl);
+  overflow:hidden;margin:var(--s5) 0 0;width:max-content;max-width:100%}
+.k-valitsin a{display:block;padding:11px 20px;font-family:var(--ff-d);font-size:15px;
+  text-transform:uppercase;letter-spacing:.03em;text-decoration:none;color:var(--ink-2);
+  min-height:var(--tap);display:flex;align-items:center}
+.k-valitsin a+a{border-left:1px solid var(--rule-2)}
+.k-valitsin a[aria-current]{background:var(--dark);color:#fff}
+
+section{padding-bottom:var(--s7)}
+.k-osa>h2{padding-top:var(--s5);border-top:2px solid var(--ink)}
+.k-osa>p.johdanto{max-width:62ch;color:var(--ink-2);margin:var(--s3) 0 0}
+
+/* Kaavarivi. Ei laatikkoa eikä levyä: hiusviiva erottaa, sivun lämmin pohja
+   näkyy läpi kuten taulukoissa ja tuotekuvissa. */
+.kv{border-bottom:1px solid var(--rule);padding:var(--s5) 0;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:var(--s5) var(--s7);align-items:start}
+.kv-otsikko{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s3)}
+.kv-nro{font-family:var(--ff-d);font-size:15px;color:var(--ink-3);letter-spacing:.06em}
+.kv-otsikko h3{font-size:var(--fs-h3)}
+.kv-lahde{margin-left:auto;font-size:var(--fs-fine);text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink-3);border:1px solid var(--rule-2);border-radius:var(--r-ctl);padding:2px 8px}
+.kv.vajaa .kv-lahde{color:var(--k-vajaa);border-color:var(--k-vajaa)}
+.kv-huom{grid-column:1/-1;margin:0;font-size:var(--fs-small);color:var(--ink-2);max-width:74ch}
+.kv-huom em{font-style:normal;color:var(--k-vajaa)}
+
+/* Merkintälista kaavan vieressä: muuttuja ja se, mitä se tarkoittaa. */
+.kv-mrk{margin:0;font-size:var(--fs-small);display:grid;grid-template-columns:auto 1fr;
+  gap:4px var(--s3);align-content:start}
+.kv-mrk dt{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:16px;
+  white-space:nowrap;color:var(--ink)}
+.kv-mrk.sanat dt{font-family:var(--ff);font-style:normal;font-size:14px;white-space:normal;
+  text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3)}
+.kv-mrk dd{margin:0;color:var(--ink-2)}
+.kv-mrk dd u{text-decoration:none;color:var(--ink-3);white-space:nowrap}
+
+/* Kaava. Klassinen ladonta: muuttuja kursiivilla antiikvalla, luvut ja
+   funktionimet pystyssä, jakoviiva aitona viivana eikä kauttaviivana. */
+.eq{font-family:Georgia,"Times New Roman",serif;font-size:23px;line-height:1.5;
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.eq+.eq{margin-top:var(--s4)}
+.eq.sanat{font-family:var(--ff);font-size:18px;line-height:1.55}
+.eq i{font-style:italic}
+.eq sub{font-size:.62em;font-style:italic}
+.eq .num,.eq .op{font-style:normal}
+.eq .fn{font-style:normal;font-size:.88em}
+.eq .san{font-style:normal;font-size:.9em;color:var(--ink)}
+.eq .ehto{font-size:.72em;font-style:normal;color:var(--ink-3);font-family:var(--ff)}
+/* Murtoluku: osoittaja ja nimittäjä päällekkäin, viiva väliin. */
+.fr{display:inline-grid;vertical-align:middle;text-align:center;line-height:1.25}
+.fr>span{padding:1px 6px}
+.fr>span:first-child{border-bottom:1px solid currentColor}
+.eq.sanat .fr{font-size:.94em}
+
+/* Taulukot: läpinäkyvä pohja, vain hiusviivat. */
+.k-taulu{width:100%;border-collapse:collapse;font-size:var(--fs-small);background:none;margin-top:var(--s4)}
+.k-taulu th,.k-taulu td{text-align:left;padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.k-taulu th{font-family:var(--ff-d);text-transform:uppercase;font-size:14px;letter-spacing:.03em}
+.k-taulu th.num,.k-taulu td.num{text-align:right;padding-left:var(--s5)}
+.k-taulu td.num{font-variant-numeric:tabular-nums}
+.k-taulu td.sym{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.k-ei{color:var(--k-vajaa)}
+
+/* Esimerkkilasku: rivi kerrallaan, arvo oikeassa reunassa. */
+.k-esim{border-top:1px solid var(--rule);margin-top:var(--s5)}
+.k-esim h3{padding-top:var(--s4);font-size:var(--fs-h3)}
+.k-esim ol{list-style:none;margin:var(--s3) 0 0;padding:0}
+.k-esim li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s4);
+  padding:9px 0;border-bottom:1px solid var(--rule);font-size:var(--fs-small)}
+.k-esim li b{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.k-esim li span.kaava{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.k-esim.sanat li span.kaava{font-family:var(--ff);font-style:normal}
+
+/* Puuttuvat termit: luettelo, jossa jokainen rivi on avoin kysymys. */
+.k-puuttuu{margin:var(--s4) 0 0;padding:0;list-style:none;border-top:1px solid var(--rule)}
+.k-puuttuu li{padding:12px 0;border-bottom:1px solid var(--rule);font-size:var(--fs-small);
+  display:grid;grid-template-columns:minmax(0,26ch) minmax(0,1fr);gap:var(--s4)}
+.k-puuttuu li b{font-weight:600}
+.k-puuttuu li span{color:var(--ink-2)}
+
+@media(max-width:980px){
+  .kv{grid-template-columns:1fr;gap:var(--s4)}
+  .eq{font-size:20px}
+}
+@media(max-width:560px){
+  .k-puuttuu li,.k-esim li{grid-template-columns:1fr;gap:4px}
+  .k-esim li b{text-align:left}
+}
+code{font-family:ui-monospace,monospace;font-size:13px;background:var(--paper-2);padding:1px 6px;border-radius:2px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="k-note"><div class="w"><b>Kaikki laskurin kaavat</b><span>Johdettu moottorista ja dokumentista <code>docs/pilarilaskuri/LASKENTA.md</code> 18.9.2026. Sama taulukko ladotaan kahdella notaatiolla: <code>?notaatio=symbolit</code> ja <code>?notaatio=sanat</code>.</span></div></div>
+<main id="main"></main>
+
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------------------
+   KAAVAT — yksi lähde, kaksi ladontaa.
+
+   `sym` on lujuusopin ja eurokoodin vakiintunut merkintä, `san` sama kaava
+   sanoiksi purettuna. Merkinnät (`mrk`) ovat [symboli, sana, selite, yksikkö].
+   `tila` on `ok` kun laskuri ajaa kaavan sellaisenaan ja `vajaa` kun kaavassa
+   on termi, jota ei ole missään lähteessä.
+--------------------------------------------------------------------------- */
+
+/* Ladonnan apurit. Muuttuja kursiivilla, luku ja operaattori pystyssä. */
+const v  = (s, sub) => '<i>' + s + (sub ? '<sub>' + sub + '</sub>' : '') + '</i>';
+const nu = s => '<span class="num">' + s + '</span>';
+const op = s => '<span class="op">' + s + '</span>';
+const fn = s => '<span class="fn">' + s + '</span>';
+const sa = s => '<span class="san">' + s + '</span>';
+const fr = (a, b) => '<span class="fr"><span>' + a + '</span><span>' + b + '</span></span>';
+const eh = s => '<span class="ehto">' + s + '</span>';
+
+const KAAVAT = [
+{
+  osa:'1 · Geometria ja pilarien määrä',
+  johdanto:'Ruudukko syntyy palkin sallimasta jakovälistä, ei kuormasta. Pyöristys on aina ylöspäin, jotta toteutuva väli jää sallitun alle.',
+  kaavat:[
+  {
+    nro:'K1', otsikko:'Pinta-ala', tila:'ok', lahde:'Syöte',
+    sym:[ v('A') + op('=') + v('b') + op('·') + v('L') ],
+    san:[ sa('pinta-ala') + op('=') + sa('leveys') + op('×') + sa('pituus') ],
+    mrk:[['A','pinta-ala','rakennuksen pohjan ala','m²'],
+         ['b','leveys','asiakkaan ilmoittama leveys','m'],
+         ['L','pituus','asiakkaan ilmoittama pituus','m']],
+    huom:'Pinta-ala on myös luvanvaraisuuden raja: sauna, piharakennus ja mökki 30 m², autokatos 50 m². Terassille ei ole lakirajaa.'
+  },
+  {
+    nro:'K2', otsikko:'Jakoväli palkin mukaan', tila:'ok', lahde:'KESTOPUU',
+    sym:[ v('a') + op('=') + fn('taulukko') + op('(') + v('h', 'p') + op(')') + eh('Kestopuu 2018, taulukon alaraja') ],
+    san:[ sa('suurin sallittu jakoväli') + op('=') + sa('palkkikoon mukaan taulukosta') ],
+    mrk:[['a','suurin sallittu jakoväli','tukien väli pääpalkin alla','m'],
+         ['h<sub>p</sub>','palkkikoko','48 × 123, 48 × 148 tai 48 × 198','mm']],
+    huom:'Taulukko on laadittu hyötykuormalle 2,0 kN/m² ja lujuusluokalle C18. Laskuri ottaa taulukon alarajan, ei ylärajaa — se on päätös T3. Kun palkkikoko ei ole tiedossa, tulos annetaan haarukkana väljimmän (2,0 m) ja tiheimmän (1,4 m) välin välillä.'
+  },
+  {
+    nro:'K3', otsikko:'Pilaririvit ja -sarakkeet', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('n', 'b') + op('=') + fn('max') + op('(') + nu('2') + op(',') + op('⌈') + fr(v('b'), v('a')) + op('⌉') + op('+') + nu('1') + op(')'),
+          v('n', 'L') + op('=') + fn('max') + op('(') + nu('2') + op(',') + op('⌈') + fr(v('L'), v('a')) + op('⌉') + op('+') + nu('1') + op(')') ],
+    san:[ sa('pilareita leveyssuunnassa') + op('=') + sa('suurempi luvuista 2 ja') + op('(') + sa('leveys') + op('÷') + sa('jakoväli, ylöspäin kokonaisluvuksi') + op(')') + op('+') + nu('1'),
+          sa('pilareita pituussuunnassa') + op('=') + sa('suurempi luvuista 2 ja') + op('(') + sa('pituus') + op('÷') + sa('jakoväli, ylöspäin kokonaisluvuksi') + op(')') + op('+') + nu('1') ],
+    mrk:[['n<sub>b</sub>','pilareita leveyssuunnassa','vähintään kaksi','kpl'],
+         ['n<sub>L</sub>','pilareita pituussuunnassa','vähintään kaksi','kpl'],
+         ['⌈ ⌉','ylöspäin pyöristys','seuraava kokonaisluku','']],
+    huom:'Vähintään kaksi kumpaankin suuntaan: yhden pilarin rivi ei kanna palkkia. Ylöspäin pyöristys takaa, että toteutuva väli on aina enintään sallittu (invariantti A7, tarkistettu 140 596 ajolla).'
+  },
+  {
+    nro:'K4', otsikko:'Pilarien määrä', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('n') + op('=') + v('n', 'b') + op('·') + v('n', 'L') ],
+    san:[ sa('pilarien määrä') + op('=') + sa('pilareita leveyssuunnassa') + op('×') + sa('pilareita pituussuunnassa') ],
+    mrk:[['n','pilarien määrä','myös tarvikkeiden määrä','kpl']],
+    huom:'Autokatoksella tätä kaavaa ei käytetä: pilarimäärä on asiakkaan ilmoittama kannatintolppien määrä, koska tolppaväli tulee puutavaran vahvuudesta eikä pilarista.'
+  },
+  {
+    nro:'K5', otsikko:'Toteutuva jakoväli', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('a', 'b') + op('=') + fr(v('b'), v('n', 'b') + op('−') + nu('1')) + op(',') + v('a', 'L') + op('=') + fr(v('L'), v('n', 'L') + op('−') + nu('1')),
+          v('a', 'b') + op('≤') + v('a') + eh('ja') + v('a', 'L') + op('≤') + v('a') ],
+    san:[ sa('väli leveyssuunnassa') + op('=') + sa('leveys') + op('÷') + op('(') + sa('pilareita leveyssuunnassa') + op('−') + nu('1') + op(')'),
+          sa('väli pituussuunnassa') + op('=') + sa('pituus') + op('÷') + op('(') + sa('pilareita pituussuunnassa') + op('−') + nu('1') + op(')'),
+          sa('molempien on oltava enintään suurin sallittu jakoväli') ],
+    mrk:[['a<sub>b</sub>','väli leveyssuunnassa','toteutuva, ei nimellinen','m'],
+         ['a<sub>L</sub>','väli pituussuunnassa','toteutuva, ei nimellinen','m']],
+    huom:'Toteutuva väli on lähes aina sallittua tiheämpi, koska pyöristys on ylöspäin. Tämä on myös syy siihen, että isompi terassi voi saada pienemmän pilarikuorman kuin pienempi — ruudukko hyppää portaittain.'
+  }]
+},
+{
+  osa:'2 · Kuorma',
+  johdanto:'Rakennuksilla kuorma on hyötykuorma, autokatoksella lumikuorma. Rakenteen omapaino ei ole kummassakaan mukana, joten laskettu kuorma on alaraja.',
+  kaavat:[
+  {
+    nro:'K6', otsikko:'Rakennuksen kuorma', tila:'vajaa', lahde:'KESTOPUU',
+    sym:[ v('q') + op('=') + v('q', 'k') + op('+') + v('g', 'k') + eh('q<sub>k</sub> = 2,0 kN/m², g<sub>k</sub> puuttuu') ],
+    san:[ sa('kuormitus') + op('=') + sa('hyötykuorma') + op('+') + sa('rakenteen omapaino') ],
+    mrk:[['q','kuormitus','pinta-alaa kohti','kN/m²'],
+         ['q<sub>k</sub>','hyötykuorma','2,0 kN/m² — terassi, piha, sauna, mökki','kN/m²'],
+         ['g<sub>k</sub>','rakenteen omapaino','<em>ei lähdettä</em> — nyt nolla','kN/m²']],
+    huom:'<em>Omapaino puuttuu, ja se on suurin yksittäinen puute koko laskennassa.</em> Kannen ja rungon omapaino, mökin katto- ja seinärakenteet sekä lumi ovat suuruusluokaltaan 2–5 kN/m², eli todellinen kuorma voi olla kolminkertainen laskettuun nähden. Arvo täytetään työpajan säätöpaneelista ja menee sieltä suoraan tähän kaavaan.'
+  },
+  {
+    nro:'K7', otsikko:'Autokatoksen lumikuorma', tila:'vajaa', lahde:'YM · EN 1991-1-3',
+    sym:[ v('s') + op('=') + v('μ', '1') + op('·') + v('s', 'k') + eh('μ<sub>1</sub> = 0,8 · s<sub>k</sub> = 3,5 kN/m²'),
+          v('q') + op('=') + v('s') + op('+') + v('g', 'k,katto') ],
+    san:[ sa('lumikuorma katolla') + op('=') + sa('muotokerroin') + op('×') + sa('lumikuorma maassa'),
+          sa('kuormitus') + op('=') + sa('lumikuorma katolla') + op('+') + sa('katon omapaino') ],
+    mrk:[['s','lumikuorma katolla','johdettu, ei mitattu','kN/m²'],
+         ['μ<sub>1</sub>','muotokerroin','0,8 — katot enintään 30°','–'],
+         ['s<sub>k</sub>','lumikuorma maassa','3,5 kN/m² kun postinumeroa ei anneta','kN/m²'],
+         ['g<sub>k,katto</sub>','katon omapaino','<em>ei lähdettä</em> — nyt nolla','kN/m²']],
+    huom:'3,5 kN/m² on Suomen suurin ominaisarvo, eli oletus on varovainen. Postinumerokohtainen lumikartta on säätöpaneelissa tyhjänä. <em>Katettu terassi lasketaan yhä hyötykuormalla 2,0</em>, vaikka se ohjataan KP-pilarille nimenomaan lumen takia — ero autokatokseen on 1,40×.'
+  },
+  {
+    nro:'K8', otsikko:'Pilarikuorma', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('N') + op('=') + fr(v('q') + op('·') + v('A'), v('n')) ],
+    san:[ sa('kuorma per pilari') + op('=') + fr(sa('kuormitus') + op('×') + sa('pinta-ala'), sa('pilarien määrä')) ],
+    mrk:[['N','kuorma per pilari','pystykuorma, keskiarvo','kN'],
+         ['q','kuormitus','K6 tai K7','kN/m²'],
+         ['A','pinta-ala','K1','m²'],
+         ['n','pilarien määrä','K4','kpl']],
+    huom:'Tämä on keskiarvo. 140 596 ajossa suurin pilarikuorma oli 6,23 kN, kun TP kantaa 16 ja KP 30 — kuorma ei siis ratkaise yhtäkään rakennustapausta, vaan perhe valikoituu käytännössä korkeuserosta. Autokatospolulla kuorma ratkaisi 47 tapausta 8 160:stä.'
+  }]
+},
+{
+  osa:'3 · Kuormitusala — tarkistus, joka ei ohjaa tulosta',
+  johdanto:'Ruudukossa kuorma ei jakaudu tasan. Laskuri raportoi todellisen suurimman pilarikuorman, mutta ei käytä sitä tuotevalintaan. Se on päätös T13.',
+  kaavat:[
+  {
+    nro:'K9', otsikko:'Yhden pilarin kuormitusala', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('A', 't') + op('=') + op('(') + v('ξ', 'i') + op('·') + v('a', 'b') + op(')') + op('·') + op('(') + v('ξ', 'j') + op('·') + v('a', 'L') + op(')'),
+          v('ξ') + op('=') + nu('0,5') + eh('reunalla') + op('|') + nu('1') + eh('sisällä') ],
+    san:[ sa('kuormitusala') + op('=') + op('(') + sa('osuus') + op('×') + sa('väli leveyssuunnassa') + op(')') + op('×') + op('(') + sa('osuus') + op('×') + sa('väli pituussuunnassa') + op(')'),
+          sa('osuus') + op('=') + sa('puolikas reunalla, kokonainen sisällä') ],
+    mrk:[['A<sub>t</sub>','kuormitusala','yhden pilarin kantama ruutu','m²'],
+         ['ξ','osuus','0,5 reunalla, 1 sisällä','–']],
+    huom:'Nurkkapilari kantaa neljänneksen ruudusta, reunapilari puolikkaan ja sisäpilari kokonaisen. Laskuri ottaa suurimman.'
+  },
+  {
+    nro:'K10', otsikko:'Ruutukuorma ja sen suhde keskiarvoon', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('N', 't') + op('=') + v('q') + op('·') + v('A', 't,max') + op(',') + v('k', 't') + op('=') + fr(v('N', 't'), v('N')) ],
+    san:[ sa('sisäpilarin kuorma') + op('=') + sa('kuormitus') + op('×') + sa('suurin kuormitusala'),
+          sa('suhde keskiarvoon') + op('=') + fr(sa('sisäpilarin kuorma'), sa('kuorma per pilari')) ],
+    mrk:[['N<sub>t</sub>','sisäpilarin kuorma','suurin yksittäinen pilarikuorma','kN'],
+         ['k<sub>t</sub>','suhde keskiarvoon','mitattu enintään 2,25','–']],
+    huom:'Tyypillinen suhde on 1,5–1,7× ja suurin mitattu 2,25×. Nykyisillä pienillä kuormilla ero ei sido kertaakaan, mutta 6 × 6 m terassilla kuormalla 5,0 kN/m² keskiarvo riittäisi AP:lle ja sisäpilari vaatisi TP:n — virhe kasvaa juuri silloin kun se alkaa merkitä.'
+  }]
+},
+{
+  osa:'4 · Tuoteperheen valinta',
+  johdanto:'Perhe kelpaa vain jos se kantaa kuorman ja sen korkeusalue kattaa maaston korkeuseron. Käytännössä jälkimmäinen ratkaisee.',
+  kaavat:[
+  {
+    nro:'K11', otsikko:'Korkeusalueen varaus', tila:'ok', lahde:'SITE · KRQ',
+    sym:[ v('Δh', 'max') + op('=') + v('h', 'max') + op('−') + v('h', 'min') ],
+    san:[ sa('perheen korkeusvara') + op('=') + sa('suurin korkeus') + op('−') + sa('pienin korkeus') ],
+    mrk:[['Δh<sub>max</sub>','perheen korkeusvara','AP 200 · TP 400 · KP 600','mm'],
+         ['h<sub>max</sub>','suurin korkeus','perheen korkeimman pilarin korkeus','mm'],
+         ['h<sub>min</sub>','pienin korkeus','perheen matalimman pilarin korkeus','mm']],
+    huom:'Korkeusero ei kerro pilarin korkeutta vaan sen, montako eri korkeutta samaan rakennukseen tarvitaan ja mahtuuko ero yhden perheen valikoimaan.'
+  },
+  {
+    nro:'K12', otsikko:'Kelpoisuusehto', tila:'ok', lahde:'KRQ',
+    sym:[ v('N') + op('≤') + v('R', 'd') + eh('ja') + v('Δh') + op('≤') + v('Δh', 'max') ],
+    san:[ sa('kuorma per pilari') + op('≤') + sa('perheen kantavuus') + eh('ja') + sa('maaston korkeusero') + op('≤') + sa('perheen korkeusvara') ],
+    mrk:[['R<sub>d</sub>','perheen kantavuus','AP 10 · TP 16 · KP 30','kN'],
+         ['Δh','maaston korkeusero','asiakkaan valitsema luokka','mm']],
+    huom:'Kun sekä AP että TP kelpaavat, oletus on TP ja AP tarjotaan kevyempänä vaihtoehtona (päätös T6). Jos kumpikaan ei kelpaa, tarjotaan KP; jos ei sekään, laskuri ohjaa ihmiselle eikä arvaa. Kantavuudet ovat Kronqvistin taulukoiden suurimman epäkeskisyyden rivi.'
+  }]
+},
+{
+  osa:'5 · Pilarin korkeus — kaava on tiedossa, kolme termiä neljästä ei',
+  johdanto:'Tämä on ainoa kohta, jossa laskuri ei laske vaan luettelee korkeudet. Syy ei ole se, ettei kaavaa tiedettäisi.',
+  kaavat:[
+  {
+    nro:'K13', otsikko:'Pilarin korkeus', tila:'vajaa', lahde:'PUUTTUU · T18',
+    sym:[ v('h', 'p') + op('=') + v('h', 'f') + op('−') + v('h', 'b') + op('−') + v('h', 'c') + op('±') + v('δ', 'c') ],
+    san:[ sa('pilarin korkeus') + op('=') + sa('lattian korkeus maasta') + op('−') + sa('palkin korkeus') + op('−') + sa('kiinnikkeen rakennekorkeus') + op('±') + sa('kiinnikkeen säätövara') ],
+    mrk:[['h<sub>p</sub>','pilarin korkeus','haettu suure','mm'],
+         ['h<sub>f</sub>','lattian korkeus maasta','<em>ei kysytä</em> — rakentajan oma valinta','mm'],
+         ['h<sub>b</sub>','palkin korkeus','123, 148 tai 198 — ainoa tunnettu termi','mm'],
+         ['h<sub>c</sub>','kiinnikkeen rakennekorkeus','<em>ei lähdettä</em> — BCE, tarvikekohtaisesti','mm'],
+         ['δ<sub>c</sub>','kiinnikkeen säätövara','<em>ei lähdettä</em> — «säädettävä», muttei kuinka paljon','mm']],
+    huom:'Kun nämä kolme lukua saadaan, korkeus on laskettavissa eikä lueteltavissa, ja säätöpaneelin korkeuksien jakosääntö korvataan tällä kaavalla. Päätös T18.'
+  }]
+},
+{
+  osa:'6 · Pohjapaine — johdettu tarkistus, jota laskuri ei aja',
+  johdanto:'A-601 ilmoittaa kutakin kantavuusriviä kohti vaaditun pohjapaineen. Nämä kaksi kaavaa kertovat, kummalla painejakaumalla taulukon luvut on todennäköisesti laskettu. Kysymys Kronqvistille on T14.',
+  kaavat:[
+  {
+    nro:'K14', otsikko:'Osavarmuuskerroin', tila:'ok', lahde:'EN 1990',
+    sym:[ v('γ', 'F') + op('=') + nu('1,15') + op('·') + v('g') + op('+') + nu('1,5') + op('·') + op('(') + nu('1') + op('−') + v('g') + op(')') ],
+    san:[ sa('osavarmuuskerroin') + op('=') + nu('1,15') + op('×') + sa('pysyvän kuorman osuus') + op('+') + nu('1,5') + op('×') + sa('muuttuvan kuorman osuus') ],
+    mrk:[['γ<sub>F</sub>','osavarmuuskerroin','AP 1,360 · TP 1,325 · KP 1,255','–'],
+         ['g','pysyvän kuorman osuus','AP 0,4 · TP 0,5 · KP 0,7','–']],
+    huom:'Kerrointa tarvitaan, koska A-601:n sarakkeet ovat eri tilassa: pystykuorma on ominaisarvo ja pohjapaine mitoitusarvo. Yksi kerroin ei voi mapata niitä toisiinsa ilman tätä.'
+  },
+  {
+    nro:'K15', otsikko:'Lineaarinen reunapaine', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('σ') + op('=') + fr(v('N'), v('A', 'p')) + op('·') + op('(') + nu('1') + op('+') + fr(nu('6') + v('e'), v('b', 'p')) + op(')') + eh('A<sub>p</sub> = b<sub>p</sub>²') ],
+    san:[ sa('pohjapaine') + op('=') + fr(sa('pystykuorma'), sa('laatan ala')) + op('×') + op('(') + nu('1') + op('+') + fr(nu('6') + op('×') + sa('epäkeskisyys'), sa('laatan sivu')) + op(')') ],
+    mrk:[['σ','pohjapaine','reunan suurin paine','kN/m²'],
+         ['A<sub>p</sub>','laatan ala','sivu × sivu','m²'],
+         ['b<sub>p</sub>','laatan sivu','AP 330 · TP 450 · KP 600','mm'],
+         ['e','epäkeskisyys','kuorman poikkeama keskiöstä','mm']],
+    huom:'Jäännös osuu osavarmuuskertoimeen pienimmällä epäkeskisyydellä (AP 0,2 %, TP 2,4 %, KP 2,0 %) mutta liukuu 15 %:iin suurimmalla. Trendi kertoo, ettei tämä ole se jakauma jolla taulukko on laskettu.'
+  },
+  {
+    nro:'K16', otsikko:'Tehollinen pinta-ala', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('σ') + op('=') + fr(v('γ', 'F') + op('·') + v('N'), op('(') + v('b', 'p') + op('−') + nu('2') + v('e') + op(')') + op('·') + v('b', 'p')) ],
+    san:[ sa('pohjapaine') + op('=') + fr(sa('osavarmuuskerroin') + op('×') + sa('pystykuorma'), op('(') + sa('laatan sivu') + op('−') + nu('2') + op('×') + sa('epäkeskisyys') + op(')') + op('×') + sa('laatan sivu')) ],
+    mrk:[['σ','pohjapaine','tasan jakautunut teholliselle alalle','kN/m²'],
+         ['γ<sub>F</sub>','osavarmuuskerroin','K14','–']],
+    huom:'Tällä jakaumalla trendi katoaa: jäännös on TP:llä 1,09–1,12 ja KP:llä 1,07–1,12 riippumatta epäkeskisyydestä, AP:lla 1,20. Taulukko on siis todennäköisesti laskettu tehollisella pinta-alalla.'
+  },
+  {
+    nro:'K17', otsikko:'Jäännös', tila:'ok', lahde:'LASKENTA',
+    sym:[ v('k') + op('=') + fr(v('σ', 'taul'), v('σ', 'lask')) ],
+    san:[ sa('jäännös') + op('=') + fr(sa('taulukon pohjapaine'), sa('laskettu pohjapaine')) ],
+    mrk:[['k','jäännös','7–12 % tehollisella pinta-alalla','–'],
+         ['σ<sub>taul</sub>','taulukon pohjapaine','A-601','kN/m²'],
+         ['σ<sub>lask</sub>','laskettu pohjapaine','K15 tai K16','kN/m²']],
+    huom:'Jäljelle jäävä 7–12 % on pilarin oman painon ja pohjalaatan päällä olevan täytön suuruusluokka. Molemmat mainitaan piirustuksessa, kumpaakaan ei ole taulukossa eritelty. Päätös T14 on siis kapea: kumpi jakauma, ja mitä kuormaan sisältyy ilmoitetun pystykuorman lisäksi.'
+  }]
+},
+{
+  osa:'7 · Tarvikkeet',
+  johdanto:'Tarvikkeen määrä on kaava, tarvikkeen laji ei. Laji tulee kysymyksestä «mitä pilarin päälle tulee», ei laskennasta.',
+  kaavat:[
+  {
+    nro:'K18', otsikko:'Tarvikkeiden määrä', tila:'ok', lahde:'SITE',
+    sym:[ v('n', 'kiinnike') + op('=') + v('n') + op(',') + v('n', 'nostokorva') + op('=') + nu('1') ],
+    san:[ sa('kiinnikkeitä') + op('=') + sa('pilarien määrä') + op(',') + sa('nostokorvia') + op('=') + nu('1') ],
+    mrk:[['n<sub>kiinnike</sub>','kiinnikkeitä','yksi per pilari','kpl'],
+         ['n<sub>nostokorva</sub>','nostokorvia','yksi työmaalle','kpl']],
+    huom:'Kahdessa tapauksessa laskuri ei valitse vaan luettelee: vaakapalkki pilarin kylkeen (PAK 100×150 tai 100×200) ja tasainen alusta (TL 100×100, 100×175 tai 150×150). Kokoa ei ratkaise mikään lähde — päätös T8.'
+  }]
+}];
+
+/* Vakiotaulukot. Samat luvut kuin moottorin PILLARS- ja defaultRules-rakenteissa. */
+const TAULUT = [
+{
+  otsikko:'Kantavuus ja vaadittu pohjapaine',
+  johdanto:'Käytetty rivi on kunkin perheen suurimman epäkeskisyyden rivi, koska kuluttaja säätää kengän sinne minne palkki osuu.',
+  pääOtsikot:['Perhe','Käytetty R<sub>d</sub>','Rivi','Vaadittu pohjapaine','Laatan sivu b<sub>p</sub>','Pysyvän osuus g'],
+  sanaOtsikot:['Perhe','Käytetty kantavuus','Rivi','Vaadittu pohjapaine','Laatan sivu','Pysyvän kuorman osuus'],
+  tasaus:['v','o','v','o','o','o'],
+  rivit:[
+    ['AP','10 kN','10 kN @ 20 mm','170 kN/m²','330 mm','0,4'],
+    ['TP','16 kN','16 kN @ 60 mm','160 kN/m²','450 mm','0,5'],
+    ['KP','30 kN','30 kN @ 80 mm','160 kN/m²','600 mm','0,7'],
+    ['PP','<span class="k-ei">ei julkaistu</span>','–','–','450 mm','–']]
+},
+{
+  otsikko:'Jakoväli palkkikoon mukaan',
+  johdanto:'Kestopuu ry 2018, tukien väli pääpalkin alla. Laskuri käyttää taulukon alarajaa.',
+  pääOtsikot:['Palkki h<sub>p</sub>','Kestopuun väli','Laskuri käyttää <i>a</i>'],
+  sanaOtsikot:['Palkkikoko','Kestopuun väli','Laskuri käyttää'],
+  tasaus:['v','o','o'],
+  rivit:[
+    ['48 × 123 mm','1,4–1,5 m','1,4 m'],
+    ['48 × 148 mm','1,6–2,2 m','1,6 m'],
+    ['48 × 198 mm','2,0–2,4 m','2,0 m'],
+    ['<span class="k-ei">ei tiedossa</span>','–','haarukka 1,4–2,0 m']]
+},
+{
+  otsikko:'Korkeusalueet ja korkeusvara',
+  johdanto:'Korkeusvara Δh_max on kaavan K11 tulos. Maaston korkeusero verrataan siihen, ei pilarin korkeuteen.',
+  pääOtsikot:['Perhe','Korkeudet','Δh<sub>max</sub>','Painot'],
+  sanaOtsikot:['Perhe','Korkeudet','Korkeusvara','Painot'],
+  tasaus:['v','v','o','o'],
+  rivit:[
+    ['AP','200 · 300 · 400 mm','200 mm','19–27 kg'],
+    ['TP','200–600 mm, 100 mm välein','400 mm','43–67 kg'],
+    ['KP','400–1000 mm, 100 mm välein','600 mm','126–187 kg'],
+    ['PP','600 mm','0 mm','78 kg']]
+}];
+
+/* Esimerkkilasku. Sama tapaus kuin LASKENTA.md luvussa 3, rivi riviltä. */
+const ESIMERKIT = [
+{
+  otsikko:'Terassi 4 × 5 m · palkki 48 × 148 · näkyvä kiinnitys · korkeusero alle 20 cm',
+  rivit:[
+    ['K1', 'A = 4 · 5', 'pinta-ala = 4 × 5', '20 m²'],
+    ['K2', 'a = taulukko(48 × 148)', 'jakoväli palkista 48 × 148', '1,6 m'],
+    ['K3', 'n<sub>b</sub> = max(2, ⌈4 / 1,6⌉ + 1)', 'pilareita leveyssuunnassa', '4'],
+    ['K3', 'n<sub>L</sub> = max(2, ⌈5 / 1,6⌉ + 1)', 'pilareita pituussuunnassa', '5'],
+    ['K4', 'n = 4 · 5', 'pilarien määrä', '20 kpl'],
+    ['K5', 'a<sub>b</sub> = 4 / 3, a<sub>L</sub> = 5 / 4', 'toteutuvat välit, molemmat ≤ 1,6', '1,33 · 1,25 m'],
+    ['K6', 'q = 2,0 + 0', 'kuormitus, omapaino puuttuu', '2,0 kN/m²'],
+    ['K8', 'N = 2,0 · 20 / 20', 'kuorma per pilari', '2,0 kN'],
+    ['K9', 'A<sub>t,max</sub> = 1,33 · 1,25', 'sisäpilarin kuormitusala', '1,67 m²'],
+    ['K10', 'N<sub>t</sub> = 2,0 · 1,67 → k<sub>t</sub> = 1,67', 'sisäpilarin kuorma, 1,67× keskiarvo', '3,33 kN'],
+    ['K12', 'AP: 2,0 ≤ 10 ja 200 ≤ 200', 'AP kelpaa', 'kyllä'],
+    ['K12', 'TP: 2,0 ≤ 16 ja 200 ≤ 400', 'TP kelpaa', 'kyllä'],
+    ['K18', 'n<sub>kiinnike</sub> = 20', 'PIK 50–70 ja yksi nostokorva', '20 + 1 kpl']],
+  tulos:'TP-pilari 20 kpl · AP 20 kpl kevyempänä vaihtoehtona · PIK 50–70 ×20 · nostokorva ×1'
+},
+{
+  otsikko:'Autokatos 6 × 8 m · 8 kannatintolppaa · postinumeroa ei annettu',
+  rivit:[
+    ['K1', 'A = 6 · 8', 'pinta-ala, ≤ 50 m² eli luvasta vapaa', '48 m²'],
+    ['K4', 'n = 8', 'asiakkaan ilmoittama tolppamäärä, ei ruudukkoa', '8 kpl'],
+    ['K7', 's = 0,8 · 3,5', 'lumikuorma katolla, katon omapaino puuttuu', '2,8 kN/m²'],
+    ['K8', 'N = 2,8 · 48 / 8', 'kuorma per pilari', '16,8 kN'],
+    ['K12', 'KP: 16,8 ≤ 30', 'KP kelpaa, AP ja TP eivät', 'kyllä'],
+    ['K18', 'n<sub>kiinnike</sub> = 8', 'PIK 90–140 ja yksi nostokorva', '8 + 1 kpl']],
+  tulos:'KP-pilari 8 kpl · PIK 90–140 ×8 · nostokorva ×1'
+}];
+
+/* Mitä laskuri ei laske. Tämä luettelo kuuluu kaavakokoelmaan yhtä paljon kuin
+   kaavat: ilman sitä kaavat lupaavat enemmän kuin ne lunastavat. */
+const PUUTTUU = [
+  ['Rakenteen omapaino g<sub>k</sub>','Kannen, rungon, seinien ja katon paino. Suuruusluokka 2–5 kN/m², eli laskettu kuorma voi olla kolmasosa todellisesta. BCE.'],
+  ['Katon omapaino g<sub>k,katto</sub>','Autokatoksen katerakenne. BCE.'],
+  ['Lumi rakennuksille','Vain autokatos saa lumikuorman. Katettu terassi ohjataan KP:lle lumen takia, mutta lumi ei tule sen kuormaan.'],
+  ['Lumivyöhykkeet s<sub>k</sub>','Postinumerokohtainen kartta. Nyt käytössä Suomen suurin ominaisarvo 3,5 kN/m². BCE.'],
+  ['Pohjapaineen tarkistus','Valittu kapasiteettirivi edellyttää maalta 160–170 kN/m². Laskuri ei vertaa tätä mihinkään, ja savelle tyypillinen sallittu paine on murto-osa siitä. Kronqvist, T14.'],
+  ['Sisäpilarin kuorma tuotevalinnassa','K10 lasketaan ja raportoidaan, mutta K12 käyttää keskiarvoa. Kronqvist, T13.'],
+  ['Kiinnikkeen mitat h<sub>c</sub> ja δ<sub>c</sub>','Kaava K13 on tiedossa, luvut eivät. BCE, T18.'],
+  ['Jakovälin ja kuorman kytkös','Kestopuun taulukko on laadittu kuormalle 2,0 kN/m². Jos kuorma nousee, pilarimäärä muuttuu mutta jakoväli ei — palkki pettäisi ennen pilaria. Taulukkoa muille kuormille ei ole.'],
+  ['PP-pilarin kantavuus','Tolppapolku ei tarkista kuormaa lainkaan, koska PP:lle ei ole julkaistu kantavuutta missään lähteessä.']
+];
+
+/* ---- Renderöinti ---------------------------------------------------------- */
+const MOODI = (function(){
+  const p = new URLSearchParams(location.search).get('notaatio');
+  return p === 'sanat' ? 'sanat' : 'symbolit';
+})();
+const SANAT = MOODI === 'sanat';
+
+const el = (tag, attrs, html) => {
+  const n = document.createElement(tag);
+  if (attrs) for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (html != null) n.innerHTML = html;
+  return n;
+};
+
+function kansi(){
+  const s = el('section', { class:'k-kansi' });
+  const w = el('div', { class:'w' });
+  w.appendChild(el('h1', null, 'Laskukaavat'));
+  w.appendChild(el('p', null, SANAT
+    ? 'Kaikki kaavat, joita BCE-pilarilaskuri ajaa, sanoiksi purettuina. Sama kokoelma on saatavilla myös lujuusopin vakiintuneilla merkinnöillä. Kaavan alla lukee lähde ja se, ajaako laskuri kaavan sellaisenaan vai puuttuuko siitä termi.'
+    : 'Kaikki kaavat, joita BCE-pilarilaskuri ajaa, lujuusopin ja eurokoodin vakiintuneilla merkinnöillä. Sama kokoelma on saatavilla myös sanoiksi purettuna. Kaavan alla lukee lähde ja se, ajaako laskuri kaavan sellaisenaan vai puuttuuko siitä termi.'));
+  const val = el('nav', { class:'k-valitsin', 'aria-label':'Notaatio' });
+  const a1 = el('a', { href:'?notaatio=symbolit' }, 'Symbolit');
+  const a2 = el('a', { href:'?notaatio=sanat' }, 'Sanallinen');
+  (SANAT ? a2 : a1).setAttribute('aria-current', 'page');
+  val.appendChild(a1); val.appendChild(a2);
+  w.appendChild(val);
+  s.appendChild(w);
+  return s;
+}
+
+function kaavaRivi(k){
+  const art = el('article', { class:'kv' + (k.tila === 'vajaa' ? ' vajaa' : '') });
+  const oh = el('div', { class:'kv-otsikko' });
+  oh.appendChild(el('span', { class:'kv-nro' }, k.nro));
+  oh.appendChild(el('h3', null, k.otsikko));
+  oh.appendChild(el('span', { class:'kv-lahde' }, k.tila === 'vajaa' ? k.lahde + ' · vajaa' : k.lahde));
+  art.appendChild(oh);
+
+  const kaavat = el('div');
+  (SANAT ? k.san : k.sym).forEach(function(rivi){
+    kaavat.appendChild(el('div', { class:'eq' + (SANAT ? ' sanat' : '') }, rivi));
+  });
+  art.appendChild(kaavat);
+
+  const dl = el('dl', { class:'kv-mrk' + (SANAT ? ' sanat' : '') });
+  k.mrk.forEach(function(m){
+    dl.appendChild(el('dt', null, SANAT ? m[1] : m[0]));
+    dl.appendChild(el('dd', null, m[2] + (m[3] ? ' <u>' + m[3] + '</u>' : '')));
+  });
+  art.appendChild(dl);
+
+  if (k.huom) art.appendChild(el('p', { class:'kv-huom' }, k.huom));
+  return art;
+}
+
+function osa(o){
+  const s = el('section', { class:'k-osa' });
+  const w = el('div', { class:'w' });
+  w.appendChild(el('h2', null, o.osa));
+  if (o.johdanto) w.appendChild(el('p', { class:'johdanto' }, o.johdanto));
+  o.kaavat.forEach(function(k){ w.appendChild(kaavaRivi(k)); });
+  s.appendChild(w);
+  return s;
+}
+
+function taulu(t){
+  const w = el('div');
+  w.appendChild(el('h3', null, t.otsikko));
+  if (t.johdanto) w.appendChild(el('p', { class:'johdanto' }, t.johdanto));
+  const tb = el('table', { class:'k-taulu' });
+  const otsikot = SANAT ? t.sanaOtsikot : t.pääOtsikot;
+  const tasaus = t.tasaus || [];
+  const luokka = i => tasaus[i] === 'o' ? { class:'num' } : null;
+  const tr = el('tr');
+  otsikot.forEach(function(o, i){ tr.appendChild(el('th', luokka(i), o)); });
+  const thead = el('thead'); thead.appendChild(tr); tb.appendChild(thead);
+  const tbody = el('tbody');
+  t.rivit.forEach(function(r){
+    const row = el('tr');
+    r.forEach(function(c, i){ row.appendChild(el('td', luokka(i), c)); });
+    tbody.appendChild(row);
+  });
+  tb.appendChild(tbody);
+  w.appendChild(tb);
+  return w;
+}
+
+function vakiot(){
+  const s = el('section', { class:'k-osa' });
+  const w = el('div', { class:'w' });
+  w.appendChild(el('h2', null, '8 · Vakiot, jotka kaavoihin sijoitetaan'));
+  w.appendChild(el('p', { class:'johdanto' }, 'Yhdenkään arvon lähde ei ole Genero. Kun lähdettä ei ole, arvo on tyhjä ja laskuri sanoo sen ääneen.'));
+  TAULUT.forEach(function(t){ w.appendChild(taulu(t)); });
+  s.appendChild(w);
+  return s;
+}
+
+function esimerkit(){
+  const s = el('section', { class:'k-osa' });
+  const w = el('div', { class:'w' });
+  w.appendChild(el('h2', null, '9 · Kaksi laskua läpi'));
+  w.appendChild(el('p', { class:'johdanto' }, 'Samat tapaukset kuin LASKENTA.md:n luvussa 3, rivi riviltä kaavanumeroineen.'));
+  ESIMERKIT.forEach(function(e){
+    const d = el('div', { class:'k-esim' + (SANAT ? ' sanat' : '') });
+    d.appendChild(el('h3', null, e.otsikko));
+    const ol = el('ol');
+    e.rivit.forEach(function(r){
+      const li = el('li');
+      li.appendChild(el('span', null, '<span class="kv-nro">' + r[0] + '</span> <span class="kaava">' + (SANAT ? r[2] : r[1]) + '</span>'));
+      li.appendChild(el('b', null, r[3]));
+      ol.appendChild(li);
+    });
+    d.appendChild(ol);
+    d.appendChild(el('p', { class:'kv-huom' }, '<b>Tulos:</b> ' + e.tulos));
+    w.appendChild(d);
+  });
+  s.appendChild(w);
+  return s;
+}
+
+function puuttuu(){
+  const s = el('section', { class:'k-osa' });
+  const w = el('div', { class:'w' });
+  w.appendChild(el('h2', null, '10 · Mitä näissä kaavoissa ei ole'));
+  w.appendChild(el('p', { class:'johdanto' }, 'Jokainen rivi on termi tai tarkistus, joka kaavoista puuttuu, ja jokainen on BCE:n tai Kronqvistin päätettävissä. Laskuri ei arvaa yhtäkään niistä.'));
+  const ul = el('ul', { class:'k-puuttuu' });
+  PUUTTUU.forEach(function(p){
+    const li = el('li');
+    li.appendChild(el('b', null, p[0]));
+    li.appendChild(el('span', null, p[1]));
+    ul.appendChild(li);
+  });
+  w.appendChild(ul);
+  s.appendChild(w);
+  return s;
+}
+
+(function render(){
+  const main = document.getElementById('main');
+  main.appendChild(kansi());
+  KAAVAT.forEach(function(o){ main.appendChild(osa(o)); });
+  main.appendChild(vakiot());
+  main.appendChild(esimerkit());
+  main.appendChild(puuttuu());
+})();
+</script>
+</body>
+</html>

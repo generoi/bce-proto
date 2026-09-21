@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Päätöspuu — BCE-pilarilaskuri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="../pilarilaskuri/paatospuu.data.js"></script>
+<style>
+/* Kaavion oma kehys. Tämä ei ole sivustokomponentti vaan työkalu, kuten
+   bce_tuotekuvat.html — siksi omat luokat eivätkä design systemin lohkot. */
+:root{
+  /* Kaavion paletti. Kaksi merkitystä, kaksi väriä — ei enempää: polku joko
+     päätyy tuotteeseen tai ihmiseen. Kaikki muu ero (sääntö puuttuu, ei
+     saavutettavissa, vertailematta) on katkoviivaa ja tekstiä, ei väriä, koska
+     kolmas ja neljäs väri eivät enää erotu toisistaan luotettavasti.
+
+     Arvot on ajettu dataviz-skillin validaattorilla vaaleaa pintaa #faf9f7
+     vasten: kategorinen pari läpäisee kaikki kuusi tarkistusta (normaali ΔE
+     27,3 · väriviat ΔE 12,8), ja molemmat asteikot läpäisevät ordinaalitarkis-
+     tuksen. Älä vaihda sävyä ajamatta validaattoria uudelleen. */
+  --pp-tuote:#0d9488;        /* polku päätyy tuotteeseen */
+  --pp-ohjaus:#e25d25;       /* polku päätyy ihmiselle */
+  --pp-tuote-1:#5cc0b4; --pp-tuote-2:#17a094; --pp-tuote-3:#0d8175; --pp-tuote-4:#0a635a;
+  --pp-ohjaus-1:#ee9160; --pp-ohjaus-2:#e6702f; --pp-ohjaus-3:#c94e14; --pp-ohjaus-4:#9e390b;
+}
+.pp-note{background:var(--dark);color:#fff;font-size:14px}
+.pp-note .w{padding:10px 0;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.pp-note b{font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em}
+.pp-note code{color:#fff;background:rgba(255,255,255,.14)}
+
+.pp-kaavio{overflow-x:auto;margin:var(--s5) 0 0}
+.pp-kaavio svg{display:block;max-width:100%;height:auto}
+
+/* Avainluvut. Ei laatikoita, vain hiusviiva erottamassa — sivun lämmin pohja
+   näkyy läpi, samoin kuin taulukoissa. */
+.pp-luvut{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:0;border-top:1px solid var(--rule);margin:var(--s5) 0}
+.pp-luvut div{border-bottom:1px solid var(--rule);padding:var(--s4) var(--s4) var(--s4) 0}
+.pp-luvut b{display:block;font-family:var(--ff-d);font-size:32px;line-height:1;font-weight:600}
+.pp-luvut span{display:block;font-size:var(--fs-fine);color:var(--ink-3);margin-top:6px;text-transform:uppercase;letter-spacing:.04em}
+
+.pp-selite{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:var(--fs-small);
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:12px 0;margin:var(--s5) 0 0}
+.pp-selite span{display:inline-flex;align-items:center;gap:8px}
+.pp-selite i{width:22px;height:0;border-top-width:4px;border-top-style:solid;display:block}
+.pp-selite u{width:14px;height:14px;display:block;text-decoration:none}
+
+.pp-loydos{border-left:3px solid var(--pp-tuote);padding-left:var(--s4);margin:var(--s5) 0 0}
+.pp-loydos h3{font-size:var(--fs-h3);margin:0 0 6px}
+.pp-loydos p{margin:0;font-size:var(--fs-small);color:var(--ink-2)}
+.pp-loydos.on-ohjaus{border-left-color:var(--pp-ohjaus)}
+
+.pp-taulu{width:100%;border-collapse:collapse;font-size:var(--fs-small);margin-top:var(--s4);background:none}
+.pp-taulu th,.pp-taulu td{text-align:left;padding:8px 12px 8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.pp-taulu th{font-family:var(--ff-d);text-transform:uppercase;font-size:14px;letter-spacing:.03em}
+.pp-taulu td.num{text-align:right;font-variant-numeric:tabular-nums;padding-right:var(--s5)}
+.pp-ei{color:var(--ink-3)}
+code{font-family:ui-monospace,monospace;font-size:13px;background:var(--paper-2);padding:1px 6px;border-radius:2px}
+section{padding-bottom:var(--s6)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="pp-note"><div class="w"><b>Päätöspuu, johdettu sääntömoottorista</b><span>Kaaviota ei ole piirretty käsin: <code>node docs/pilarilaskuri/paatospuu.js --js</code> ajaa laskurin moottorin läpi koko syöteavaruuden ja kirjoittaa <code>paatospuu.data.js</code>:n, josta tämä sivu piirtää. Kaaviossa ei siis voi olla kaarta, jota moottori ei tuota — eikä puuttua kaarta, jonka se tuottaa.</span></div></div>
+<main id="main"></main>
+<script>
+"use strict";
+const E = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const P = window.PAATOSPUU;
+
+/* ---- Rivit sarakkeista objekteiksi ---------------------------------------
+   Data tulee sanakirjakoodattuna, jotta tiedosto pysyy satojen kilotavujen
+   kokoisena. Purku on yksi silmukka, ja sen jälkeen rivi on tavallinen objekti. */
+const RIVIT = (function(){
+  const { kentat, sanastot, data } = P.rivit;
+  return data.map(d => {
+    const o = {};
+    for (let i = 0; i < kentat.length; i++) o[kentat[i]] = sanastot[i][d[i]];
+    return o;
+  });
+})();
+
+/* Näkyvät nimet. Data puhuu moottorin tunnuksia; kaavio puhuu asiakkaan kieltä. */
+const NIMI = {
+  terassi:"Terassi", katos:"Autokatos", sauna:"Pihasauna", piha:"Piharakennus",
+  mokki:"Mökki", tolppa:"Tolppa tai pylväs",
+  TP:"TP-pilari", KP:"KP-pilari", PP:"PP-pilari", AP:"AP-pilari",
+  nakyva:"Näkyvä kiinnike", piilo:"Piilotettu kiinnike",
+  palkki:"Palkki satulaan", tasainen:"Tasainen alusta",
+  "90-140":"Tolppa 90–140 mm", yli140:"Tolppa yli 140 mm", eos:"En tiedä vielä",
+  korkeus:"Maasto yli 60 cm", area:"Pinta-ala yli rajan",
+  kuorma:"Kuorma yli kapasiteetin", mokki_savi:"Ympärivuotinen mökki + savi",
+  alle20:"Alle 20 cm", "20-40":"20–40 cm", "40-60":"40–60 cm", yli60:"Yli 60 cm",
+  kantava:"Kantava", pehmea:"Pehmeä tai routiva",
+  kyllä:"Katos tai lasitus", ei:"Ei katosta", kesa:"Kesäkäyttö", ympari:"Ympärivuotinen",
+  pieni:"Pieni", keski:"Keskikokoinen", iso:"Iso",
+  "48":"48 mm", "96":"96 mm", "48x123":"48 × 123", "48x148":"48 × 148", "48x198":"48 × 198",
+  "PIK-50-70":"PIK 50–70", "PIK-90-140":"PIK 90–140", "P-PIK-50x70":"P-PIK 50×70",
+  "TL-100x100":"TL 100×100", "TL-150x150":"TL 150×150", "TL-100x175":"TL 100×175",
+  "PAK-100x150":"PAK 100×150", "PAK-100x200":"PAK 100×200", NOSTOKORVA:"Nostokorva"
+};
+const nimi = k => NIMI[k] !== undefined ? NIMI[k] : String(k);
+const KYSYMYS = {
+  rakennus:"K1 Mitä rakennat", koko:"K2 Rakennuksen koko", katos:"K2 Katos tai lasitus",
+  lammitys:"K2 Ympärivuotinen käyttö", tolppia:"K2 Tolppien määrä",
+  maasto:"K3 Maaston korkeusero", maapohja:"K4 Maapohja",
+  palkki:"K5 Palkin koko", kiinnitys:"K5 Mitä pilarin päälle tulee", paksuus:"K6 Palkin paksuus"
+};
+const KYSYMYKSET = Object.keys(KYSYMYS);
+
+const pros = (osa, koko) => koko ? Math.round(osa / koko * 1000) / 10 : 0;
+const luku = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const prosT = v => (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10).toString().replace(".", ",") + " %";
+
+/* ---- Lopputuloksen tunnus -------------------------------------------------
+   Yksi merkkijono, joka kertoo sekä sen mihin polku päätyi että sen kumpaa
+   lajia lopputulos on. Huutomerkki edessä = ohjaus ihmiselle. */
+const tulos = r => r.ohjaus ? "!" + r.ohjaus : r.perhe;
+const onOhjaus = k => k.charAt(0) === "!";
+const tulosNimi = k => onOhjaus(k) ? nimi(k.slice(1)) : nimi(k);
+const tulosVari = k => onOhjaus(k) ? "var(--pp-ohjaus)" : "var(--pp-tuote)";
+
+/* Lopputulokset siinä järjestyksessä, jossa ne sarakkeisiin piirretään:
+   ensin tuotteet yleisyysjärjestyksessä, sitten ohjaukset. Järjestys tulee
+   datasta, joten uusi perhe tai uusi ohjauskoodi ilmestyy itsestään. */
+const TULOSKPL = (function(){
+  const m = new Map();
+  RIVIT.forEach(r => { const k = tulos(r); m.set(k, (m.get(k) || 0) + 1); });
+  return m;
+})();
+const TULOKSET = [...TULOSKPL.keys()].sort((a, b) =>
+  (onOhjaus(a) - onOhjaus(b)) || (TULOSKPL.get(b) - TULOSKPL.get(a)));
+const TUOTETULOKSET = TULOKSET.filter(k => !onOhjaus(k));
+const OHJAUSTULOKSET = TULOKSET.filter(onOhjaus);
+
+/* ---- Yhteiset piirtoapurit ------------------------------------------------ */
+const LEV = 1140;
+const svgAlku = (k, nimike) =>
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + LEV + ' ' + k + '" width="' + LEV +
+  '" height="' + k + '" role="img" aria-label="' + E(nimike) + '"><title>' + E(nimike) + '</title>';
+const teksti = (x, y, s, o) => {
+  o = o || {};
+  return '<text x="' + x + '" y="' + y + '"' +
+    ' font-family="' + (o.ff || "Raleway,sans-serif") + '"' +
+    ' font-size="' + (o.koko || 14) + '"' +
+    (o.paino ? ' font-weight="' + o.paino + '"' : '') +
+    (o.vali ? ' letter-spacing="' + o.vali + '"' : '') +
+    (o.ankkuri ? ' text-anchor="' + o.ankkuri + '"' : '') +
+    ' fill="' + (o.vari || "var(--ink,#252425)") + '"' +
+    (o.numerot ? ' font-variant-numeric="tabular-nums"' : '') +
+    '>' + E(s) + '</text>';
+};
+const otsake = (x, y, s, ankkuri) => teksti(x, y, String(s).toUpperCase(),
+  { ff:"Oswald,Raleway,sans-serif", koko:13, paino:600, vali:".06em",
+    vari:"var(--ink-3,#6f6d6b)", ankkuri:ankkuri });
+
+/* ==========================================================================
+   1 · Portit järjestyksessä
+   Kieltäytymiset ovat jono, ei joukko: kun kaksi ehtoa pätee yhtä aikaa, vain
+   toinen näkyy asiakkaalle. Järjestys on johdettu moottorilta (paatospuu.js,
+   ESTEJONO), ei luettu säännöistä, ja ne parit joita ei voi asettaa
+   järjestykseen kerrotaan kaavion alla omalla rivillään.
+   ========================================================================== */
+function kaavioPortit(){
+  const jono = (P.estejono || []).filter(e => TULOSKPL.has("!" + e.koodi));
+  /* Tolppa ei käy porteilla lainkaan: siltä ei kysytä maastoa eikä maapohjaa.
+     Se luetaan datasta eikä oleteta — jos tolpalta joskus kysytään maasto,
+     tämä haara katoaa itsestään. */
+  const ohi = RIVIT.filter(r => r.maasto == null);
+  const ohiTulos = [...new Set(ohi.map(tulos))];
+
+  const RIVIK = 92, MARG = 28, TRUNK = 250, HAARA = 700, LOPPU = 1108;
+  const kork = MARG + 34 + (jono.length + 2) * RIVIK + 70;
+  const o = [svgAlku(kork, "Portit järjestyksessä: missä kohtaa polku päättyy ihmiseen")];
+
+  o.push(otsake(MARG, MARG + 10, "Portit järjestyksessä"));
+  o.push(otsake(HAARA, MARG + 10, "Ohjaus ihmiselle"));
+  o.push(otsake(LOPPU, MARG + 10, "Jäljellä", "end"));
+
+  let y = MARG + 34 + 26;
+  let jaljella = RIVIT.length;
+
+  const lukuRivi = (yy, n, korosta) =>
+    teksti(LOPPU, yy + 5, luku(n), { koko:korosta ? 19 : 16, paino:600, ankkuri:"end",
+      numerot:true, vari:korosta ? "var(--ink,#252425)" : "var(--ink-2,#515151)" });
+
+  /* Lähtö */
+  o.push(teksti(MARG, y + 5, "Kaikki vastausyhdistelmät", { koko:17, paino:600 }));
+  o.push(lukuRivi(y, jaljella, true));
+  let edellinenY = y;
+
+  /* Tolppa ohittaa portit — oma, turkoosi haara oikealle. */
+  if (ohi.length){
+    y += RIVIK;
+    o.push('<path d="M' + TRUNK + ' ' + edellinenY + ' L' + TRUNK + ' ' + y +
+      '" fill="none" stroke="var(--rule-2,#cfcac3)" stroke-width="2"/>');
+    o.push('<path d="M' + TRUNK + ' ' + y + ' C' + (TRUNK + 120) + ' ' + y + ' ' +
+      (HAARA - 120) + ' ' + y + ' ' + HAARA + ' ' + y +
+      '" fill="none" stroke="var(--pp-tuote)" stroke-width="4"/>');
+    o.push('<circle cx="' + HAARA + '" cy="' + y + '" r="5" fill="var(--pp-tuote)"/>');
+    o.push(teksti(MARG, y + 1, "Tolppa tai pylväs", { koko:16, paino:600 }));
+    o.push(teksti(MARG, y + 19, "ei käy porteilla: maastoa ei kysytä",
+      { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
+    o.push(teksti(HAARA + 14, y + 5, ohiTulos.map(tulosNimi).join(" · ") + ", " + luku(ohi.length) + " polkua",
+      { koko:14, vari:"var(--pp-tuote-4)" }));
+    jaljella -= ohi.length;
+    o.push(lukuRivi(y, jaljella));
+    edellinenY = y;
+  }
+
+  /* Portit. Oranssi haara ulos, harmaa runko alas. */
+  jono.forEach(e => {
+    const n = TULOSKPL.get("!" + e.koodi) || 0;
+    y += RIVIK;
+    o.push('<path d="M' + TRUNK + ' ' + edellinenY + ' L' + TRUNK + ' ' + y +
+      '" fill="none" stroke="var(--rule-2,#cfcac3)" stroke-width="2"/>');
+    const paksuus = Math.max(3, Math.min(16, 3 + Math.sqrt(n) / 4));
+    o.push('<path d="M' + TRUNK + ' ' + y + ' C' + (TRUNK + 120) + ' ' + y + ' ' +
+      (HAARA - 120) + ' ' + y + ' ' + HAARA + ' ' + y +
+      '" fill="none" stroke="var(--pp-ohjaus)" stroke-width="' + paksuus + '" opacity=".9"/>');
+    o.push('<circle cx="' + HAARA + '" cy="' + y + '" r="5" fill="var(--pp-ohjaus)"/>');
+    o.push(teksti(MARG, y + 1, nimi(e.koodi) + "?", { koko:16, paino:600 }));
+    o.push(teksti(MARG, y + 19, "laukaisin: " + (e.laukaisin || "—"),
+      { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
+    o.push(teksti(HAARA + 14, y + 5, luku(n) + " polkua päättyy tähän",
+      { koko:14, vari:"var(--pp-ohjaus-4)" }));
+    jaljella -= n;
+    o.push(lukuRivi(y, jaljella));
+    edellinenY = y;
+  });
+
+  /* Loppu: perheet, jotka jäävät jäljelle. */
+  y += RIVIK;
+  o.push('<path d="M' + TRUNK + ' ' + edellinenY + ' L' + TRUNK + ' ' + y +
+    '" fill="none" stroke="var(--rule-2,#cfcac3)" stroke-width="2"/>');
+  const jaaneet = TUOTETULOKSET.filter(k => !ohiTulos.includes(k));
+  o.push('<path d="M' + TRUNK + ' ' + y + ' C' + (TRUNK + 120) + ' ' + y + ' ' +
+    (HAARA - 120) + ' ' + y + ' ' + HAARA + ' ' + y +
+    '" fill="none" stroke="var(--pp-tuote)" stroke-width="' +
+    Math.max(3, Math.min(16, 3 + Math.sqrt(jaljella) / 4)) + '" opacity=".9"/>');
+  o.push('<circle cx="' + HAARA + '" cy="' + y + '" r="5" fill="var(--pp-tuote)"/>');
+  o.push(teksti(MARG, y + 1, "Kaikki portit läpi", { koko:16, paino:600 }));
+  o.push(teksti(MARG, y + 19, "laskuri antaa tuloksen",
+    { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
+  o.push(teksti(HAARA + 14, y + 5,
+    jaaneet.map(k => tulosNimi(k) + " " + luku(TULOSKPL.get(k))).join(" · "),
+    { koko:14, vari:"var(--pp-tuote-4)" }));
+  o.push(lukuRivi(y, jaljella, true));
+
+  o.push('</svg>');
+  return o.join("");
+}
+
+/* ==========================================================================
+   2 · Rakennus × lopputulos
+   Sama tieto kuin ennen viuhkakaaviossa, mutta ilman risteäviä kaaria: yksi
+   rivi per rakennus, kiinteät sarakkeet, palkin pituus osuus. Rivi luetaan
+   polkuna vasemmalta oikealle, sarake vertailuna ylhäältä alas.
+   ========================================================================== */
+function kaavioMatriisi(){
+  const rakennukset = [...new Set(RIVIT.map(r => r.rakennus))]
+    .sort((a, b) => RIVIT.filter(r => r.rakennus === b).length -
+                    RIVIT.filter(r => r.rakennus === a).length);
+  /* Sarakeleveys lasketaan tilasta eikä lyödä lukkoon: uusi ohjauskoodi tai uusi
+     perhe lisää sarakkeen, ja ilman tätä se valuisi ulos kuvasta. */
+  const VALI = 10, NIMIL = 168, MARG = 28, RIVIK = 52, ryhmaVali = 30;
+  const SOL = Math.floor((LEV - 2 * MARG - NIMIL - ryhmaVali -
+    (TULOKSET.length - 1) * VALI) / TULOKSET.length);
+  const TRACK = Math.max(30, SOL - 44);
+  const xSol = i => MARG + NIMIL + i * (SOL + VALI) + (i >= TUOTETULOKSET.length ? ryhmaVali : 0);
+  const kork = MARG + 74 + rakennukset.length * RIVIK + 34;
+  const o = [svgAlku(kork, "Mihin kukin rakennustyyppi päätyy")];
+
+  /* Sarakeryhmien otsikot ja hiusviivat. */
+  const tuoteX = xSol(0), tuoteLop = xSol(TUOTETULOKSET.length - 1) + SOL;
+  const ohjX = xSol(TUOTETULOKSET.length), ohjLop = xSol(TULOKSET.length - 1) + SOL;
+  o.push(otsake(tuoteX, MARG + 4, "Laskuri antaa tuloksen"));
+  o.push(otsake(ohjX, MARG + 4, "Ohjaus ihmiselle"));
+  o.push('<path d="M' + tuoteX + ' ' + (MARG + 12) + ' H' + tuoteLop +
+    '" stroke="var(--pp-tuote)" stroke-width="2"/>');
+  o.push('<path d="M' + ohjX + ' ' + (MARG + 12) + ' H' + ohjLop +
+    '" stroke="var(--pp-ohjaus)" stroke-width="2"/>');
+
+  /* Otsikko kahdelle riville, jotta sarake saa olla kapea eikä nimeä tarvitse
+     lyhentää tunnistamattomaksi. Katko haetaan sanavälistä, ei merkkimäärästä. */
+  TULOKSET.forEach((k, i) => {
+    const sanat = tulosNimi(k).split(" ");
+    const rivit = [sanat.shift()];
+    sanat.forEach(s => {
+      const viim = rivit[rivit.length - 1];
+      if (rivit.length < 2 && (viim + " " + s).length > 13) rivit.push(s);
+      else rivit[rivit.length - 1] = viim + " " + s;
+    });
+    rivit.forEach((t, j) =>
+      o.push(teksti(xSol(i), MARG + 42 + j * 15, t, { koko:13.5, paino:600 })));
+  });
+
+  let y = MARG + 74;
+  rakennukset.forEach(rk => {
+    const rivit = RIVIT.filter(r => r.rakennus === rk);
+    o.push('<path d="M' + MARG + ' ' + (y + RIVIK - 8) + ' H' + (LEV - MARG) +
+      '" stroke="var(--rule,#e1ded9)" stroke-width="1"/>');
+    o.push(teksti(MARG, y + 20, nimi(rk), { koko:16, paino:600 }));
+    o.push(teksti(MARG, y + 36, luku(rivit.length) + " polkua",
+      { koko:12.5, vari:"var(--ink-3,#6f6d6b)", numerot:true }));
+
+    TULOKSET.forEach((k, i) => {
+      const n = rivit.filter(r => tulos(r) === k).length;
+      const x = xSol(i);
+      /* Tyhjä solu on hiusviiva, ei tyhjä tila: nolla on tulos siinä missä
+         muutkin, ja ilman merkkiä lukija ei tiedä onko se nolla vai unohdus. */
+      if (!n){
+        o.push('<path d="M' + x + ' ' + (y + 22) + ' H' + (x + 10) +
+          '" stroke="var(--rule-2,#cfcac3)" stroke-width="2"/>');
+        return;
+      }
+      const osuus = n / rivit.length;
+      const lev = Math.max(4, Math.round(osuus * TRACK));
+      o.push('<rect x="' + x + '" y="' + (y + 13) + '" width="' + lev + '" height="18" rx="4" fill="' +
+        tulosVari(k) + '"><title>' + E(nimi(rk) + " → " + tulosNimi(k) + ": " +
+        luku(n) + " polkua, " + prosT(pros(n, rivit.length))) + '</title></rect>');
+      /* Prosentti heti radan perään, kiinteään kohtaan — ei palkin perään, jossa
+         se hyppisi rivistä toiseen, eikä sarakkeen oikeaan reunaan, jossa se
+         näyttäisi kuuluvan seuraavalle sarakkeelle. */
+      o.push(teksti(x + TRACK + 7, y + 27, prosT(pros(n, rivit.length)),
+        { koko:13, numerot:true, vari:"var(--ink-2,#515151)" }));
+    });
+    y += RIVIK;
+  });
+
+  o.push('</svg>');
+  return o.join("");
+}
+
+/* ==========================================================================
+   3 · Mikä kysymys ratkaisee mitäkin
+   Mitta: pidetään kaikki muut vastaukset samoina ja vaihdetaan vain tämä.
+   Jos lopputulos vaihtuu, kysymys vaikuttaa. Tämä on ainoa tapa erottaa
+   "kysymys ratkaisee" siitä, että "kysymys sattuu korreloimaan".
+   ========================================================================== */
+function vaikutus(rivit, arvo, kentta){
+  const otos = rivit.filter(r => r[kentta] != null);
+  if (otos.length < 2) return null;
+  const muut = KYSYMYKSET.filter(x => x !== kentta);
+  const ryhmat = new Map();
+  otos.forEach(r => {
+    const avain = muut.map(x => String(r[x])).join("|");
+    let g = ryhmat.get(avain);
+    if (!g){ g = { arvot:new Set(), tulokset:new Set() }; ryhmat.set(avain, g); }
+    g.arvot.add(String(r[kentta]));
+    g.tulokset.add(arvo(r));
+  });
+  let vertailtavia = 0, vaihtelee = 0;
+  const verratut = new Set();
+  ryhmat.forEach(g => {
+    if (g.arvot.size < 2) return;
+    vertailtavia++;
+    g.arvot.forEach(a => verratut.add(a));
+    if (g.tulokset.size > 1) vaihtelee++;
+  });
+  return { vertailtavia:vertailtavia, vaihtelee:vaihtelee, verratut:[...verratut].sort() };
+}
+const TULOSRIVIT = RIVIT.filter(r => !r.ohjaus);
+const VAIKUTUS = KYSYMYKSET.map(k => ({
+  kentta: k,
+  perhe: vaikutus(RIVIT, tulos, k),
+  tarvike: vaikutus(TULOSRIVIT, r => (r.tarvikkeet || []).join("+") || "-", k)
+}));
+
+function kaavioVaikutus(){
+  const SAR = 300, MARG = 28, NIMIL = 300, VALI = 60, RIVIK = 40;
+  const x1 = MARG + NIMIL, x2 = x1 + SAR + VALI;
+  const kork = MARG + 58 + VAIKUTUS.length * RIVIK + 34;
+  const o = [svgAlku(kork, "Mikä kysymys vaihtaa lopputuloksen")];
+
+  o.push(otsake(MARG, MARG + 10, "Kysymys"));
+  o.push(otsake(x1, MARG + 10, "Vaihtaa pilariperheen tai ohjauksen"));
+  o.push(otsake(x2, MARG + 10, "Vaihtaa tarvikkeen"));
+
+  let y = MARG + 42;
+  VAIKUTUS.forEach(v => {
+    o.push('<path d="M' + MARG + ' ' + (y + RIVIK - 10) + ' H' + (LEV - MARG) +
+      '" stroke="var(--rule,#e1ded9)" stroke-width="1"/>');
+    o.push(teksti(MARG, y + 18, KYSYMYS[v.kentta], { koko:15, paino:600 }));
+
+    [[x1, v.perhe], [x2, v.tarvike]].forEach(function(pari){
+      const x = pari[0], m = pari[1];
+      if (!m || !m.vertailtavia){
+        o.push(teksti(x, y + 18, "ei vertailtavissa",
+          { koko:13, vari:"var(--ink-3,#6f6d6b)" }));
+        return;
+      }
+      const osuus = m.vaihtelee / m.vertailtavia;
+      const lev = Math.max(3, Math.round(osuus * (SAR - 118)));
+      o.push('<rect x="' + x + '" y="' + (y + 5) + '" width="' + (SAR - 118) +
+        '" height="16" rx="4" fill="var(--rule,#e1ded9)"/>');
+      if (m.vaihtelee)
+        o.push('<rect x="' + x + '" y="' + (y + 5) + '" width="' + lev +
+          '" height="16" rx="4" fill="var(--pp-tuote)"><title>' +
+          E(m.vaihtelee + " / " + m.vertailtavia + " vertailua vaihtoi tuloksen") + '</title></rect>');
+      o.push(teksti(x + SAR - 108, y + 18,
+        m.vaihtelee ? prosT(pros(m.vaihtelee, m.vertailtavia)) + " vertailuista" : "ei koskaan",
+        { koko:13, numerot:true,
+          vari: m.vaihtelee ? "var(--ink-2,#515151)" : "var(--ink-3,#6f6d6b)" }));
+    });
+    y += RIVIK;
+  });
+
+  o.push('</svg>');
+  return o.join("");
+}
+
+/* ==========================================================================
+   4 · Kiinnitysvastaus → tarvike
+   Yksi kaista per vastaus, ei yhtään risteävää kaarta. Katkoviiva ei ole eri
+   väri vaan eri viiva: se tarkoittaa, ettei sääntöä ole ja laskuri näyttää
+   useamman vaihtoehdon.
+   ========================================================================== */
+function kaavioTarvikkeet(){
+  const tarvikeAvain = r => (r.tarvikkeet || []).join("+");
+  const kaistat = [];
+  [...new Set(TULOSRIVIT.map(r => r.kiinnitys).filter(Boolean))].forEach(kii => {
+    const rivit = TULOSRIVIT.filter(r => r.kiinnitys === kii);
+    /* Kumpi jatkokysymys ratkaisee tarvikkeen tällä vastauksella — paksuus vai
+       palkin koko? Se kysytään datalta eikä oleteta: piilokiinnike ei katso
+       kumpaakaan, näkyvä katsoo paksuutta ja satula palkkia. Ilman tätä kaavio
+       piirtäisi kolme samannäköistä kaistaa sinne, missä kysymys ei vaikuta. */
+    const ratkaisija = ["paksuus", "palkki"].find(kentta => {
+      if (rivit.some(r => r[kentta] == null)) return false;
+      const m = new Map();
+      let ok = true;
+      rivit.forEach(r => {
+        const v = String(r[kentta]), t = tarvikeAvain(r);
+        if (m.has(v) && m.get(v) !== t) ok = false;
+        m.set(v, t);
+      });
+      /* Kenttä ratkaisee vain jos se tuottaa eri tarvikkeita. Piilokiinnikkeellä
+         paksuus vaihtelee mutta tarvike ei — silloin kenttä ei ratkaise mitään,
+         ja kolme samannäköistä kaistaa olisi kolme kertaa sama tieto. */
+      return ok && new Set(m.values()).size > 1;
+    }) || null;
+
+    const arvot = ratkaisija ? [...new Set(rivit.map(r => String(r[ratkaisija])))].sort() : [null];
+    arvot.forEach(arvo => {
+      const osa = ratkaisija ? rivit.filter(r => String(r[ratkaisija]) === arvo) : rivit;
+      if (!osa.length) return;
+      const joukot = new Map();
+      osa.forEach(r => { const a = tarvikeAvain(r); joukot.set(a, (joukot.get(a) || 0) + 1); });
+      kaistat.push({
+        otsikko: nimi(kii) + (arvo ? " · " + nimi(arvo) : ""),
+        alaotsikko: ratkaisija ? KYSYMYS[ratkaisija].replace(/^K\d+ /, "") : null,
+        n: osa.length,
+        joukot: [...joukot.entries()].sort((a, b) => b[1] - a[1])
+      });
+    });
+  });
+
+  const MARG = 28, NIMIL = 264, LAHTO = MARG + NIMIL, KOHDE = LAHTO + 150, RIVIK = 30;
+  let kork = MARG + 42;
+  kaistat.forEach(k => { kork += Math.max(RIVIK, k.joukot.length * RIVIK) + 16; });
+  kork += 20;
+  const o = [svgAlku(kork, "Mistä tarvike tulee: kiinnitysvastaus ja palkin koko")];
+
+  o.push(otsake(MARG, MARG + 10, "K5 · K6 vastaus"));
+  o.push(otsake(KOHDE, MARG + 10, "Tarvike, jonka laskuri ehdottaa"));
+
+  let y = MARG + 40;
+  kaistat.forEach(k => {
+    const kk = Math.max(RIVIK, k.joukot.length * RIVIK);
+    const keski = y + kk / 2;
+    o.push('<path d="M' + MARG + ' ' + (y - 10) + ' H' + (LEV - MARG) +
+      '" stroke="var(--rule,#e1ded9)" stroke-width="1"/>');
+    o.push(teksti(MARG, keski - 3, k.otsikko, { koko:15, paino:600 }));
+    o.push(teksti(MARG, keski + 14,
+      luku(k.n) + " polkua" + (k.alaotsikko ? " · ratkaisee " + k.alaotsikko.toLowerCase() : ""),
+      { koko:12.5, vari:"var(--ink-3,#6f6d6b)", numerot:true }));
+
+    k.joukot.forEach((pari, i) => {
+      const koodit = pari[0] ? pari[0].split("+") : [];
+      const n = pari[1];
+      const valinta = koodit.some(c => c.indexOf("?") >= 0);
+      const yy = y + i * RIVIK + RIVIK / 2;
+      o.push('<path d="M' + LAHTO + ' ' + keski + ' C' + (LAHTO + 60) + ' ' + keski + ' ' +
+        (KOHDE - 60) + ' ' + yy + ' ' + KOHDE + ' ' + yy +
+        '" fill="none" stroke="var(--pp-tuote)" stroke-width="' +
+        Math.max(2, Math.min(10, 2 + Math.sqrt(n) / 3)) + '" opacity=".85"' +
+        (valinta ? ' stroke-dasharray="7 5"' : '') + '/>');
+      o.push('<circle cx="' + KOHDE + '" cy="' + yy + '" r="4" fill="var(--pp-tuote)"/>');
+      o.push(teksti(KOHDE + 14, yy + 5,
+        koodit.map(c => nimi(c.replace("?", ""))).join(valinta ? "  tai  " : " + ") +
+        (valinta ? "   — sääntö puuttuu, laskuri näyttää kaikki" : ""),
+        { koko:14, vari: valinta ? "var(--ink-2,#515151)" : "var(--ink,#252425)" }));
+    });
+    y += kk + 16;
+  });
+
+  o.push('</svg>');
+  return o.join("");
+}
+
+/* ==========================================================================
+   5 · Missä pinta-alaraja kulkee
+   Lukusuora per rakennus + maasto. Väri kertoo kumpaa lajia lopputulos on,
+   ei mitä tuotetta: yhdellä suoralla on korkeintaan kaksi merkitystä.
+   ========================================================================== */
+function kaavioRajat(){
+  /* Sama raja toistuu yleensä kaikilla maastoluokilla ja usein monella
+     rakennuksella. Rivit, joilla on täsmälleen sama rajakuvio, yhdistetään
+     yhdeksi: viisitoista lähes identtistä palkkia ei kerro enempää kuin kolme,
+     ja toisto peittää sen ainoan rivin, joka on erilainen. */
+  const yhdistetyt = new Map();
+  (P.rajat || []).filter(r => r.rajat && r.rajat.length).forEach(r => {
+    const avain = r.rajat.map(b => b.ala + ">" + b.jalkeen.split(":").slice(0, 2).join(":")).join(" ");
+    if (!yhdistetyt.has(avain)) yhdistetyt.set(avain, { nimet:[], rajat:r.rajat });
+    yhdistetyt.get(avain).nimet.push(r.nimi);
+  });
+  /* Nimi on muotoa "rakennus [· lisävalinta] · maasto" (paatospuu.js kokoaa sen
+     siinä järjestyksessä). Yhdistetyn rivin otsikoksi tulevat rakennukset, ja
+     alariville se mikä niitä erottaa — maastoluokka tai lisävalinta. */
+  const MAASTOT = ["alle20", "20-40", "40-60", "yli60"];
+  const rajat = [...yhdistetyt.values()].map(y => {
+    const osat = y.nimet.map(n => n.split(" · "));
+    const rakennukset = [...new Set(osat.map(o => o[0]))];
+    const maastot = [...new Set(osat.map(o => o[o.length - 1]))];
+    const lisat = [...new Set([].concat.apply([], osat.map(o => o.slice(1, -1))))];
+    const ehdot = [];
+    if (maastot.length >= MAASTOT.length) ehdot.push("kaikki maastot");
+    else ehdot.push("maasto " + maastot.map(nimi).join(" tai ").toLowerCase());
+    if (lisat.length) ehdot.push(lisat.map(nimi).join(" ja "));
+    return {
+      nimi: rakennukset.map(nimi).join(", "),
+      lisa: ehdot.join(" · "),
+      rajat: y.rajat
+    };
+  }).sort((a, b) => a.rajat[0].ala - b.rajat[0].ala);
+  if (!rajat.length) return "";
+  const kaikkiAlat = rajat.reduce((a, r) => a.concat(r.rajat.map(b => b.ala)), [0]);
+  const maxAla = Math.max(60, Math.ceil(Math.max.apply(null, kaikkiAlat) / 10) * 10 + 10);
+  const MARG = 28, NIMIL = 300, X0 = MARG + NIMIL, X1 = LEV - MARG - 40, RIVIK = 52;
+  const x = a => X0 + (a / maxAla) * (X1 - X0);
+  const kork = MARG + 60 + rajat.length * RIVIK + 40;
+  const o = [svgAlku(kork, "Missä pinta-ala vaihtaa lopputuloksen")];
+
+  o.push(otsake(MARG, MARG + 10, "Rakennus ja maasto"));
+  o.push(otsake(X0, MARG + 10, "Pinta-ala, m²"));
+  /* Asteikko. Viivat ovat taustaa, joten ne ovat hiusviivaa eivätkä kilpaile. */
+  for (let a = 0; a <= maxAla; a += 10){
+    o.push('<path d="M' + x(a) + ' ' + (MARG + 30) + ' V' + (kork - 34) +
+      '" stroke="var(--rule,#e1ded9)" stroke-width="1"/>');
+    o.push(teksti(x(a), kork - 16, String(a), { koko:12, ankkuri:"middle",
+      vari:"var(--ink-3,#6f6d6b)", numerot:true }));
+  }
+
+  let y = MARG + 54;
+  rajat.forEach(r => {
+    o.push(teksti(MARG, y + 14, r.nimi, { koko:14.5, paino:600 }));
+    if (r.lisa) o.push(teksti(MARG, y + 30, r.lisa, { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
+    /* Jaksot: alku → ensimmäinen raja → … → maxAla. Väri kertoo, onko jakso
+       tulos vai ohjaus; tieto luetaan lehtiavaimen etuliitteestä. */
+    let edellinen = 0;
+    const jaksot = [];
+    r.rajat.forEach(b => { jaksot.push({ a:edellinen, b:b.ala, avain:b.ennen }); edellinen = b.ala; });
+    jaksot.push({ a:edellinen, b:maxAla, avain:r.rajat[r.rajat.length - 1].jalkeen });
+    jaksot.forEach((j, i) => {
+      const ohjaus = j.avain.indexOf("ohjaus:") === 0;
+      const viimeinen = i === jaksot.length - 1;
+      const lev = Math.max(2, x(j.b) - x(j.a) - 2);
+      o.push('<rect x="' + x(j.a) + '" y="' + (y + 6) + '" width="' + lev +
+        '" height="14" rx="3" fill="' + (ohjaus ? "var(--pp-ohjaus)" : "var(--pp-tuote)") +
+        '"><title>' + E(j.a + "–" + j.b + " m²: " + j.avain) + '</title></rect>');
+      /* Viimeinen jakso jatkuu asteikon yli: pyyhkäisy menee 400 m²:iin asti,
+         mutta se ei mahdu kuvaan. Nuoli kertoo, ettei palkki lopu tähän. */
+      if (viimeinen)
+        o.push('<path d="M' + (x(j.b) + 4) + ' ' + (y + 7) + ' l9 6 l-9 6 z" fill="' +
+          (ohjaus ? "var(--pp-ohjaus)" : "var(--pp-tuote)") + '"/>');
+    });
+    r.rajat.forEach(b => {
+      o.push('<path d="M' + x(b.ala) + ' ' + (y + 2) + ' v22" stroke="var(--ink,#252425)" stroke-width="1.5"/>');
+      o.push(teksti(x(b.ala), y + 36, String(b.ala).replace(".", ",") + " m²",
+        { koko:11.5, ankkuri:"middle", numerot:true, vari:"var(--ink-2,#515151)" }));
+    });
+    y += RIVIK;
+  });
+
+  o.push('</svg>');
+  return o.join("");
+}
+
+/* ==========================================================================
+   Sivu
+   ========================================================================== */
+const ohjausKpl = OHJAUSTULOKSET.reduce((s, k) => s + TULOSKPL.get(k), 0);
+const eiSaav = P.tuotteet.filter(t => !t.saavutettavissa).map(t => nimi(t.koodi));
+const perheetKaytossa = TUOTETULOKSET.map(tulosNimi);
+const vaihtoehdot = [...new Set(RIVIT.map(r => r.vaihtoehto).filter(Boolean))];
+const haarukoita = RIVIT.filter(r => r.haarukka).length;
+const eiVaikutaPerheeseen = VAIKUTUS.filter(v => v.perhe && v.perhe.vertailtavia && !v.perhe.vaihtelee);
+const eiVaikutaTarvikkeeseen = VAIKUTUS.filter(v => v.tarvike && v.tarvike.vertailtavia && !v.tarvike.vaihtelee);
+const rakennusVaikutus = VAIKUTUS.find(v => v.kentta === "rakennus");
+const vertailematta = P.esteetVertailematta || [];
+/* Millä rakennuksilla pinta-alaraja ei tule vastaan? Se luetaan siitä, ettei
+   rakennus esiinny yhdessäkään pyyhkäisyn löytämässä rajassa — ei siitä, että
+   sääntötaulukossa on null, jota tämä sivu ei näe. */
+const rajaRakennukset = new Set((P.rajat || []).map(r => r.nimi.split(" · ")[0]));
+const eiRajaa = [...new Set(RIVIT.map(r => r.rakennus))]
+  .filter(b => !rajaRakennukset.has(b) && RIVIT.some(r => r.rakennus === b && r.maasto != null));
+
+const lehtiRivi = l => {
+  const L = l.lehti;
+  return "<tr><td>" + (L.tyyppi === "ohjaus"
+      ? '<strong style="color:var(--pp-ohjaus-4)">Ohjaus ihmiselle</strong> · ' + E(nimi(L.koodi))
+      : "<strong>" + E(nimi(L.perhe)) + "</strong>" +
+        (L.vaihtoehto ? " (tai " + E(nimi(L.vaihtoehto)) + ")" : "") +
+        (L.haarukka ? " · määrä haarukkana" : "")) +
+    /* Kysymysmerkki datassa tarkoittaa, ettei laskuri osaa valita — silloin
+       tarvikkeet luetellaan "tai"-listana, muuten ne tulevat kaikki yhdessä. */
+    "</td><td>" + (L.tarvikkeet && L.tarvikkeet.length
+      ? L.tarvikkeet.map(c => E(nimi(c.replace("?", "")))).join(
+          L.tarvikkeet.some(c => c.indexOf("?") >= 0) ? " tai " : " + ")
+      : "—") +
+    '</td><td class="num">' + luku(l.kpl) + "</td><td class=\"pp-ei\">" + E(l.esimerkki) + "</td></tr>";
+};
+
+const lohko = (otsikko, johdanto, sisalto) =>
+  '<div class="w"><section><div class="head"><h2>' + otsikko + "</h2>" +
+  (johdanto ? "<p>" + johdanto + "</p>" : "") + "</div>" + sisalto + "</section></div>";
+
+document.getElementById("main").innerHTML =
+
+ '<div class="w"><section><h1>Päätöspuu</h1>' +
+ '<p style="font-size:var(--fs-lede);color:var(--ink-2);max-width:66ch">Miten laskuri päätyy mihinkin tuotteeseen — ja missä kohtaa se luovuttaa ja ohjaa ihmiselle. ' +
+   'Moottori on ajettu läpi ' + luku(P.ajoja) + ' kertaa ' + E(P.ajettu) + ', ja siitä syntyi ' +
+   luku(P.lehdet.length) + ' erilaista lopputulosta. Jokainen viiva on olemassa siksi, että moottori tuottaa sen — ei siksi, että joku piirsi sen.</p>' +
+ '<div class="pp-luvut">' +
+   '<div><b>' + luku(RIVIT.length) + '</b><span>vastausyhdistelmää</span></div>' +
+   '<div><b>' + luku(P.lehdet.length) + '</b><span>erilaista lopputulosta</span></div>' +
+   '<div><b>' + prosT(pros(ohjausKpl, RIVIT.length)) + '</b><span>päätyy ihmiselle</span></div>' +
+   '<div><b>' + prosT(pros(haarukoita, RIVIT.length)) + '</b><span>antaa määrän haarukkana</span></div>' +
+ '</div>' +
+ '<div class="pp-selite">' +
+   '<span><i style="border-color:var(--pp-tuote)"></i> polku päätyy tuotteeseen</span>' +
+   '<span><i style="border-color:var(--pp-ohjaus)"></i> polku päätyy ihmiselle</span>' +
+   '<span><u style="border-top:4px dashed var(--pp-tuote)"></u> sääntö puuttuu — useampi vaihtoehto</span>' +
+   '<span><i style="border-color:var(--rule-2);border-top-width:2px"></i> runko, ei vielä lopputulosta</span>' +
+ '</div></section></div>' +
+
+ lohko("Portit järjestyksessä",
+   "Kieltäytymiset eivät ole joukko vaan jono. Kun kaksi ehtoa pätee yhtä aikaa, asiakas näkee vain ensimmäisen — " +
+   "eli sama tontti voi olla “liian jyrkkä” tai “liian iso” sen mukaan, kumpi portti on edellä. Järjestys on kysytty moottorilta ajamalla tila, jossa molemmat ehdot pätevät; sitä ei ole luettu säännöistä." +
+   (vertailematta.length
+     ? " " + (vertailematta.length === 1 ? "Yhtä paria" : vertailematta.length + " paria") +
+       " ei voi asettaa järjestykseen, koska ehdot koskevat eri rakennusta tai samaa vastausta: " +
+       vertailematta.map(p => E(nimi(p[0])) + " / " + E(nimi(p[1]))).join("; ") + "."
+     : ""),
+   '<div class="pp-kaavio">' + kaavioPortit() + "</div>" +
+   '<div class="pp-loydos on-ohjaus"><h3>' + prosT(pros(ohjausKpl, RIVIT.length)) + " vastausyhdistelmistä ei saa tuotetta</h3>" +
+   "<p>Suurin yksittäinen syy on " + E(tulosNimi(OHJAUSTULOKSET[0])).toLowerCase() + " (" +
+   luku(TULOSKPL.get(OHJAUSTULOKSET[0])) + " polkua). Luku ei ole todennäköisyys vaan kattavuus: se kertoo, kuinka suuri osa vastausavaruudesta on laskurin ulottumattomissa.</p></div>") +
+
+ lohko("Mihin kukin rakennus päätyy",
+   "Yksi rivi per rakennustyyppi, kiinteät sarakkeet. Palkin pituus on osuus sen rakennuksen omista poluista, joten rivejä voi verrata keskenään vaikka polkumäärät ovat eri. " +
+   "Viiva sarakkeessa tarkoittaa nollaa: polkua ei ole." +
+   (vaihtoehdot.length
+     ? " " + vaihtoehdot.map(nimi).join(" ja ") + " ei ole yhdenkään polun lopputulos — se esiintyy vain " +
+       "rinnalla vaihtoehtona, eikä siksi saa omaa saraketta."
+     : ""),
+   '<div class="pp-kaavio">' + kaavioMatriisi() + "</div>" +
+   (rakennusVaikutus && rakennusVaikutus.perhe && rakennusVaikutus.perhe.vertailtavia && !rakennusVaikutus.perhe.vaihtelee
+     ? '<div class="pp-loydos"><h3>' + rakennusVaikutus.perhe.verratut.map(nimi).join(" ja ") +
+       " ovat laskurille sama rakennus</h3><p>Ne ovat ainoat rakennustyypit, joilta kysytään täsmälleen samat kysymykset, ja " +
+       luku(rakennusVaikutus.perhe.vertailtavia) + " vertailussa lopputulos ei vaihdu kertaakaan. " +
+       "Muita rakennustyyppejä ei voi verrata näin, koska rakennus vaihtaa myös sen, mitä muuta kysytään.</p></div>"
+     : "")) +
+
+ lohko("Mikä kysymys ratkaisee mitäkin",
+   "Mitta on yksinkertainen: pidetään kaikki muut vastaukset samoina ja vaihdetaan vain tämä. Jos lopputulos vaihtuu, kysymys vaikuttaa. " +
+   "Näin erottuu se, mikä oikeasti ratkaisee, siitä mikä vain sattuu esiintymään samoissa poluissa.",
+   '<div class="pp-kaavio">' + kaavioVaikutus() + "</div>" +
+   '<div class="pp-loydos"><h3>Kaksi erillistä päätöstä, ei yhtä puuta</h3><p>' +
+   "Yksikään kysymys ei vaihda molempia: " + eiVaikutaPerheeseen.length +
+   " kysymystä ei vaihda pilariperhettä kertaakaan ja " + eiVaikutaTarvikkeeseen.length +
+   " ei vaihda tarviketta. Pilari valitaan tontista ja koosta, tarvike siitä mitä pilarin päälle tulee — " +
+   "ne ovat kaksi erillistä päätöstä, jotka sattuvat kulkemaan samassa lomakkeessa. " +
+   "Siksi niitä ei kannata piirtää samaan puuhun: se oli vanhan kaavion virhe, ei lukijan.</p></div>") +
+
+ lohko("Mistä tarvike tulee",
+   "Yksi kaista per vastaus. Katkoviiva tarkoittaa, ettei valintasääntöä ole missään lähteessä, jolloin laskuri näyttää kaikki mahtuvat vaihtoehdot. " +
+   "Nostokorva ei ole tässä: se tulee aina, ei minkään vastauksen kautta." +
+   (eiSaav.length
+     ? " Ilman yhtään polkua jää " + eiSaav.length + " tarviketta: " + E(eiSaav.join(", ")) + "."
+     : " Jokainen tarvike, jonka laskuri tuntee, on jonkin polun päässä — yhtään saavuttamatonta tuotetta ei ole."),
+   '<div class="pp-kaavio">' + kaavioTarvikkeet() + "</div>") +
+
+ lohko("Missä pinta-alaraja kulkee",
+   "Pinta-ala ei ole valinta vaan jatkuva suure, joten raja etsitään pyyhkäisemällä: rakennusta kasvatetaan puolen metrin askelin ja katsotaan, missä kohtaa lopputulos vaihtuu. " +
+   "Turkoosi jakso tarkoittaa, että laskuri antaa tuloksen; oranssi, että se ohjaa ihmiselle. Nuoli kertoo, että jakso jatkuu asteikon yli." +
+   (eiRajaa.length
+     ? " " + eiRajaa.map(nimi).join(", ") + " ei ole tässä: yksikään koko ei vaihda sen lopputulosta, eli pinta-alarajaa ei ole."
+     : ""),
+   '<div class="pp-kaavio">' + kaavioRajat() + "</div>") +
+
+ lohko("Kaikki lopputulokset",
+   "Yksi rivi per erilainen lopputulos — sama tieto kuin kaavioissa, luettavana taulukkona. " +
+   "Polkumäärä kertoo, kuinka monella vastausyhdistelmällä siihen päädytään: se on kattavuuden mitta, ei todennäköisyys. " +
+   "Käytössä olevat perheet: " + perheetKaytossa.join(", ") + ".",
+   '<table class="pp-taulu"><thead><tr><th>Lopputulos</th><th>Tarvikkeet</th>' +
+   '<th class="num">Polkuja</th><th>Esimerkki</th></tr></thead><tbody>' +
+   P.lehdet.map(lehtiRivi).join("") + "</tbody></table>");
+</script>
+</body>
+</html>

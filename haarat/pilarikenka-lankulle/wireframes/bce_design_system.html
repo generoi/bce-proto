@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design system — BCE Pilarimaailma, wireframet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+<!-- Tuotekuvademo piirretään samasta generaattorista kuin sivujen kuvat:
+     katalogi ei näytä kopiota vaan komponentin itsensä. -->
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
+<script src="palkkikuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
+<script src="tuotevalitsin.js"></script>
+<style>
+/* Katalogin oma kehys. Nämä eivät kuulu bce-v4.css:ään: ne kuvaavat komponentteja,
+   eivät ole komponentteja. Sivu ei ole sivuston sivu vaan suunnittelun työväline. */
+.ds-note{background:var(--dark);color:#fff;font-size:14px}
+.ds-note .w{padding-top:10px;padding-bottom:10px;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.ds-note b{font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em}
+.ds-note a{color:#e9e7e5}
+.ds-toc{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;font-weight:600;margin:0;padding:0;list-style:none}
+.ds-toc a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding:10px 0}
+.ds-item{padding:34px 0;border-top:1px solid var(--rule)}
+.ds-item:first-of-type{border-top:0;padding-top:0}
+.ds-meta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 40px;margin-bottom:22px;align-items:start}
+.ds-meta h3{font-size:19px}
+.ds-meta code{font-family:ui-monospace,monospace;font-size:13px;background:#fff;border:1px solid var(--rule);border-radius:3px;padding:2px 7px;color:var(--ink)}
+.ds-meta .on{font-size:13px;color:var(--ink-3);margin:8px 0 0}
+.ds-meta .on span{display:inline-block;border:1px solid var(--rule-2);border-radius:3px;padding:2px 8px;margin:0 4px 4px 0;background:#fff}
+.ds-meta p{font-size:15px;color:var(--ink-2);margin:0}
+.ds-meta p+p{margin-top:8px}
+.ds-meta .merge{color:var(--accent-dark);font-weight:600}
+.ds-demo{background:#fff;border:1px solid var(--rule);border-radius:4px;padding:28px}
+.ds-demo.paper{background:var(--paper)}
+.ds-demo>*+*{margin-top:0}
+.ds-row{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
+.ds-static .bar{position:static;display:flex;max-width:420px;border:1px solid var(--rule-2);border-radius:4px}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.sw div{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:#fff;font-size:13px}
+.sw i{display:block;height:64px}
+.sw b{display:block;padding:8px 10px 0;font-family:ui-monospace,monospace;font-weight:600;font-size:13px}
+.sw span{display:block;padding:2px 10px 10px;color:var(--ink-2)}
+.spec{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 24px;align-items:baseline}
+.spec code{font-family:ui-monospace,monospace;font-size:13px;color:var(--ink-3)}
+.scale{display:grid;gap:8px}
+.scale div{display:grid;grid-template-columns:60px minmax(0,1fr);gap:14px;align-items:center;font-size:13px;color:var(--ink-3)}
+.scale i{display:block;height:14px;background:var(--accent-dark);border-radius:2px}
+/* Kuvademot: rivi, jossa kuvat seisovat samalla tasolla. Alareunaan tasaus on
+   se, mikä tekee yhteisen mittakaavan näkyväksi — keskitettynä matala AP kelluisi
+   korkean KP:n puolivälissä ja rivi kertoisi päinvastoin kuin on tarkoitus. */
+.ds-kuvarivi{display:flex;flex-wrap:wrap;gap:var(--s5) var(--s6);align-items:flex-end;justify-content:center}
+.ds-kuvarivi>div{text-align:center}
+.ds-kuvarivi svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.ds-kuvarivi b{display:block;font-family:var(--ff-d);text-transform:uppercase;
+  font-size:15px;letter-spacing:.03em;margin-top:var(--s2);color:var(--ink-2)}
+.ds-mk svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.ds-legacy{font-size:13px;color:var(--ink-3);margin:14px 0 0;line-height:1.7}
+.ds-legacy code{font-family:ui-monospace,monospace;background:var(--paper-2);padding:1px 6px;border-radius:2px}
+.ds-status{font-size:13px;font-weight:600;padding:2px 8px;border-radius:3px;display:inline-block;margin-left:6px}
+.ds-status.ok{background:#e4efe4;color:#24532a}.ds-status.todo{background:#f7ead9;color:#7a3a10}.ds-status.dec{background:var(--paper-2);color:var(--ink-2);border:1px solid var(--rule-2)}
+@media(max-width:820px){.ds-meta{grid-template-columns:1fr}.ds-demo{padding:18px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="ds-note"><div class="w"><b>Design system, wireframe-taso</b><span>Katalogi siitä mitä <code style="color:#fff">bce-v4.css</code> jo sisältää. Säännöt ja siirtotaulukko: <a href="DESIGN-SYSTEM.md">DESIGN-SYSTEM.md</a>. Kuori ylä- ja alatunnisteena on itse komponentti.</span></div></div>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+(function(){
+"use strict";
+const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+SPECSHELL(E,{crumb:[["Etusivu","/"],["Design system",null]],bar:false});
+
+/* Sivut, joilla komponentti on käytössä. Lyhenteet toistuvat katalogissa. */
+const P={etu:"Etusivu",pil:"Pilarit-hubi",tp:"TP-perhesivu",ak:"Autokatos",jeki:"JeKi-sokkeli",tavat:"Perustustavat",ref:"Referenssi",a:"Tarvikkeet A",b:"Tarvikkeet B",sivu:"Luurankosivu",kuori:"Kuori"};
+const on=(...k)=>'<p class="on">'+k.map(x=>"<span>"+E(P[x]||x)+"</span>").join("")+"</p>";
+const ph=(t,mod)=>'<span class="ph '+(mod||"ph-43")+'">'+E(t)+"</span>";
+const arrow=t=>E(t)+" →";
+const st=(k,t)=>'<span class="ds-status '+k+'">'+E(t)+"</span>";
+
+/* Yksi katalogikohta: nimi, luokka, käyttöpaikat, sääntö, demo. */
+function item(o){
+  return '<div class="ds-item" id="'+E(o.id)+'"><div class="ds-meta"><div><h3>'+E(o.n)+(o.status?st(o.status[0],o.status[1]):"")+"</h3>"+
+    "<p><code>"+E(o.c)+"</code></p>"+(o.on||"")+"</div>"+
+    "<div>"+(o.rule?"<p>"+o.rule+"</p>":"")+(o.merge?'<p class="merge">'+o.merge+"</p>":"")+"</div></div>"+
+    (o.demo?'<div class="ds-demo'+(o.paper?" paper":"")+(o.stat?" ds-static":"")+'">'+o.demo+"</div>":"")+
+    (o.legacy?'<p class="ds-legacy">'+o.legacy+"</p>":"")+"</div>";
+}
+const sect=(id,h,p,items)=>'<div class="w" id="'+id+'"><section><div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+p+"</p>":"")+"</div>"+items.map(item).join("")+"</section></div>";
+
+/* ---- Värit: kontrasti lasketaan renderöidyistä arvoista, ei luvata. ---- */
+const hex2=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const lum=([r,g,b])=>{const f=c=>{c/=255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)};return .2126*f(r)+.7152*f(g)+.0722*f(b)};
+const cr=(a,b)=>{const x=lum(hex2(a)),y=lum(hex2(b));return ((Math.max(x,y)+.05)/(Math.min(x,y)+.05)).toFixed(2)};
+const COL=[["--accent","#e25d25","Ensisijainen painike, pilarit piirustuksissa. Ei tekstinä."],
+  ["--accent-dark","#b8420f","Oranssi pienessä tekstissä: linkit, numerointi, kuittaus."],
+  ["--ink","#252425","Leipäteksti ja otsikot."],["--ink-2","#515151","Ingressit ja selitteet."],
+  ["--ink-3","#6f6d6b","Pienet selitteet, kuvapaikat. Heikoin sallittu teksti."],
+  ["--dark","#323132","Ylä- ja alatunniste."],["--paper","#faf9f7","Sivun tausta."],
+  ["--paper-2","#f2f0ec","Paneelit, kuvapaikat, valittu tila."],
+  ["--rule","#e1ded9","Erottimet."],["--rule-2","#cfcac3","Kehykset, katkoviivat."]];
+const swatches='<div class="sw">'+COL.map(c=>'<div><i style="background:'+c[1]+'"></i><b>'+E(c[0])+"</b><span>"+E(c[1])+"<br>"+E(c[2])+
+  "<br>paperilla "+cr(c[1],"#faf9f7")+":1 · valkoisella "+cr(c[1],"#ffffff")+":1</span></div>").join("")+"</div>";
+
+/* ---- Typografia: koot luetaan laskennasta renderöinnin jälkeen. ---- */
+const type='<div class="spec">'+
+  '<code>h1</code><h1 data-fs>Valmiit perustuspilarit</h1>'+
+  '<code>.hero h1</code><div class="hero" style="display:block;padding:0"><h1 data-fs style="margin:0">Valmiit perustuspilarit</h1></div>'+
+  '<code>.hero-spec h1</code><div class="hero-spec"><h1 data-fs style="margin:0">BCE-pilarit — valmis betoniperustus ilman valua</h1></div>'+
+  '<code>h2</code><h2 data-fs>Perustus ei ole projektin hitain vaihe</h2>'+
+  '<code>.subh</code><p class="subh" data-fs style="margin:0">Terassit, pienmökit ja saunat</p>'+
+  '<code>h3</code><h3 data-fs>Pilarikenkä</h3>'+
+  '<code>.lede</code><p class="lede" data-fs style="margin:0">Pilarit tulevat tehtaalta valmiiksi valettuina, joten omaa valua ei tarvita.</p>'+
+  '<code>body</code><p data-fs style="margin:0">Leipäteksti 17 px, riviväli 1,6, enintään 68 merkkiä rivillä.</p>'+
+  '<code>.small (15)</code><p data-fs style="margin:0;font-size:15px;color:var(--ink-2)">Selite kortissa ja listarivillä.</p>'+
+  '<code>.fine</code><p class="fine" data-fs style="margin:0">Pieni huomautus taulukon alla.</p>'+
+  '<code>.lbl</code><p class="lbl" data-fs style="margin:0">Valitse korkeus</p>'+
+  '<code>.btn</code><span class="btn btn-2" data-fs>Painikkeen teksti</span>'+
+  "</div>";
+
+const spacing='<div class="scale">'+[["--s1","4"],["--s2","8"],["--s3","12"],["--s4","16"],["--s5","24"],["--s6","32"],["--s7","48"],["--s8","64"]]
+  .map(s=>"<div><span>"+s[0]+"</span><i style=\"width:"+(s[1]*4)+"px\"></i></div>").join("")+
+  '</div><p class="fine" style="margin-top:16px">Osioiden väli 60 px (mobiili 44), lohkon palstaväli 48 px (hero 56), kortin sisäväli 24 px, listarivin pystyväli 13 px. Rytmi syntyy sisällöstä, ei osioiden eri väleistä: osio on aina 60 px.</p>';
+
+/* Kokovalitsimen demo on elävä: katalogi näyttää komponentin itsensä, ei kuvaa
+   siitä. Tekstit ovat samat kuin TP-sivulla. */
+const DSVAL={perhe:"TP",id:"ds",otsikko:"Valitse korkeus",tyhjenna:"Kaikki koot",yks:"mm",
+  mitat:[["Korkeus","H1"],["Paino","paino"],["Pohjalaatta","D1","nelio"],["Pilarin pää","D2","nelio"]],
+  /* Lasketut rivit ensin, sitten sivun omat vakiorivit samaan taulukkoon. */
+  lisatiedot:[["Suositeltu enimmäiskuormitus","1 600 kg"],["Kierre","M20-sisäkierre"],["CE-merkintä","Kyllä"]],
+  painot:{"TP-200":"43 kg","TP-300":"49 kg","TP-400":"55 kg","TP-500":"61 kg","TP-600":"67 kg"}};
+
+/* ---- Kuvat: viisi generaattoria, yksi kamera ----------------------------
+   Demot piirretään samoista tiedostoista kuin sivujen kuvat. Katalogi ei näytä
+   kopiota vaan komponentin itsensä — jos mitta muuttuu, tämä sivu muuttuu.
+   Kaikki kuvat ovat koristeita (aria-hidden): otsikko ja sääntö kertovat mistä
+   on kyse, eikä ruudunlukija toista sitä. */
+const kuvaDemo=(function(){
+  const TKU=window.tarvikekuva, YKU=window.yhdistelmakuva, KAN=window.tuotekuva.kangas;
+  const rivi=(kuvat,tunnukset)=>'<div class="ds-kuvarivi">'+kuvat.map((k,i)=>
+    "<div>"+k+"<b>"+E(tunnukset[i])+"</b></div>").join("")+"</div>";
+
+  /* Neljä perhettä yhteen mittakaavaan ja yhdelle kankaalle. */
+  const perheet=window.tuotekuva.rivi(window.tuotekuva.perheet,
+    {korkeus:200,koriste:true,merkinta:false,id:"dsp"});
+
+  /* Kymmenen tarviketta, yksi mittakaava. Silhuetit ovat 150…371 mm, joten
+     pienin ei katoa isoimman viereen. */
+  const tavaimet=TKU.osat();
+  const tskaala=150/Math.max.apply(null,tavaimet.map(k=>TKU.laajuus(k)));
+  const tkuvat=KAN(tavaimet.map(k=>TKU({osa:k,skaala:tskaala,koriste:true,id:"dst-"+k})));
+
+  /* Kolme palkkikokoa. kiintea:true, muuten 48 × 123 näyttää yhtä korkealta
+     kuin 48 × 198 ja kuva tekee päinvastoin kuin pitäisi. */
+  const pavaimet=window.palkkikuva.koot();
+  const pkuvat=KAN(pavaimet.map(k=>window.palkkikuva(
+    {koko:k,korkeus:120,kiintea:true,koriste:true,id:"dsb-"+k})));
+
+  return {
+    mk:'<div class="ds-mk">'+window.mittakaavio({perhe:"TP",id:"dsmk"})+"</div>",
+    pilarit:rivi(perheet.map(o=>o.svg),perheet.map(o=>window.tuotekuva.koodi(o.perhe,o.koko))),
+    tarvikkeet:rivi(tkuvat,tavaimet.map(k=>TKU.tieto(k).koodi)),
+    palkit:rivi(pkuvat,pavaimet.map(k=>window.palkkikuva.nimi(k))),
+    parit:rivi([YKU({pari:"pik-50-70-palkki",korkeus:200,koriste:true,id:"dsy1"}),
+                YKU({pari:"pak-100x150",korkeus:200,koriste:true,id:"dsy2"}),
+                YKU({pari:"tl-150x150",korkeus:200,koriste:true,id:"dsy3"})],
+               ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta"]),
+    /* Asennuskuvat yhteiseen mittakaavaan ja yhdelle kankaalle. Tasaus «ala»,
+       koska neljällä kuvalla on nyt yhteinen alataso: pilarin rajaus. */
+    asennus:(function(){
+      const kuvaukset=[{pari:"pik-50-70-palkki"},{pari:"pak-100x150"},
+                       {pari:"tl-150x150"},{osa:"nostokorva-m20"}];
+      const AK=window.asennuskuva;
+      const sk=190/Math.max.apply(null,kuvaukset.map(k=>AK.laajuus(k)));
+      return rivi(KAN(kuvaukset.map((k,i)=>AK(Object.assign({},k,
+               {skaala:sk,koriste:true,id:"dsa"+i}))),"ala"),
+        ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta",
+         "Nostokorva M20"]);
+    })(),
+    /* Oma piirtokutsu eikä sama SVG kahdesti: kuvan sisäiset id:t (rakeisuus,
+       valoliuku, varjosuodin) muodostetaan id-etuliitteestä, ja sama kuva kahdesti
+       samassa dokumentissa tarkoittaa 14 kaksoiskappaletta — silloin toisen kuvan
+       suodin osuu ensimmäiseen. Tämä nähtiin tällä sivulla ennen kuin korjattiin. */
+    kortit:'<div class="series series-4" style="max-width:none">'+
+      window.tuotekuva.rivi(window.tuotekuva.perheet,
+        {korkeus:200,koriste:true,merkinta:false,id:"dsk"})
+        .map(o=>'<div class="serie"><div class="im piirros">'+o.svg+
+          "</div><h3>"+E(o.perhe)+"-pilari</h3></div>").join("")+"</div>"
+  };
+})();
+
+document.getElementById("main").innerHTML=
+'<div class="w"><section class="topline" style="padding-bottom:20px"><h1>Design system</h1>'+
+  '<p class="lede">Yksi CSS, yksi kuori, kanoninen nimi jokaiselle tehtävälle. Tämä sivu renderöi komponentit samasta <code>bce-v4.css</code>-tiedostosta kuin sivut, joten se ei voi valehdella niistä.</p>'+
+  '<ul class="ds-toc"><li><a href="#tokenit">Tokenit</a></li><li><a href="#primitiivit">Primitiivit</a></li><li><a href="#layout">Layout</a></li><li><a href="#karki">Sivun kärki</a></li><li><a href="#kortit">Kortit ja ruudukot</a></li><li><a href="#rivit">Rivilistat</a></li><li><a href="#data">Taulukot ja tiedot</a></li><li><a href="#kuvat">Kuvat</a></li><li><a href="#toiminnot">Valitsimet ja toiminnot</a></li><li><a href="#kuori">Kuori</a></li></ul>'+
+"</section></div>"+
+
+sect("tokenit","Tokenit","Arvot ovat <code>:root</code>-lohkossa. Uusi sääntö valitsee arvon asteikolta; vanhat pikseliarvot siirretään lohko kerrallaan.",[
+  {id:"varit",n:"Värit",c:"--accent --accent-dark --ink --ink-2 --ink-3 --dark --paper --paper-2 --rule --rule-2",
+   rule:"Puhdasta mustaa tai valkoista ei käytetä tekstissä. Oranssi <code>--accent</code> on varattu ensisijaiselle painikkeelle ja pilareille piirustuksissa; kaikkialla muualla oranssi on <code>--accent-dark</code>. Jos oranssi näkyy sivulla kuudessa paikassa, se on rikki.",
+   merge:"Valkoinen painikkeen teksti oranssilla on 3,6:1. Se kelpaa vain vähintään 19 px:n versaalitekstille. Navigaation .btn-s (16 px) ja alapalkin painike (15 px) alittavat tämän.",
+   demo:swatches},
+  {id:"typo",n:"Typografia",c:"--ff (Raleway) --ff-d (Oswald) --fs-fine --fs-small --fs-body --fs-lede --fs-h3 --fs-h2 --fs-h1",
+   rule:"Otsikot Oswald 600 versaalina, leipäteksti Raleway 400/600. Askelten suhde vähintään 1,25. Rivinpituus enintään 68 merkkiä (<code>p{max-width:68ch}</code>).",
+   merge:"Kaksi H1-kokoa (.hero 38–64, .hero-spec 30–46) ja kolme H2-kokoa (23, 26, 30). Pieni H2 (<code>h2.lbl</code>) on selite, ei otsikko: pidä yksi H2-koko per sivu.",
+   demo:type},
+  {id:"valit",n:"Välit",c:"--s1 … --s8",rule:"Kahdeksan askelta. Inline <code>style=\"margin-top:26px\"</code> sivun koodissa tarkoittaa, että komponentti puuttuu: etusivulla niitä on 14, ja lähes kaikki ovat lohkon lopettavan .more-linkin päällä.",
+   merge:"Puuttuva komponentti: lohkon lopetuslinkki omalla ylävälillään. Ehdotus <code>p.next</code>, margin-top --s5.",
+   demo:spacing},
+  {id:"kulmat",n:"Kulmat, viivat, kosketus, liike",c:"--r-ctl 3px · --r-card 4px · --rule 1px · --tap 44px · --ease",
+   rule:"Painikkeet ja kentät 3 px, kortit ja paneelit 4 px. Yksi viivanpaksuus. Kosketuskohde 44 × 44 px; rivilinkeissä vähintään 24 px osuma-alue paddingilla, jotta rivikorkeus ei kasva. Liike vain ease-out, ei pomppua.",
+   demo:'<div class="ds-row"><span class="btn btn-2">3 px</span><span class="ph" style="width:160px;height:64px">4 px</span><span class="more" href="#">.more, 44 px</span><span class="cp">Kopioi</span></div>'},
+  {id:"bp",n:"Katkaisukohdat",c:"980 · 820 · 560",
+   rule:"980: navigaatio valikoksi, kaksipalstaiset lohkot yhteen. 820: ruudukot kahteen sarakkeeseen. 560: yhteen sarakkeeseen. Näiden lisäksi ei uusia.",
+   merge:"CSS:ssä on nyt 15 eri arvoa (1160, 1100, 1080, 980, 900, 860, 820, 760, 700, 640, 600, 560, 520, 430, 420). Ne siirretään kolmeen sitä mukaa kun lohko käydään läpi; poikkeus perustellaan kommentissa kuten .pick-how (1160).",
+   demo:'<p class="fine" style="margin:0">Kokeile: kaventamalla ikkunaa tämän sivun lohkot vaihtavat sarakemäärää samoista säännöistä kuin sivuilla.</p>'}
+])+
+
+sect("primitiivit","Primitiivit","Pienimmät osat, joista lohkot kootaan. Näillä on yksi nimi ja yksi ulkoasu joka sivulla.",[
+  {id:"btn",n:"Painikkeet",c:".btn .btn-1 .btn-2 .btn-s .wide",on:on("etu","pil","tp","a","b","kuori","ak"),
+   rule:"Yksi <code>.btn-1</code> per näkymä, ja se nimeää lopputuloksen. Toissijainen toiminto on .btn-2 vain kun se on aito rinnakkainen toiminto (alapalkki, hakukenttä); muuten .more-tekstilinkki. Sama toiminto saa saman nimen joka sivulla.",
+   merge:"Päätös 16.9.: konfiguraattori on joka paikassa Laske pilarien määrä, myös kuoressa (aiemmin Löydä sopiva pilari) ja B:llä (aiemmin Laske tarvikkeiden määrä). Alle 19 px:n .btn-1 (kuoren .btn-s, alapalkki) saa pohjaksi --accent-dark, 5,5:1. Avoin: Isompi kohde -lohkon nappi on Pyydä tarjous (etusivu, hubi) ja Ota yhteyttä (TP, B) samaan osoitteeseen.",
+   demo:'<div class="ds-row"><a class="btn btn-1" href="#">Laske pilarien määrä</a><a class="btn btn-2" href="#">Mistä ostat</a><a class="btn btn-1 btn-s" href="#">Pieni .btn-s</a><button class="lnk" type="button">.lnk, painike linkin näköisenä</button></div><div style="max-width:320px;margin-top:18px"><a class="btn btn-1 wide" href="#">.wide ostolaatikossa</a></div>'},
+  {id:"more",n:"Toissijainen linkki",c:".more (ent. .hero-2)",on:on("etu","pil","tp","a","b","ak"),status:["ok","nimetty 16.9."],
+   rule:"Lohkon lopetus ja jokainen toissijainen reitti. Nuoli → kun linkki vie toiselle sivulle, ↓ kun se on ankkuri samalla sivulla. Aina inline-flex ja 44 px korkea, paitsi leipätekstin sisällä (<code>.fine .more</code>).",
+   demo:'<div class="ds-row"><a class="more" href="#">'+arrow("Katso käyttökohteet")+'</a><a class="more" href="#">Hyppää mittoihin ↓</a></div><p class="fine" style="margin-top:14px">Pystykuorma ja epäkeskisyys ovat suunnittelijan tiedoissa. <a class="more" href="#">'+arrow("Kuormakestävyydet")+"</a></p>"},
+  {id:"cp",n:"Kuittaava painike",c:".cp [data-copied] [data-failed] + .sr[role=status]",on:on("tp","b"),
+   rule:"Toiminto kuittaa itsensä sanoin: Kopioi → Kopioitu, ja sama teksti aria-live-alueelle. Epäonnistuminen kertoo itsestään. Vähintään 44 px korkea.",
+   demo:'<div class="ds-row"><button class="cp" type="button" id="dscp">Kopioi</button><span class="sku" style="margin:0"><span class="k">TP-400 125/450</span><span class="e">EAN 6430000000400</span><button class="cp" type="button">Kopioi</button></span></div>'},
+  {id:"lbl",n:"Selite (eyebrow)",c:".lbl · h2.lbl",on:on("tp","a","b"),status:["ok","kanoninen 16.9."],
+   rule:"13 px versaali, harvennus .06em, --ink-3. Selite otsakkeelle joka ei kilpaile H2:n kanssa: ostolaatikon kentät, hakemisto, latauskortin tyyppi, taulukon sarakeotsikot.",
+   merge:"Sama tyyli oli määritelty kuudesti (.box .lbl, h2.lbl, .idx .lbl, .dl .ty, table.data thead th, footer h3). Kolme jälkimmäistä käyttävät yhä omaa sääntöään.",
+   demo:'<p class="lbl">Valitse korkeus</p><h2 class="lbl">Sopii näihin kohteisiin</h2><span class="dl" style="display:block;max-width:220px"><a href="#"><span class="ty">PDF · FI, SV, EN</span><b>Asennusperiaate A-601</b></a></span>'},
+  {id:"tbd",n:"Merkinnät",c:".tbd · .fine · code",on:on("etu","pil","tp","a","b","sivu","ak"),
+   rule:"Puuttuva tieto on <code>[TÄYTETTÄVÄ]</code>, ei arvaus. Syy kirjoitetaan koodikommenttiin, ei sivulle. .fine on huomautus taulukon tai lohkon alla, enintään 76 merkkiä rivillä. Tuotekoodi on aina <code>code</code>-elementissä, jotta se erottuu ja kopioituu.",
+   merge:"Tarvikkeet A:ssa on 37 merkintää, joista 27 on kolme samaa avointa kenttää yhdeksän kertaa. Toistuva tuntematon on parempi kertoa kerran lohkon alussa kuin joka kortissa.",
+   demo:'<p style="margin:0">Paino '+T("[TÄYTETTÄVÄ]")+'. Tuotekoodi <code class="k" style="font-family:ui-monospace,monospace;background:var(--paper-2);padding:2px 7px;border-radius:2px;font-size:14px">TP-400 125/450</code></p><p class="fine">Mitat millimetreinä. B1 on pilarin päässä oleva valmis sisäkierre.</p>'},
+  {id:"ph",n:"Kuvapaikka",c:".ph .ph-43 .ph-1610 .ph-169 .ph-1",status:["ok","kanoninen 16.9."],
+   rule:"Katkoviivalaatikko, teksti kertoo mitä kuvassa on, ei miksi. Kuvasuhde modifierilla, ei min-heightia. Kuvapaikka ei saa olla lohkon suurin elementti ellei kuva ole lohkon sisältö.",
+   merge:"Sama laatikko on määritelty 15 kertaa lohkokohtaisesti (.hero-img, .quote .im, .case .im, .serie .im, .side .im, .pitem .im, .gal .im, .tim, .plot .im, .flow .st .im, .logos .lg, .thumbs button, .pick .im, .combo .im, .lgrow span). Uudet lohkot käyttävät .ph:ta; vanhat siirretään.",
+   demo:'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">'+ph("Kuva: TP-pilari 4:3")+ph("Kuva: kohde 16:10","ph-1610")+ph("Video: asennus 16:9","ph-169")+ph("Tuotekuva 1:1","ph-1")+"</div>"},
+  {id:"field",n:"Kentät",c:".search · .guide input · .find input · .acts input",on:on("etu","pil","kuori","ak"),
+   rule:"Yksi kenttätyyli: 16 px, 13/14 px sisäväli, 3 px kulma. Nimiö on placeholder ja aria-label, koska kentät ovat yhden kentän lomakkeita. Painike kentän vieressä on .btn-1 vain jos se on sivun ensisijainen toiminto; muuten .btn-2.",
+   merge:"Kolme määritelmää samalle kentälle (.guide, .find, .acts). Yhdistettävä yhdeksi .field-luokaksi.",
+   demo:'<form class="find" style="margin:0;padding:0;border:0" onsubmit="return false"><input type="search" aria-label="Syötä tuotekoodi" placeholder="Syötä tuotekoodi, esim. KP-900"><button class="btn btn-2" type="submit">Etsi</button></form>'}
+])+
+
+sect("layout","Layout","Sivu on <code>.w</code>-kehyksiä, joissa on yksi <code>section</code>. Osiot erottaa 1 px viiva; rytmi tulee sisällön vaihtelusta, ei väleistä.",[
+  {id:"head",n:"Osion otsake",c:".w > section > .head (h2 + p)",on:on("etu","pil","tp","a","b","ak"),
+   rule:"H2 on väite, ei aihe. Ingressi on yksi kappale, --ink-2, enintään 62 merkkiä rivillä. Otsakkeen alla yksi lohko; jos otsikkoon tarvitaan ja-sana, osioita on kaksi.",
+   demo:'<div class="head" style="margin-bottom:0"><h2>Perustus ei ole projektin hitain vaihe</h2><p>Valettu perustus vie kaksi työpäivää ja kuivumisajan päälle. BCE-pilarit nostetaan paikalleen ja rakentaminen jatkuu samana päivänä.</p></div>'},
+  {id:"side",n:"Mediapari",c:".side · .side.flip · .side .im · .side .uses · .side .cmp · .head h2 .h2b",on:on("etu","pil","tp","a","ak"),
+   rule:"Teksti ja media rinnakkain, media oikealla. <code>.flip</code> kääntää median vasemmalle kun media on lohkon sisältö (video). Kaksi .side-lohkoa peräkkäin käännetään eri suuntiin. Mobiilissa teksti ensin.",
+   merge:"Kuollutta rinnakkaista: .two .top .build .buy .close .combo .guide määrittelevät saman kaksipalstaisen lohkon eri väleillä (44/48/56) ja katkaisukohdilla (820/900/980). Vain .side ja .guide ovat käytössä.",
+   demo:'<div class="side"><div><div class="head"><h2>JeKi-sokkeli <span class="h2b">umpinainen alareuna ilman valua</span></h2><p>JeKi on valmis elementtisokkeli: se seisoo vapaasti, eikä sitä tarvitse tukea erikseen.</p></div><ul class="uses"><li>Asennusvalmis tehtaalta</li><li>Mekaaninen liitos, ei saumavalua</li></ul><p class="cmp"><b>Pilarit vai JeKi?</b> Valitse pilarit, kun rakennuksen alle saa jäädä avointa tilaa. Valitse JeKi, kun haluat umpinaisen reunan: huvilat ja mökit, autokatokset.</p><p style="margin:18px 0 0"><a class="more" href="#">'+arrow("Katso JeKi-sokkeli")+'</a></p></div><div class="im">Kuva: JeKi-sokkeli asennettuna</div></div>'},
+  {id:"band",n:"Toimintopaneeli",c:".band (h2 p + .btn-1 .sub)",on:on("etu","pil","tp","b"),
+   rule:"Rajattu paneeli yhdelle toiminnolle, jonka kohderyhmä on eri kuin sivun (isompi kohde, tarjouspyyntö). Ei sivun ensisijaiselle toiminnolle. Painikkeen nimi on sama joka sivulla.",
+   demo:'<div class="band"><div><h2>Isompi kohde tai kysyttävää?</h2><p>Suuremmat tilaukset ja projektikohteet hoituvat suoraan meidän kauttamme.</p></div><div><a class="btn btn-1" href="#">Pyydä tarjous</a><p class="sub">'+T("[TÄYTETTÄVÄ]")+"</p></div></div>"},
+  {id:"cfg",n:"Konfiguraattoripaneeli",c:".cfg (.head .steps .act .shot)",on:on("etu","pil","tp","b"),
+   rule:"Sivun ensisijainen toiminto omana lohkonaan, aina sama kuva ja sama painikkeen nimi. Teksti ja toiminto vasemmalla, kuva oikealla; mobiilissa kuva ensin. Kuva on läpinäkyvä PNG paneelin pohjavärillä.",
+   demo:'<div class="cfg"><div><div class="head"><h2>Näet heti montako pilaria ja mitkä tarvikkeet</h2><p>Kerro mitä rakennat ja kohteen mitat. Saat sijoittelukaavion, pilarimäärän ja tarvikelistan.</p></div><p class="act"><a class="btn btn-1" href="#">Laske pilarien määrä</a><span class="sub">Vastaat muutamaan kysymykseen kohteestasi.</span></p></div><img class="shot" src="kuvat/konfiguraattori-isometric-c.png" alt="Konfiguraattorin tulosnäkymä puhelimessa" width="3200" height="1800" loading="lazy"></div>',paper:true},
+  {id:"pro",n:"Kapea nosto",c:".pro-strip",on:on("etu"),
+   rule:"Yksi lause ja yksi linkki toiselle yleisölle. Viivat ylä- ja alapuolella, ei paneelia.",
+   demo:'<div class="pro-strip" style="padding:24px 0"><div><h2 style="font-size:23px">Rakennatko ammatiksesi tai myytkö BCE-tuotteita?</h2><p>Kantavuustaulukot, mitoitustiedot, CE-dokumentit ja tuotekoodit.</p></div><div><a class="more" href="#">'+arrow("Ammattilaisten osio")+"</a></div></div>"}
+])+
+
+sect("karki","Sivun kärki","Viidellä sivulla on viisi erilaista ensimmäistä ruutua. Kolme riittää: kuvahero, tuotenäkymä ja tekstikärki. Kärjessä on aina yksi H1 alle kymmenellä sanalla ja yksi visuaalisesti hallitseva toiminto.",[
+  {id:"hero",n:"Kuvahero",c:".hero (h1 .lede .cta .trust .lgrow) · .hero-spec (pitkä H1) · .hero-img",on:on("etu","pil","ak"),
+   rule:"Otsikko sanoo mitä tuote on kävijän hakusanalla. Yksi .btn-1, toissijainen on .more. Kuva näyttää tuotteen käytössä. Mobiilissa kuva nousee ensin (order:-1), mikä painaa H1:n 445–600 px:n syvyyteen.",
+   merge:"Pilarit-hubilla kärjessä on painike ja kaksi ankkurilinkkiä (3 valintaa); etusivulla painike ja linkki (2). Sama lohko, kaksi rakennetta.",
+   demo:'<div class="hero" style="padding:0"><div><h1>Valmiit perustuspilarit</h1><p class="lede">Pilarit tulevat tehtaalta valmiiksi valettuina, joten omaa valua ei tarvita.</p><div class="cta"><a class="btn btn-1" href="#">Laske pilarien määrä</a><a class="more" href="#">'+arrow("Katso käyttökohteet")+'</a></div><p class="trust">Myydään rautakaupoissa<span class="lgrow"><span>Logo: Hartman</span><span>Logo: K-Rauta</span></span></p></div><div class="hero-img">Hero-kuva: valmis terassi, jonka alta pilarit näkyvät</div></div>',paper:true},
+  {id:"shop",n:"Tuotenäkymä",c:".shop (.gal .thumbs · h1 .subh .lede · .uses · .box .sizes .sku .dealers)",on:on("tp"),
+   rule:"Verkkokaupan konventio: galleria vasemmalla, tuotetiedot ja ostolaatikko oikealla. Kokovalinta ei ole esivalittu eikä vieritä. Ostolaatikossa on yksi .btn-1 ja jälleenmyyjät painikkeina.",
+   merge:"Tarvikkeet B:n .plot on tämän lohkon tiivis toisto: sama kentät ja järjestys. Jos B valitaan, .plot ja .shop dokumentoidaan yhdeksi tuotelohkoksi kahdella tiheydellä.",
+   demo:'<div class="shop" style="padding:0"><div class="col"><div class="gal" style="position:static"><div class="im">Tuotekuva: TP-pilari asennettuna</div><div class="thumbs"><button type="button" aria-pressed="true">Kuva 1</button><button type="button" aria-pressed="false">Kuva 2</button><button type="button" aria-pressed="false">Kuva 3</button></div></div></div><div><h1>TP-pilari</h1><p class="subh">Terassit, pienmökit ja saunat</p><p class="lede">BCE:n yleisin perustuspilari. Kaksi ihmistä nostaa paikalleen.</p><h2 class="lbl">Sopii näihin kohteisiin</h2><ul class="uses"><li><a href="#">Terassit ja kuistit</a></li><li><a href="#">Piha- ja rantasaunat</a></li></ul><div class="box"><p class="lbl">Valitse korkeus</p><div class="sizes"><button type="button" aria-pressed="false"><b>TP-200</b><span>43 kg</span></button><button type="button" aria-pressed="false"><b>TP-400</b><span>55 kg</span></button><button type="button" aria-pressed="false"><b>TP-600</b><span>67 kg</span></button></div><a class="btn btn-1 wide" href="#">Laske pilarien määrä</a><p class="lbl">Osta jälleenmyyjältä</p><div class="dealers"><a href="#">Hartman</a><a href="#">K-Rauta</a><a href="#">Soraterminaali</a><a href="#">Stark</a></div><p class="fine">Hinnat ja saatavuus jälleenmyyjillä.</p></div></div></div>',paper:true},
+  {id:"topline",n:"Tekstikärki",c:".topline (h1 .lede) · .lead (h1 .lede .cta + .idx)",on:on("a","b"),
+   rule:"Kun sivu on työkalu tai luettelo, kärki on H1 ja yksi kappale, jotta seuraava lohko nousee ruudun alareunaan. .lead lisää oikealle hakemiston.",
+   merge:"A:lla ei ole kärjessä toimintoa lainkaan; B:n ensisijainen painike Osta jälleenmyyjältä on ankkuri saman sivun alaosaan. Toinen puuttuu, toinen on väärä väline. Kun A/B ratkaistaan, tästä jää yksi.",
+   demo:'<div class="topline" style="padding:0"><h1>Pilarien kiinnitystarvikkeet</h1><p class="lede">Kiinnike valitaan kannatinpalkin mitan ja halutun ulkonäön mukaan. Kaikkiin BCE-pilareihin sopivat samat tarvikkeet.</p></div>',paper:true}
+])+
+
+sect("kortit","Kortit ja ruudukot","Kortti on oikea väline kun kohteet ovat rinnakkaisia valintoja. Kaksi ruudukkoa peräkkäin on kielletty, ja identtinen ikoni + otsikko + teksti -ruudukko on mallipohjan tunnusmerkki.",[
+  {id:"pick",n:"Valintakortti",c:".pick a (.im .nm) · .pick-tight · .pick-parts (.fn .cx)",on:on("etu","pil"),
+   rule:"Kuva ja nimi, koko kortti on linkki. Käyttökohdevalinta on tämän lohkon ainoa käyttö. .pick-parts lisää kaksi tietoriviä (mitä tekee, missä yhteydessä).",
+   demo:'<div class="pick pick-tight" style="margin:0">'+["Terassi","Autokatos","Sauna"].map(x=>'<a href="#"><span class="im">Kuva: '+x+'</span><span class="nm">'+x+"</span></a>").join("")+"</div>"},
+  {id:"serie",n:"Tuoteperhekortti",c:".series .serie (.im h3 p .wt .lk) · .series-4",on:on("etu","pil"),
+   rule:"Kuva, nimi käyttökohteineen, yksi lause, paino ja nostotapa. Linkki tasataan pohjaan. Etusivulla kolme, hubilla neljä.",
+   merge:"Etusivun kortin otsikko on linkki, hubin kortissa linkki on erillinen .lk. Sama kortti, kaksi klikkauslogiikkaa.",
+   demo:'<div class="series series-4" style="grid-template-columns:repeat(2,1fr)"><div class="serie"><div class="im">Kuva: TP-pilari</div><h3>TP-pilari — terassit ja pienet rakennukset</h3><p>Terassit, pienmökit ja pihasaunat. Yleisin valinta tee-se-itse-kohteisiin.</p><a class="more lk" href="#">'+arrow("Katso TP")+'</a></div><div class="serie"><div class="im">Kuva: KP-pilari</div><h3>KP-pilari — kantavat rakennukset</h3><p>Autokatokset, kesämökit ja isommat piharakennukset. Kun rakennuksen päällä on katto, lunta ja tuulta.</p><a class="more lk" href="#">'+arrow("Katso KP")+"</a></div></div>"},
+  {id:"claims",n:"Väiteruudukko",c:".claims .claim (.ic h3 p .lk)",on:on("etu","pil"),
+   rule:"Neljä väitettä, ikoni viivapiirroksena 34 px, otsikko on väite. Asiakkaan pyyntö (kommentti 4). Sama lohko ja sama copy on kahdella sivulla; toisella se on toistoa.",
+   merge:"Ikoni + otsikko + teksti neljästi rinnakkain on juuri se ruudukko, jota PRODUCT.md:n anti-referenssi kieltää. Hyväksytty etusivulla; hubilla se kannattaa korvata yhdellä kontrastilla (.bars) tai poistaa.",
+   demo:'<div class="claims" style="grid-template-columns:repeat(2,1fr)"><div class="claim"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div><h3>Valmis samana päivänä</h3><p>Ei muotteja, ei kuivumisen odottelua.</p></div><div class="claim"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M2 20l6-8 4 5 3-4 5 7"/></svg></div><h3>Toimii vaikeallakin tontilla</h3><p>Kallio, rinne, saari, pehmeä maa.</p><a class="more lk" href="#">'+arrow("Katso saaristomökin perustus")+"</a></div></div>"},
+  {id:"claims3",n:"Väiteruudukko kolmelle",c:".claims.claims-3 .claim",on:on("jeki"),
+   rule:"Sama kortti kuin .claims, kolme saraketta. Perusruudukko on neljä saraketta (etusivun neljä väitettä); kuudella väitteellä se jättäisi toiselle riville kaksi korttia ja kaksi tyhjää saraketta. 980 px kaksi saraketta, 560 px yksi.",
+   demo:'<div class="claims claims-3">'+[["Valmis samana päivänä","Elementit nostetaan paikalleen ja liitetään toisiinsa mekaanisesti.",'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>'],["Vapaasti seisova","JeKi ei tarvitse erillistä tukirakennetta.",'<path d="M2 20h20"/><rect x="6" y="6" width="12" height="11" rx="1"/>'],["Purettavissa ja siirrettävissä","Mekaaninen liitos avataan, ja elementit voidaan käyttää uudelleen.",'<path d="M4 12a8 8 0 0 1 13.7-5.6L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15"/><path d="M4 20v-5h5"/>']].map(function(x){return '<div class="claim"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24">'+x[2]+"</svg></div><h3>"+E(x[0])+"</h3><p>"+E(x[1])+"</p></div>"}).join("")+"</div>"},
+  {id:"cases",n:"Referenssikortit ja lainaus",c:".cases .case · .quote (.im blockquote cite .acts)",on:on("etu","pil","tp","ak"),
+   rule:"Etusivu ja hubi: kaksi korttia. Perhesivu: yksi lainaus rakentajan omin sanoin, nimi ja paikka. Molemmat päättyvät .more-linkkiin.",
+   demo:'<div class="quote"><div class="im">Kuva: kesämökki valmiina</div><div><blockquote>Yhtenäisen jalustan ja kierteillä varustetun teräslaatan ansiosta perustus valmistui nopeasti.</blockquote><cite>Mattias Svenlin, kesämökki Luodossa</cite><p class="acts"><a class="more" href="#">'+arrow("Lue koko tarina")+"</a></p></div></div>"},
+  {id:"cases3",n:"Kuvarivi kolmelle",c:".cases.cases-3 .case (.ph.ph-1610 + p)",on:on("ak"),
+   rule:"Kolme kohdekuvaa rinnakkain, kuvateksti kertoo kohteen koon ja käytetyn mallin. Ei otsikkoa eikä linkkiä: kortti on kuva ja yksi rivi tietoa. .cases yksin on kaksipalstainen, jolloin kolmas kuva jäisi riippumaan. 820 px kaksi palstaa, 560 px yksi.",
+   demo:'<div class="cases cases-3">'+[["Kuva: kaksipaikkainen autokatos valmiina, pilarit näkyvissä","Kaksipaikkainen autokatos, 6 × 7 m, 8 kpl KP-pilaria."],["Kuva: yksipaikkainen autokatos, sama kuvakulma","[TÄYTETTÄVÄ]"],["Kuva: autokatos ja varasto samassa rakennuksessa","[TÄYTETTÄVÄ]"]].map(function(x){return '<div class="case">'+ph(x[0],"ph-1610")+"<p>"+T(x[1])+"</p></div>"}).join("")+"</div>"},
+  {id:"buyrow",n:"Ostorivi lohkon lopussa",c:".buyrow (h3.lbl + .dealers + .contact + p.fine)",on:on("ak"),
+   rule:"Lohko päättyy kolmeen osaan allekkain: ensisijainen toiminto, selite ja jälleenmyyjät. Käyttökohdesivun moduuli 10 vaatii jakelumallin ja jälleenmyyjät samaan lohkoon, ja .cta-block antaa välin vain yläpuolelleen — ilman tätä selite on kiinni painikkeen alareunassa (mitattu 1 px). Puhelin ja sähköposti ovat .contact-rivillä 17 px tekstinä ja 49 px kosketuskohteena, eivät 13 px .fine-rivillä jonka osuma-alue oli 15 px.",
+   demo:'<div class="cta-block"><a class="btn btn-1" href="#">Mitoita perustus</a></div><div class="buyrow"><h3 class="lbl">Osta lähimmältä jälleenmyyjältä</h3><div class="dealers dealers-4"><a href="#"><span class="dlogo">Logo: Hartman</span><span class="dgo">Osta verkkokaupasta<span aria-hidden="true">↗</span></span></a><a href="#"><span class="dlogo">Logo: K-Rauta</span><span class="dgo">Osta verkkokaupasta<span aria-hidden="true">↗</span></span></a></div><p class="fine">'+T("[TÄYTETTÄVÄ]")+'</p></div>'},
+  {id:"vidlist",n:"Videolista työvaiheessa",c:".vidlist li (a + .vt)",on:on("ak"),
+   rule:"Video kuuluu sen työvaiheen viereen jota se käsittelee, ei omaksi lohkokseen. Aihe näkyy tekstinä ilman että videota tarvitsee avata, eikä automaattitoistoa ole. Kompakti, koska lista on askeleen sisällä; rivilinkin osuma-alue 30 px paddingilla ja negatiivisella marginilla.",
+   demo:'<div class="flow" style="max-width:640px"><div class="st"><div class="ph ph-1610">Kuva: kaivanto, suodatinkangas ja salaoja paikallaan</div><div class="tx"><span class="n" aria-hidden="true">2</span><b>Kaiva ja salaojita</b><p>Kaiva vähintään metri rakennuksen ulkoreunan ulkopuolelle häiriintymättömään moreenipohjaan asti.</p><ul class="vidlist"><li><a href="#">Jakso 4</a> <span class="vt">Suodatinkangas</span></li><li><a href="#">Jakso 5</a> <span class="vt">Salaojitus</span></li></ul></div></div></div>'},
+  {id:"kohdefakta",n:"Kohteen lukurivi",c:".hero.hero-ref > .herocol (.hero-img + .kohdefakta > h2.lbl + dl.spec2)",on:on("ref"),
+   rule:"Sivutyyppikortti 10 pyytää kohteen kuvina ja lukuina, joten kuva ja arvoparit ovat samassa palstassa eivätkä omina lohkoinaan. dl.spec2 on tarkoituksella yksipalstainen (päätös 16.9.: kahdessa sarakkeessa silmä ei tiedä kumpaa luetaan ensin), joten täysleveänä lohkona kuusi paria jättäisi oikean puolen tyhjäksi. .hero-ref on align-items:start ja kuva täyttää palstan leveyden, jolloin kuvan ja lukurivin reunat ovat samassa linjassa. Kuusi paria, ei kahdeksan: loput toistavat tarinan, ja lukurivin tehtävä on antaa suodatettavat arvot.",
+   demo:'<div class="herocol" style="max-width:520px">'+ph("Kuva: Villa Rosa valmiina, hirsimökki saaristomaisemassa")+'<div class="kohdefakta"><h2 class="lbl">Kohteen tiedot</h2><dl class="spec2">'+[["Kohde","Ympärivuotinen hirsimökki"],["Paikka","Eugmon saaristo"],["Koko","50 m²"],["Valmistui","Syyskuu 2021"],["Pilarimalli","[TÄYTETTÄVÄ: BCE]"],["Pilarien määrä","[TÄYTETTÄVÄ: BCE]"]].map(function(x){return "<div><dt>"+E(x[0])+"</dt><dd>"+T(x[1])+"</dd></div>"}).join("")+"</dl></div></div>"},
+  {id:"tarina",n:"Tarinaosuus",c:".tarina (useita p-elementtejä)",on:on("ref"),
+   rule:"Referenssin leipäteksti on asiakkaan omaa tekstiä eikä speksattua copya, joten kappaleita on 4–8 peräkkäin. Luokka on pelkkä kappaleväli (--s4); rivin mitta tulee oletuksesta (p on 68ch). Osion otsikko on väite tarinasta, ei sana Tarina.",
+   demo:'<div class="head"><h2>Perustus kuljetettiin jäätä pitkin maaliskuussa</h2></div><div class="tarina"><p>He tilasivat 50 m²:n kokoisen Kuusamo kakkoskodin, joka toimitettiin paikan päälle keväällä 2021. Maaliskuun alussa he kuljettivat pilarit ja osan puutavarasta vielä hyvin kantavan jääpeitteen yli.</p><p>Talopaketti sen sijaan kuljetettiin saareen proomulla toukokuussa.</p></div>'},
+  {id:"figwide",n:"Aito kuva omalla rivillään",c:"figure.figwide > img",on:on("ak"),
+   rule:"Kuvapaikka on .ph; tämä on sille kuvalle joka on jo olemassa. Leveä tekninen piirros ei mahdu mediaparin palstaan: A-601-leikkaus on 2 680 px leveä ja sen numeroselite lukee vasta noin 1 000 px:stä ylöspäin, joten 552 px:n palstassa se renderöityi 5 px:n kokoisena.",
+   demo:'<figure class="figwide" style="margin:0"><img src="kuvat/asennus-kp-b.png" alt="Leikkaus KP-pilarin asennuksesta" width="2680" height="1800" loading="lazy"></figure>'},
+  {id:"dl",n:"Latauskortti",c:".dl a (.ty .ic b .st)",on:on("tp","b"),
+   rule:"Tiedostotyyppi latausikonilla selitteenä, nimi lihavoituna, tila pienenä. Neljä rinnakkain, kaksi 900 px:n alla.",
+   demo:'<div class="dl" style="grid-template-columns:repeat(2,minmax(0,1fr))"><a href="#"><span class="ty"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>DWG</span><b>Mittapiirustukset</b><span class="st">'+T("[TÄYTETTÄVÄ]")+'</span></a><a href="#"><span class="ty"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>PDF · FI, SV, EN</span><b>Asennusperiaate A-601</b></a></div>'},
+  {id:"pickhow",n:"Suodatinkortti",c:".pick-how a (b span) [aria-current] · .fstate .msg .lnk",on:on("a","b"),
+   rule:"Kortti on toiminto, ei navigaatio: valittu tila on paksu reuna ja ✓, kuittaus sanoin (Näytetään 3 tarviketta 9:stä) ja purkupainike. Ilman skriptiä ankkurilinkki. Ei esivalintaa.",
+   merge:"A:n suodatin vierittää käyttäjän puolesta (scrollIntoView) klikkauksen jälkeen. Sama virhe korjattiin TP:n kokovalinnasta 15.9. B käyttää samaa luokkaa pelkkänä sisällysluettelona.",
+   demo:'<div class="pick-how" style="grid-template-columns:repeat(3,1fr)"><a href="#" aria-current="true"><b>Terassin runkopalkki</b><span>Ohuemmat runkopalkit ja välilankut</span></a><a href="#"><b>Kannatinpalkki</b><span>Paksummat kannatinpalkit ja hirsirakenteet</span></a><a href="#"><b>Piilotettu kiinnitys</b><span>Kun kiinnikkeen ei haluta näkyvän</span></a></div><p class="fstate"><span class="msg">Näytetään 3 tarviketta 9:stä.</span><button class="lnk" type="button">Näytä kaikki tarvikkeet</button></p>'}
+])+
+
+sect("rivit","Rivilistat","Rivi on oikea väline kun kohteet luetaan järjestyksessä tai niitä on yli neljä. Kaikki rivilistat käyttävät samaa 1 px viivaa ja samaa pystyväliä.",[
+  {id:"flow",n:"Vaiheet kuvalla",c:".flow .st (.im .tx .n b p) · .fsub",on:on("etu","ak"),
+   rule:"Yksi kuva per vaihe, numero --accent-dark, otsikko lihavoituna. Otsikko on linkki vain kun vaihe vie toiselle sivulle.",
+   demo:'<div class="flow"><div class="st"><div class="im">Kuva: sora-alusta valmiina</div><div class="tx"><span class="n" aria-hidden="true">2</span><b>Tee sora-alusta</b><p>Pilari asettuu konetiivistetyn soran päälle.</p></div></div><div class="st"><div class="im">Kuva: pilari lasketaan alustalle</div><div class="tx"><span class="n" aria-hidden="true">3</span><b>Laske pilarit paikoilleen</b><p>Leveä jalusta jää soran päälle.</p></div></div></div>'},
+  {id:"steps",n:"Numeroitu lista",c:".steps li (b span)",on:on("pil","ak"),
+   rule:"Kun vaiheilla ei ole kuvaa. Numero Oswald --accent-dark, otsikko ja yksi lause.",
+   merge:".build li (kuollut) on sama lista harmaalla numerolla.",
+   demo:'<ol class="steps" style="max-width:560px"><li><b>Mitä rakennat</b><span>Kevyt rakennelma, terassi tai sauna, vai autokatos. Tämä ratkaisee perheen.</span></li><li><b>Kuinka iso</b><span>Mitä isompi rakennus, sitä suurempi kantavuus.</span></li></ol>'},
+  {id:"pitem",n:"Tuoterivi",c:".plist .pitem (.im h3 p a) · .plot (B) · .tcard (A)",on:on("tp","a","b"),
+   rule:"Kuva vasemmalla, nimi ja yksi lause, toiminto oikealla. Sama järjestys joka rivillä, jotta silmä vertaa riviä eikä etsi kenttää.",
+   merge:"Kolme toteutusta samalle tarvikeriville: .pitem (perhesivu), .plot (B, lisää .sku ja koot), .tcard (A, kenttätaulukko ja kaksi kuvaa). A/B-päätös pudottaa yhden; .pitem ja voittaja yhdistetään yhdeksi lohkoksi kahdella tiheydellä.",
+   demo:'<div class="plist"><div class="pitem"><div class="im">Detaljikuva: pilarikenkä pilarin päässä</div><div><h3>Pilarikenkä</h3><p>Liittää pystyrakenteen pilarin päähän.</p></div><a class="more" href="#">'+arrow("Katso asennusvideo")+'</a></div><div class="pitem"><div class="im">Detaljikuva: palkkikenkä ja vaakapalkki</div><div><h3>Palkkikenkä PAK</h3><p>Liittää vaakapalkin pilariin.</p></div><a class="more" href="#">'+arrow("Katso asennusvideo")+"</a></div></div>"},
+  {id:"uses",n:"Pistelista",c:".uses li (a) · .alt · .alt.alt-2",on:on("etu","pil","tp","a","ak","jeki"),
+   rule:"Oranssi piste kaikissa pistelistoissa, linkillä tai ilman (.uses) — päätös 17.9.2026. .alt on kolme ohjausta toiseen perheeseen, teksti ja linkki. .alt-2 on sama lohko kahdelle haaralle: kuva, otsikko, teksti ja linkki vain sillä haaralla, joka vie muualle (JeKi-sivun \"Pilarit vai JeKi\").",
+   merge:".sure ja .fitlist (kuolleet) ovat sama pistelista eri väleillä. Poistetaan.",
+   demo:'<div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:40px"><ul class="uses" style="margin:0"><li><a href="#">Terassit ja kuistit</a></li><li><a href="#">Pienmökit ja vierasmajat</a></li><li><a href="#">Piha- ja rantasaunat</a></li></ul><ul class="uses" style="margin:0"><li>Asennusvalmis tehtaalta</li><li>Mekaaninen liitos</li></ul></div><div class="alt alt-2" style="margin-top:28px"><div>'+ph("Kuva: rakennuksen alareuna pilariperustuksella, avointa tilaa alla","ph-1610")+'<h3>Valitse pilarit</h3><p>kun rakennuksen alle saa jäädä avointa tilaa.</p><a class="more" href="#">'+arrow("Katso pilariperheet")+'</a></div><div>'+ph("Kuva: sama rakennus JeKi-sokkelilla, umpinainen alareuna","ph-1610")+'<h3>Valitse JeKi</h3><p>kun haluat umpinaisen alareunan.</p></div></div>'},
+  {id:"faq",n:"Haitari",c:"details > summary .c + .b · .faq",on:on("etu","a","ak"),
+   rule:"Kysymys on summary, vastaus .b. Avaus on mitattava tapahtuma. Ensimmäinen kysymys ei ole valmiiksi auki, jos vastaus on [TÄYTETTÄVÄ].",
+   merge:"Etusivulla ensimmäinen haitari on auki ja näyttää keltaisen merkinnän ensimmäisenä. A:lla kaikki kiinni.",
+   demo:'<div class="faq"><details><summary>Tarvitsenko tarvikkeita, vai riittääkö pelkkä pilari?<span class="c" aria-hidden="true">▾</span></summary><div class="b">'+T("[TÄYTETTÄVÄ]")+'</div></details><details><summary>Ruostuvatko tarvikkeet ulkokäytössä?<span class="c" aria-hidden="true">▾</span></summary><div class="b">'+T("[TÄYTETTÄVÄ]")+"</div></details></div>"}
+])+
+
+sect("data","Taulukot ja tiedot","Taulukko kuuluu alasivulle, ei etusivulle. Kaikki kolme taulukkomuotoa käyttävät samaa viivaa, samaa sarakeotsikkoa ja oikealle tasattua lukua.",[
+  {id:"table",n:"Datataulukko",c:"table.data (thead th, td.n) · .tw · .dims (code .cpc .cp) · tr[data-pick]",on:on("tp"),
+   rule:"Vaakavieritettävä .tw-kehyksessä, ei typistetty. Tuotekoodi code-elementissä, Kopioi omassa sarakkeessaan oikealla. Lyhenteet (H1, D2) selitetään kaaviolla samassa lohkossa.",
+   demo:'<div class="tw"><table class="data dims" style="min-width:0"><thead><tr><th class="c1">Tuotekoodi</th><th>H1</th><th>D1</th><th>Paino</th><th>EAN</th><th class="cpc"></th></tr></thead><tbody><tr><td class="c1"><code>TP-200 125/450</code></td><td>200</td><td>450</td><td>43 kg</td><td>6430000000200</td><td class="cpc"><button class="cp" type="button">Kopioi</button></td></tr><tr data-pick="true"><td class="c1"><code>TP-400 125/450</code></td><td>400</td><td>450</td><td>55 kg</td><td>6430000000400</td><td class="cpc"><button class="cp" type="button">Kopioi</button></td></tr></tbody></table></div>'},
+  {id:"stack",n:"Menetelmätaulukko",c:"table.data.stack (th[scope=row], td[data-lbl])",on:on("tavat"),
+   rule:"Pinoutuu alle 560 px: otsikkorivi piiloon, jokainen rivi omaksi lohkokseen, sarakeotsikko td:n data-lbl-attribuutista. Käytä kun taulukko on koko sivun tiivistelmä eikä sitä saa joutua vierittämään. Mittataulukko (.dims) tekee päinvastoin: se vierittyy vaakaan, koska ammattilainen etsii yhtä lukua.",
+   demo:'<div class="tw"><table class="data stack"><thead><tr><th>Perustustapa</th><th>Kesto</th><th>Kalusto</th><th>Sää</th></tr></thead><tbody><tr><th scope="row">Pilariharkko</th><td data-lbl="Kesto">Noin 2 päivää</td><td data-lbl="Kalusto">Harkot, raudoitus, betoni</td><td data-lbl="Sää">Rajoittaa</td></tr><tr><th scope="row">Valmispilari</th><td data-lbl="Kesto">Yksi päivä</td><td data-lbl="Kalusto">Ei erikoiskalustoa</td><td data-lbl="Sää">Ei rajoita</td></tr></tbody></table></div>'},
+  {id:"spec2",n:"Arvoparit",c:"dl.spec2 (div dt dd)",on:on("tp","b"),
+   rule:"Otsikko–arvo-parit kahdessa sarakkeessa, arvo lihavoituna oikealla. Sama viiva kuin taulukossa. Puuttuva arvo on merkintä, ei tyhjä.",
+   merge:".facts (kuollut), .codes/.code (kuollut) ja .fr-rivit (A) ovat sama otsikko–arvo-pari eri tyylillä.",
+   demo:'<dl class="spec2"><div><dt>Korkeudet</dt><dd>200–600 mm, viisi kokoa</dd></div><div><dt>Paino</dt><dd>43–67 kg</dd></div><div><dt>Kierre</dt><dd>M20-sisäkierre</dd></div><div><dt>Materiaali</dt><dd>'+T("[TÄYTETTÄVÄ]")+"</dd></div></dl>"}
+])+
+
+sect("kuvat","Kuvat","Viisi generaattoria ja yksi kamera: <code>tuotekuva.projektio</code> (CX 0,866 · CY 0,42). Pilari, tarvike, palkki ja niiden yhdistelmät ovat väistämättä samassa kulmassa, koska kukaan ei määrittele omaa. Valo on eri materiaaleille eri, ja se on tarkoitus. Demot piirtyvät samoista tiedostoista kuin sivujen kuvat. Käyttöönotto-ohje on <a href=\'TUOTEKUVAT.md\'>TUOTEKUVAT.md</a>, työlista puuttuvista <a href=\'SVG-INVENTAARIO.md\'>SVG-INVENTAARIO.md</a>.",[
+  {id:"mk",n:"Mittakaavio",c:".mk svg · .mitoitus .mk (mittakaavio.js)",on:on("tp"),
+   rule:"Selite taulukolle, ei kuvituskuva: kirjaimet kaaviossa, luvut viereisessä taulukossa. Piirretään DOMiin <code>window.mittakaavio({perhe:\"TP\"})</code>-kutsulla, jotta merkinnät saavat sivun Oswaldin. Leveys enintään 620 px, kangas mitoitettu perheen suurimman koon mukaan (<code>kiintea</code>), joten valinta ei muuta piirroksen eikä tekstin kokoa.",
+   merge:"Vain TP, AP ja KP. PP puuttuu tarkoituksella: sen pää on 45 mm:n holkki eikä M20-kierre, ja se tarvitsee oman piirroksen — ks. SVG-INVENTAARIO kohta 5.",
+   demo:kuvaDemo.mk,paper:true},
+  {id:"tuotekuva",n:"Tuotekuva: pilari",c:"tuotekuva({perhe,koko,korkeus,kiintea,koriste,id}) · .perhe() · .rivi() · .morffi()",on:on("pil","tp"),status:["ok","18.9."],
+   rule:"Tehtävä on <strong>muistijälki muodosta</strong>, ei mitoitus: ei mittaviivoja eikä kirjaimia. Mitat luetaan <code>mittakaavio.js</code>:n <code>PERHEET</code>-taulukosta, joten toista totuutta ei ole. Projektio on aksonometrinen (pystymitat 1:1), joten saman perheen koot ovat vertailukelpoisia. Betonipinnat <code>--bet-*</code>; särmä <code>--bet-viiva</code>, ei <code>--ink</code>, koska musta viiva tekisi kuvasta sarjakuvan.",
+   merge:"Neljä perhettä on tässä samassa mittakaavassa (<code>tuotekuva.rivi</code>): AP-400 ei saa näyttää KP-1000:n kokoiselta, koska perhe valitaan koon mukaan.",
+   demo:kuvaDemo.pilarit,paper:true},
+  {id:"tarvikekuva",n:"Tarvikekuva",c:"tarvikekuva({osa,korkeus,skaala,koriste,id}) · .osat() · .tieto() · .laajuus()",on:on("a"),status:["ok","18.9."],
+   rule:"Kymmenen nimikettä. Kamera luetaan <code>tuotekuva.projektio</code>-oliosta, mutta <strong>valo on eri ja se on tarkoitus</strong>: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista — neliportainen cel-varjostus ja kiiltojuova särmän vieressä. Sävy lasketaan <strong>pinnan normaalista</strong> eikä anneta parametrina, joten ohutlevyn jokainen taite erottuu itsestään. Teräkset <code>--met-*</code>.",
+   merge:"Ei <code>kiintea</code>-valitsinta, koska perheitä ei ole: yhteinen mittakaava tehdään <code>laajuus()</code>-suhteella. Varjo ei ole oletus — tarvike ei seiso maassa vaan kiertyy pilarin päähän, joten kontaktivarjo väittäisi alustaa jota ei ole.",
+   demo:kuvaDemo.tarvikkeet,paper:true},
+  {id:"palkkikuva",n:"Palkkikuva",c:"palkkikuva({koko,korkeus,kiintea,syyt,oksat,koriste,id}) · .rivi() · .koot()",on:"",status:["todo","ei vielä sivulla"],
+   rule:"Laskurin kolme palkkikokoa. Oma generaattori eikä <code>tuotekuva.js</code>:n perhe — puu ei ole betonia — mutta sama projektio, koska palkki ja pilari näkyvät samassa laskurissa. <strong>Mitat luetaan kokotunnuksesta</strong> («48x148» <em>on</em> mitat), joten toista kopiota luvuista ei ole. Puu <code>--puu-*</code>.",
+   merge:"Paikka on laskurin kysymys K5, ja se on muutos toimivaan käyttöliittymään: esitetään ennen toteutusta. Tuotesivuille näitä ei laiteta — BCE myy pilareita, ei sahatavaraa, ja tuotesivulla palkki väittäisi kuuluvansa toimitukseen.",
+   demo:kuvaDemo.palkit,paper:true},
+  {id:"yhdistelma",n:"Yhdistelmäkuva",c:"yhdistelmakuva({pari,korkeus,skaala,rajahdys,koriste,id}) · .parit()",on:on("a"),status:["ok","18.9."],
+   rule:"Tarvike ja siihen kuuluva puu samassa kuvassa: vastaa kysymykseen <strong>miten päin puu menee kiinni</strong>. Ei piirrä itse mitään vaan asettaa kaksi generaattoria samaan kankaaseen. Piirtojärjestys ratkaistaan koukulla (<code>C.puu()</code>), koska puu on tarvikkeen <em>sisällä</em> eikä kutsuja voi päätellä sitä. Puun paikka lasketaan <code>tarvikekuva.tieto()</code>:n mitoista.",
+   merge:"Kuusi paria, joista <strong>P-PIK 50×70 on ristiriidassa lähteidensä kanssa eikä ole käytössä</strong>: copy sanoo piilokiinnike, geometria panee levyn tolpan kylkeen eli näkyviin. Teräslaatta on ainoa pari räjäytettynä — paikalleen laskettuna lauta peittää koko tarvikkeen.",
+   demo:kuvaDemo.parit,paper:true},
+  {id:"asennus",n:"Asennuskuva",c:"asennuskuva({pari|osa,perhe,koko,nakyva}) · .laajuus() · .oletus()",on:on("tp"),status:["ok","20.9."],
+   rule:"Pilarin pää, siihen kierretty tarvike ja siihen tuleva puu. Vastaa kysymykseen <strong>mihin osa kiinnittyy</strong> — tarvikekuva kertoo miltä osa näyttää, yhdistelmäkuva miten päin puu menee siihen. Kuvaus on sama olio kuin lohkon riveillä (<code>{pari:…}</code> tai <code>{osa:…}</code>), joten sivulla vaihtuu generaattorin nimi eikä datamalli. Kosketustaso tulee osalta (<code>tarvikekuva.tieto().pilariZ</code>), ja kierretappi jää pilarin sisään <code>piilotaso</code>-parametrilla: maalarin algoritmi ei sitä hoida, koska tappi on kameraan päin pilarin yläpinnasta katsottuna.",
+   merge:"<strong>Pilarista näkyy vain pää, ja rajaus tehdään kankaasta eikä geometriasta.</strong> Koko pilari piirretään ja viewBox jättää alaosan näkymättä, joten pää on oikean pilarin pää eikä lyhennetty tynkä. Kokonainen TP-400 pohjalaattoineen veisi kuvan leveyden ja kenkä olisi rivin kuvapaikassa parinkymmenen pikselin kokoinen. Säätömutteri jää yhä piiloon: kamera on yhteinen kaikille generaattoreille, joten matalampi kulma olisi toinen kamera samalla sivulla.",
+   demo:kuvaDemo.asennus,paper:true},
+  {id:"tk",n:"Piirretty kuva kuvapaikassa",c:".ph.piirros · .im.piirros · .thumbs button.piirros · .pick-how .ph.piirros",on:on("pil","a"),status:["ok","lisätty 18.9."],
+   rule:"Modifier sanoo, että paikassa on aito kuva eikä paikanpitäjää: katkoviiva, <code>--paper-2</code>-täyttö ja keskitys pois. Kuva on läpinäkyvä, joten levy sen alla lupaisi taustan jota kuvassa ei ole. Ei koske kuvasuhdetta — kortin ruudukko pysyy samana, vaikka sisältö vaihtuu.",
+   merge:"Saman lohkon kuvat saavat saman mittakaavan ja <strong>saman kankaan</strong> (<code>tuotekuva.rivi</code> pilareille, <code>tuotekuva.kangas</code> mille tahansa generaattorille). Eri kokoisilla kankailla CSS skaalaa jokaisen omalla kertoimellaan heti kun laatikko on kuvaa kapeampi — mittakaava olisi oikein vain työpöydällä. Nimi ei ole <code>.tk</code>, koska <code>.tcard .tk</code> on tarvikesivun tuotekoodi.",
+   demo:kuvaDemo.kortit,paper:true}
+])+
+
+sect("toiminnot","Valitsimet ja toiminnot","Toiminto kuittaa itsensä sanoin. Mikään ei ole esivalittu, mikään ei vieritä käyttäjän puolesta.",[
+  {id:"tval",n:"Kokovalitsin tuotekuvalla",c:"tuotevalitsin(E,o) → .tval (.tval-row .tval-kuva .tval-valinnat .tval-koko) + tuotevalitsin.tiedot(E,o,T) → dl.spec2.tval-mitat · .mitoitus (.valitsin + .tiedot)",on:on("tp"),status:["ok","lisätty 18.9."],
+   rule:"Radioryhmä kertoo mitä kokoja on, tuotekuva näyttää mitä ero tarkoittaa: valinta morffaa rungon samaan kankaaseen kiinteässä mittakaavassa. Vaihtoehto on laatikko samalla tyylillä kuin ostolaatikon .sizes button, ja siinä lukee tuotekoodi ja korkeus — paino on lukurivillä, koska valinta tehdään korkeuden perusteella. Kuvan päällä on mittaviivat samassa aksonometriassa kuin kappale (korkeus oikealle pystysuoraan, pohjalaatta etureunan suuntaisesti, pään mitta pään yläpuolelle nostettuna), ja lukurivi kirjoittaa mitat millimetreinä järjestyksessä korkeus, paino, pohjalaatta, pilarin pää: kaksi ensimmäistä vaihtuvat koon mukana, kaksi jälkimmäistä ovat perheen vakioita. Koot, mitat ja koodit tulevat mittakaavio.js:n taulukosta; sivu antaa vain tekstit ja painot. Mikään ei ole esivalittuna: ilman valintaa kuva näyttää perheen suurimman koon ja lukurivi vaihteluvälit. Purkupainike näkyy vain kun valinta on päällä. Osuma-alue on koko rivi, 44 px.",
+   merge:"Korvaa TP-sivulla viisi .koot-painiketta ja kapean ruudun alasvedon (.koko-m): sama valitsin toimii molemmilla leveyksillä, ja siluettikuvat jäävät pois, koska kuva on nyt täysikokoisena vieressä.",
+   demo:'<div class="mitoitus"><div class="valitsin">'+window.tuotevalitsin(E,DSVAL)+"</div>"+
+     '<div class="tiedot"><h3 class="lbl">Tekniset tiedot</h3>'+window.tuotevalitsin.tiedot(E,DSVAL)+"</div></div>",paper:true},
+  {id:"sizes",n:"Kokovalinta",c:".sizes button[aria-pressed] (b span) · .sku (.k .e .cp)",on:on("tp","b"),
+   rule:"Painikkeet, ei radio-nappeja: koko ja paino näkyvissä. Valinta näyttää tuotekoodin ja EANin .sku-rivillä samassa laatikossa ja merkitsee rivin taulukossa. Toinen klikkaus purkaa. Ei vieritystä.",
+   demo:'<div style="max-width:420px"><div class="sizes"><button type="button" aria-pressed="false"><b>TP-200</b><span>43 kg</span></button><button type="button" aria-pressed="true"><b>TP-400</b><span>55 kg</span></button><button type="button" aria-pressed="false"><b>TP-600</b><span>67 kg</span></button></div><p class="sku" style="margin:0"><span class="k">TP-400 125/450</span><span class="e">EAN 6430000000400</span><button class="cp" type="button">Kopioi</button></p></div>'},
+  {id:"dealers",n:"Jälleenmyyjät",c:"SPECDEALERS(E,{cls,sijainti,size}) → .dealers a (.dlogo .dgo) · .dealers-4",on:on("etu","pil","tp","a"),status:["ok","kuoressa 17.9."],
+   rule:"Yksi lähde (SPEC.dealers): sama neljä ketjua samassa järjestyksessä joka sivulla, ei korostuksia. Jokainen on aito linkki ketjun verkkokaupan BCE-sivulle uuteen välilehteen; ↗ kertoo sen ja ruudunlukija kuulee sen. Perhesivun ostolaatikko vaihtaa linkit valitun koon tuotesivuun (SPECDEALERSIZE). data-dealer ja data-sijainti pakolliset.",
+   merge:"Ennen: kolme esitystä (katkoviivainen logorivi ilman linkkiä herossa, logorivi /mista-ostat/-linkillä ostolohkossa, painikkeet # -linkillä). Nyt yksi lohko ja yksi renderöijä; .logos .lg ja .lgrow ovat kuolleita.",
+   demo:SPECDEALERS(E,{cls:"dealers-4",sijainti:"katalogi"})+'<div style="max-width:420px;margin-top:22px">'+SPECDEALERS(E,{sijainti:"katalogi",size:"TP-400"})+'</div><p class="fine" style="margin-top:12px">Ylhäällä brändisivut, alhaalla TP-400:n tuotesivut siellä missä ne ovat.</p>'},
+  {id:"thumbs",n:"Pikkukuvat",c:".thumbs button[aria-pressed]",on:on("tp"),
+   rule:"Painikkeita, ei span-elementtejä: klikattavan näköinen on klikattava. Kapealla vaakavieritettävä nauha, 100 px ruudut.",
+   demo:'<div class="thumbs" style="max-width:560px"><button type="button" aria-pressed="true">Kuva: pilari yksin</button><button type="button" aria-pressed="false">Kuva: halkaistuna</button><button type="button" aria-pressed="false">Kuva: kenkä kiinni</button><button type="button" aria-pressed="false">Kuva: kohde valmiina</button></div>'},
+  {id:"bar",n:"Mobiilin alapalkki",c:".bar (.btn-1 + .btn-2), näkyy alle 980 px",on:on("etu","pil","tp","a","b","ak"),status:["ok","kuoressa 16.9."],
+   rule:"Kuori renderöi palkin joka sivulle (SPEC.bar), paitsi kun sivu sanoo bar:false (luuranko, tämä sivu). Ensisijainen toiminto ja ostopaikka, samat nimet joka sivulla. Pohja --accent-dark, koska 15 px valkoista brändioranssilla on 3,6:1.",
+   merge:"Päätös 16.9.: palkki kaikille sivuille joilla on ensisijainen toiminto. Ennen vain perhesivulla, ja body-paddingin 74 px oli voimassa myös sivuilla joilla palkkia ei ollut.",
+   demo:'<div class="bar"><a class="btn btn-1" href="#">Laske pilarien määrä</a><a class="btn btn-2" href="#">Mistä ostat</a></div>',stat:true}
+])+
+
+sect("kuori","Kuori","Ylä- ja alatunniste tämän sivun ympärillä ovat itse komponentti: <code>SPECSHELL(E,{crumb,active})</code> renderöi ne <code>bce-spec-shell.js</code>:n copysta.",[
+  {id:"header",n:"Apurivi, ylätunniste, navigaatio",c:".urow (.search .ulink .lang) · header.site (.logo .menu-btn nav .hassub .sub .tools .btn-s.hdr-cta)",on:on("kuori","ak"),status:["ok","korjattu 16.9."],
+   rule:"Logo vasemmalla, valikko keskellä, yksi toiminto oikealla. Alavalikko avautuu osoittimella ja fokuksella, vanhempi on itsekin linkki — paitsi ryhmä ilman omaa sivua (Tuotteet, Sokkelit), joka on painike ja ryhmäotsikko. Tuotteet-pudotus on kolme ryhmää, muut yksi sarake. Mobiilissa lapset ovat auki sisennettynä. aria-current merkitsee aktiivisen kohdan, myös jälkeläisen perusteella.",
+   merge:"Päätös 16.9.: kuoren painike piilotetaan mobiilissa (.hdr-cta), jolloin ylätunniste putoaa 123 → 76 px, ja sivun toiminto on alapalkissa. Ennen: kuoren Löydä sopiva pilari kietoutui omalle rivilleen ja näkyi yhtä aikaa sivun Laske pilarien määrä -painikkeen kanssa.",
+   demo:'<p class="fine" style="margin:0">Katso sivun yläreuna. Mittaa 390 px:llä: apurivi 44 px, ylätunniste 76 px, murupolku 45 px.</p>'},
+  {id:"crumb",n:"Murupolku",c:"nav.crumb (a .sep span[aria-current])",on:on("pil","tp","a","b","sivu","ak"),
+   rule:"Alasivuilla aina, etusivulla ei. Viimeinen kohta on nykyinen sivu ilman linkkiä. Linkkien osuma-alue 33 px paddingilla, rivi ei kasva.",
+   demo:'<p class="fine" style="margin:0">Katso murupolku tämän sivun yläreunassa: Etusivu › Design system.</p>'},
+  {id:"footer",n:"Alatunniste",c:"footer .cols (h3 ul .addr .social .certrow) .end",on:on("kuori","ak"),
+   rule:"Neljä palstaa: yhteystiedot, sivusto, tuotteet, käyttökohteet, sertifikaatit. Linkkien osuma-alue 26 px. Sertifikaatit ovat katkoviivapaikkoja kunnes logot saadaan.",
+   demo:'<p class="fine" style="margin:0">Katso sivun alareuna.</p>'}
+]);
+
+/* Typografian koot luetaan laskennasta, ei luvata. */
+document.querySelectorAll("[data-fs]").forEach(el=>{const cs=getComputedStyle(el);
+  const tag=document.createElement("span");tag.className="fine";tag.style.cssText="display:block;margin:4px 0 0;font-size:12px";
+  tag.textContent=Math.round(parseFloat(cs.fontSize))+" px · "+cs.fontWeight+" · "+cs.fontFamily.split(",")[0].replace(/"/g,"")+(cs.textTransform==="uppercase"?" · versaali":"");
+  /* Suoraan .spec-ruudukossa oleva näyte kääritään, jottei kokorivi lisää ruudukkoon
+     ylimääräistä solua ja riko koodi–näyte-vuorottelua. */
+  if(el.parentElement.classList.contains("spec")){const w=document.createElement("div");el.replaceWith(w);w.appendChild(el);w.appendChild(tag)}
+  else el.insertAdjacentElement("afterend",tag)});
+
+/* Kuittaavan painikkeen demo toimii, jotta kuittaus näkyy eikä sitä tarvitse kuvitella. */
+const say=document.createElement("p");say.className="sr";say.setAttribute("role","status");say.setAttribute("aria-live","polite");document.body.appendChild(say);
+document.querySelectorAll(".cp").forEach(b=>b.addEventListener("click",function(){
+  const t=b.textContent;const ok=()=>{b.textContent="Kopioitu";b.setAttribute("data-copied","true");say.textContent="Kopioitu";setTimeout(()=>{b.textContent=t;b.removeAttribute("data-copied")},2200)};
+  const fail=()=>{b.textContent="Kopiointi ei onnistunut";b.setAttribute("data-failed","true");say.textContent=b.textContent;setTimeout(()=>{b.textContent=t;b.removeAttribute("data-failed")},2600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText("TP-400 125/450  6430000000400").then(ok,fail);else fail();}));
+window.tuotevalitsin.kiinnita(document.querySelector(".ds-demo .mitoitus"),DSVAL);
+document.querySelectorAll(".sizes button,.thumbs button").forEach(b=>b.addEventListener("click",function(){
+  [...b.parentElement.children].forEach(x=>x.setAttribute("aria-pressed",String(x===b&&x.getAttribute("aria-pressed")!=="true")))}));
+})();
+</script>
+</body>
+</html>
