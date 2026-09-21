@@ -26,7 +26,7 @@
    jokaiselle koolle.
 
    ---- Kolme varmuustasoa, ja ne näkyvät kuvassa ----
-     tiedossa     palkin korkeus (KESTOPUU, laskurin K3), pilarikorkeudet ja
+     tiedossa     palkin korkeus (KESTOPUU, laskurin K5), pilarikorkeudet ja
                   pohjalaatan paksuus (mittakaavio.js, CAD 18.9.2026)
      oletus       täyttö pohjalaatan päällä: AP 300, TP ja KP 500 mm (A-601).
                   **Avointa ei ole luku vaan status:** onko se vaatimus vai

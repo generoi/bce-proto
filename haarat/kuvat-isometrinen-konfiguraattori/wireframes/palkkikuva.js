@@ -8,7 +8,7 @@
 
    Mitat luetaan kokotunnuksesta, ei taulukosta. «48x148» ON mitat, joten tässä
    tiedostossa ei ole toista kopiota luvuista: laskuri antaa saman merkkijonon
-   kuin sen oma state.beam (bce-pilarilaskuri.html, rK5). Jos kokoluettelo
+   kuin sen oma state.beam (bce-pilarilaskuri.html, rPalkki). Jos kokoluettelo
    muuttuu siellä, tänne lisätään vain uusi tunnus.
 
    Lähteet
@@ -70,7 +70,7 @@
      mittakaavassa mutta särmän kirkas kaistale erottuu. */
   var PITUUS = 480, VIISTE = 3;
 
-  /* Kokoluettelo on sama ja samassa järjestyksessä kuin laskurin rK5:ssä. */
+  /* Kokoluettelo on sama ja samassa järjestyksessä kuin laskurin rPalkki:ssa. */
   var KOOT = ["48x123", "48x148", "48x198"];
 
   /* ---- Väri ----------------------------------------------------------------
