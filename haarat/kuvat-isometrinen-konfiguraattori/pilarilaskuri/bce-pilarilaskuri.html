@@ -2275,7 +2275,13 @@ function swimNodes(){
   var b = state.building, r = RESULT, N = [];
   /* Sarakkeet ovat vaiheita eivätkä ruutuja: ruutuja on kahdesta seitsemään, mutta
      kaavion pitää pysyä luettavana ja samanlaisena rakennustyypistä riippumatta. */
-  var cur = ({ rakennus:0, lisa:0, kaltevuus:1, maapohja:1, liitos:2, palkki:2, mitat:3,
+  /* Kartta on VAIHEkartta eikä järjestyskartta: lisa on 0 vaikka se on toinen ruutu,
+     ja paksuus ja massa ovat 2 vaikka massa kysytään vasta mittojen edellä. Molemmat
+     kuvaavat sitä, mitä pilarin päälle tulee, eli Runko-vaihetta.
+     Jokainen steps():n ruutu on oltava tässä. Jos ei ole, cur jää −1 eikä yksikään
+     solmu saa tilaa "käsillä nyt" — kaavio näyttää siltä ettei missään olla. */
+  var cur = ({ rakennus:0, lisa:0, kaltevuus:1, maapohja:1, liitos:2, palkki:2,
+               paksuus:2, massa:2, mitat:3,
                result:4, lead:4, sent:4, handoff:4 })[SCREEN];
   if (cur === undefined) cur = -1;
   var hf = (r && r.handoff) ? r.handoff.code : null;
