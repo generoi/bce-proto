@@ -2,3 +2,7 @@
 __pycache__/
 *.log
 
+# Julkaisulukko. Sijaitsee repossa, koska se on jaettava kaikkien agenttien
+# kesken — mutta se on ajon tila, ei sisältöä. Ilman tätä jokainen julkaisu
+# committoi lukon ja seuraava sen poiston: kaksi tyhjää committia per ajo.
+.julkaisu.lukko/
