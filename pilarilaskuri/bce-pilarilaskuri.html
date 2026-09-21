@@ -1516,7 +1516,7 @@ function rStart(){
    undefined tarkoittaa ettei kortti ole kuvallinen lainkaan. */
 var KUVAT = {
   nakyva:   '../kuvat/liitos-nakyva.svg',
-  piilo:    null,                              /* P-PIK: lähteet ristiriidassa, avoin */
+  piilo:    '../kuvat/liitos-piilo.svg',      /* P-PIK, ristiriita ratkesi 21.9.2026 */
   palkki:   '../kuvat/liitos-palkki.svg',
   tasainen: '../kuvat/liitos-tasainen.svg',
   tolppa:   '../kuvat/liitos-tolppa.svg',
@@ -2275,7 +2275,13 @@ function swimNodes(){
   var b = state.building, r = RESULT, N = [];
   /* Sarakkeet ovat vaiheita eivätkä ruutuja: ruutuja on kahdesta seitsemään, mutta
      kaavion pitää pysyä luettavana ja samanlaisena rakennustyypistä riippumatta. */
-  var cur = ({ rakennus:0, lisa:0, kaltevuus:1, maapohja:1, liitos:2, palkki:2, mitat:3,
+  /* Kartta on VAIHEkartta eikä järjestyskartta: lisa on 0 vaikka se on toinen ruutu,
+     ja paksuus ja massa ovat 2 vaikka massa kysytään vasta mittojen edellä. Molemmat
+     kuvaavat sitä, mitä pilarin päälle tulee, eli Runko-vaihetta.
+     Jokainen steps():n ruutu on oltava tässä. Jos ei ole, cur jää −1 eikä yksikään
+     solmu saa tilaa "käsillä nyt" — kaavio näyttää siltä ettei missään olla. */
+  var cur = ({ rakennus:0, lisa:0, kaltevuus:1, maapohja:1, liitos:2, palkki:2,
+               paksuus:2, massa:2, mitat:3,
                result:4, lead:4, sent:4, handoff:4 })[SCREEN];
   if (cur === undefined) cur = -1;
   var hf = (r && r.handoff) ? r.handoff.code : null;
@@ -2798,10 +2804,10 @@ render();
    ja parametri ei ole linkitetty mistään. Vastaukset ovat samat kuin
    docs/pilarilaskuri/ruutukuvat.py:ssä, joka ajaa kuvat. */
 var DEMOT = {
-  terassi: { building:'terassi', w:4, l:5, cover:'ei',    terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
-  mokki:   { building:'mokki',   w:5, l:5, heated:'kesa', terrain:'20-40',  soil:'kantava', beam:'48x148', thickness:'96', fixing:'palkki' },
-  sauna:   { building:'sauna',   w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
-  piha:    { building:'piha',    w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
+  terassi: { building:'terassi', w:4, l:5, cover:'ei',    terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'terassi' },
+  mokki:   { building:'mokki',   w:5, l:5, heated:'kesa', terrain:'20-40',  soil:'kantava', beam:'48x148', thickness:'96', fixing:'palkki', mass:'rakennus' },
+  sauna:   { building:'sauna',   w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'rakennus' },
+  piha:    { building:'piha',    w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'rakennus' },
   katos:   { building:'katos',   w:6, l:8, poles:8,      terrain:'20-40',  soil:'kantava', post:'90-140' },
   tolppa:  { building:'tolppa',  poles:4 }
 };
