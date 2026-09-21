@@ -64,7 +64,14 @@ window.SPEC={
           ["Suunnittelijalle","/ohjeet/suunnittelijalle/"],
           ["Ladattavat materiaalit","/ohjeet/materiaalit/"]]],
        ["Referenssit","/referenssit/"],
-       ["Mistä ostat","/mista-ostat/"]],
+       ["Mistä ostat","/mista-ostat/"],
+       /* 21.9.2026: Yhteystiedot palasi päävalikkoon viimeiseksi kohdaksi, samalle
+          paikalle kuin nykysivustolla. Apurivi on pieni harmaa teksti kielivalinnan
+          vieressä, eli siirto olisi ollut alennus sivulle joka laskeuttaa 448 istuntoa
+          vuodessa — yhdeksänkertaisesti Referensseihin nähden, jolla on oma
+          valikkopaikka. Kohtia on nyt kuusi ja painike; painike on oranssi eikä
+          kilpaile tekstilinkkien kanssa. */
+       ["Yhteystiedot","/yhteystiedot/"]],
   /* Jälleenmyyjät, yksi lähde (17.9.2026). Sama neljä ketjua samassa järjestyksessä
      joka sivulla, tasapuolisesti. url on BCE:n brändisivu ketjun verkkokaupassa, tp on
      TP-kokojen omat tuotesivut siellä missä ne ovat: perhesivun ostolaatikko linkittää
@@ -96,7 +103,9 @@ window.SPEC={
          "TP-400":"https://www.stark-suomi.fi/tuote/perustuspilari-bce-tp-400-125-450-55kg-92as",
          "TP-600":"https://www.stark-suomi.fi/tuote/perustuspilari-bce-tp-600-125-450-67kg-92dp"}}],
   dealerLogo:"Logo", dealerGo:"Osta verkkokaupasta", dealerNew:"avautuu uuteen välilehteen",
-  util:["Yhteystiedot","/yhteystiedot/"],
+  /* Apurivillä on nyt haku ja kieli. Yhteystiedot siirtyi päävalikkoon 21.9.2026;
+     null pitää rivin rakenteen ennallaan, jos linkki halutaan takaisin. */
+  util:null,
   /* 16.9.2026: konfiguraattorilla on yksi nimi joka paikassa (hero-oppi 3). Spec 1.0:n
      "Löydä sopiva pilari" vaihdettiin lopputuloksen nimeävään muotoon, sama kuin sivuilla.
      Poikkeama specistä, kerrotaan asiakkaalle. Mobiilissa kuoren painike piilotetaan
@@ -279,7 +288,7 @@ window.SPECSHELL=function(E,o){
   q(".urow .w").innerHTML=
     '<span class="search"><span class="mag" aria-hidden="true">⌕</span>'+
       '<input type="search" aria-label="'+E(SPEC.search)+'" placeholder="'+E(SPEC.search)+'"></span>'+
-    '<a class="ulink" href="'+E(SPECLINK(SPEC.util[1]))+'">'+E(SPEC.util[0])+"</a>"+
+    (SPEC.util?'<a class="ulink" href="'+E(SPECLINK(SPEC.util[1]))+'">'+E(SPEC.util[0])+"</a>":"")+
     '<span class="lang" role="group" aria-label="Kieli">'+
       SPEC.langs.map(l=>'<a href="#"'+(l[1]?' aria-current="true"':"")+">"+E(l[0])+"</a>").join("")+"</span>";
   q("header.site .w").innerHTML='<a class="logo" href="'+E(SPECLINK("/"))+'">'+E(SPEC.logo)+"</a>"+

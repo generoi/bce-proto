@@ -1516,7 +1516,7 @@ function rStart(){
    undefined tarkoittaa ettei kortti ole kuvallinen lainkaan. */
 var KUVAT = {
   nakyva:   '../kuvat/liitos-nakyva.svg',
-  piilo:    null,                              /* P-PIK: lähteet ristiriidassa, avoin */
+  piilo:    '../kuvat/liitos-piilo.svg',      /* P-PIK, ristiriita ratkesi 21.9.2026 */
   palkki:   '../kuvat/liitos-palkki.svg',
   tasainen: '../kuvat/liitos-tasainen.svg',
   tolppa:   '../kuvat/liitos-tolppa.svg',
@@ -2804,10 +2804,10 @@ render();
    ja parametri ei ole linkitetty mistään. Vastaukset ovat samat kuin
    docs/pilarilaskuri/ruutukuvat.py:ssä, joka ajaa kuvat. */
 var DEMOT = {
-  terassi: { building:'terassi', w:4, l:5, cover:'ei',    terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
-  mokki:   { building:'mokki',   w:5, l:5, heated:'kesa', terrain:'20-40',  soil:'kantava', beam:'48x148', thickness:'96', fixing:'palkki' },
-  sauna:   { building:'sauna',   w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
-  piha:    { building:'piha',    w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva' },
+  terassi: { building:'terassi', w:4, l:5, cover:'ei',    terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'terassi' },
+  mokki:   { building:'mokki',   w:5, l:5, heated:'kesa', terrain:'20-40',  soil:'kantava', beam:'48x148', thickness:'96', fixing:'palkki', mass:'rakennus' },
+  sauna:   { building:'sauna',   w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'rakennus' },
+  piha:    { building:'piha',    w:4, l:3,               terrain:'alle20', soil:'kantava', beam:'48x148', thickness:'48', fixing:'nakyva', mass:'rakennus' },
   katos:   { building:'katos',   w:6, l:8, poles:8,      terrain:'20-40',  soil:'kantava', post:'90-140' },
   tolppa:  { building:'tolppa',  poles:4 }
 };

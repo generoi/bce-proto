@@ -121,6 +121,16 @@ header.site nav a[aria-current],header.site nav .navtop[aria-current]{box-shadow
 .btn-2:hover{border-color:var(--ink)}
 .btn-s{font-size:16px;padding:11px 18px}
 .hdr-cta{flex:none}
+/* Kuudes valikkokohta (Yhteystiedot, 21.9.2026) vie palkin yli reunan kaistalla
+   981–1120 px: 1024 px:ssä ylivuoto oli 53 px eli sivu sai vaakavierityksen.
+   Palkki oli jo viisi kohtaa laaja täysin äärimmillään 1024 px:ssä, joten kyse ei ole
+   yhden kohdan vaan koko kaistan mitoituksesta. Tiivistetään välit tällä välillä,
+   ei fonttikokoa: 15 px on luettavuuden alaraja tässä navigaatiossa. Alle 981 px
+   koko valikko on jo hampurilaisessa. */
+@media(min-width:1024px) and (max-width:1120px){
+  header.site nav{gap:3px}
+  header.site nav a,header.site nav .navtop{padding:9px 8px}
+}
 
 /* murupolku */
 .crumb{font-size:14px;color:var(--ink-3);border-bottom:1px solid var(--rule);background:#fff}
@@ -217,6 +227,16 @@ footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:
   .bar{display:flex}
   body.has-bar{padding-bottom:74px}
   section{padding:44px 0}
+}
+
+/* Kaista 981–1023 px on liian kapea kuudelle kohdalle ja painikkeelle yhtaikaa
+   (ylivuoto 29 px välit tiivistettyinäkin). Tässä välissä valikko pysyy vaakarivinä
+   ja ensisijainen toiminto siirtyy alapalkkiin — sama ratkaisu kuin mobiilissa,
+   jolloin konversiolinkki ei katoa miltään leveydeltä. Hampurilainen pysyy 980:ssä. */
+@media(min-width:981px) and (max-width:1023px){
+  .hdr-cta{display:none}
+  .bar{display:flex}
+  body.has-bar{padding-bottom:74px}
 }
 
 /* --- sivukohtaiset lohkot, samaa kieltä --- */

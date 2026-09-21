@@ -203,16 +203,16 @@ const KAAVAT = [
 },
 {
   osa:'2 · Kuorma',
-  johdanto:'Rakennuksilla kuorma on hyötykuorma, autokatoksella lumikuorma. Rakenteen omapaino ei ole kummassakaan mukana, joten laskettu kuorma on alaraja.',
+  johdanto:'Rakennuksilla kuorma on hyötykuorma, autokatoksella lumikuorma. Rakenteen omapaino <strong>kysytään nyt asiakkaalta</strong> (K7), mutta kahden valmiin luokan lukua ei ole vielä annettu, joten niillä omapaino on yhä nolla ja laskettu kuorma on alaraja. Vain <em>Määritä itse</em> tuo kaavaan luvun.',
   kaavat:[
   {
     nro:'K6', otsikko:'Rakennuksen kuorma', tila:'vajaa', lahde:'KESTOPUU',
-    sym:[ v('q') + op('=') + v('q', 'k') + op('+') + v('g', 'k') + eh('q<sub>k</sub> = 2,0 kN/m², g<sub>k</sub> puuttuu') ],
+    sym:[ v('q') + op('=') + v('q', 'k') + op('+') + v('g', 'k') + eh('q<sub>k</sub> = 2,0 kN/m², g<sub>k</sub> asiakkaalta') ],
     san:[ sa('kuormitus') + op('=') + sa('hyötykuorma') + op('+') + sa('rakenteen omapaino') ],
     mrk:[['q','kuormitus','pinta-alaa kohti','kN/m²'],
          ['q<sub>k</sub>','hyötykuorma','2,0 kN/m² — terassi, piha, sauna, mökki','kN/m²'],
-         ['g<sub>k</sub>','rakenteen omapaino','<em>ei lähdettä</em> — nyt nolla','kN/m²']],
-    huom:'<em>Omapaino puuttuu, ja se on suurin yksittäinen puute koko laskennassa.</em> Kannen ja rungon omapaino, mökin katto- ja seinärakenteet sekä lumi ovat suuruusluokaltaan 2–5 kN/m², eli todellinen kuorma voi olla kolminkertainen laskettuun nähden. Arvo täytetään työpajan säätöpaneelista ja menee sieltä suoraan tähän kaavaan.'
+         ['g<sub>k</sub>','rakenteen omapaino','asiakkaan oma luku, tai luokan luku joka <em>puuttuu</em> — silloin nolla','kN/m²']],
+    huom:'<em>Omapaino kysytään, mutta luokkien luvut puuttuvat.</em> Kysymys K7 tarjoaa kolme vastausta: avoin terassi, katettu tai seinällinen rakennus, tai oma luku. Kaksi ensimmäistä ovat luokkia, joille BCE ei ole vielä antanut kN/m²-arvoa (T19), joten niillä g<sub>k</sub> on nolla ja kuorma on yhä alaraja — <em>Määritä itse</em> on ainoa vastaus, joka tuo kaavaan luvun. Suuruusluokka on 2–5 kN/m², eli todellinen kuorma voi olla kolminkertainen laskettuun nähden. Luvut voi täyttää myös työpajan säätöpaneelista, ja ne menevät sieltä suoraan tähän kaavaan.'
   },
   {
     nro:'K7', otsikko:'Autokatoksen lumikuorma', tila:'vajaa', lahde:'YM · EN 1991-1-3',
@@ -403,7 +403,7 @@ const ESIMERKIT = [
     ['K3', 'n<sub>L</sub> = max(2, ⌈5 / 1,6⌉ + 1)', 'pilareita pituussuunnassa', '5'],
     ['K4', 'n = 4 · 5', 'pilarien määrä', '20 kpl'],
     ['K5', 'a<sub>b</sub> = 4 / 3, a<sub>L</sub> = 5 / 4', 'toteutuvat välit, molemmat ≤ 1,6', '1,33 · 1,25 m'],
-    ['K6', 'q = 2,0 + 0', 'kuormitus, omapaino puuttuu', '2,0 kN/m²'],
+    ['K6', 'q = 2,0 + 0', 'kuormitus, omapaino nolla koska luokan luku puuttuu', '2,0 kN/m²'],
     ['K8', 'N = 2,0 · 20 / 20', 'kuorma per pilari', '2,0 kN'],
     ['K9', 'A<sub>t,max</sub> = 1,33 · 1,25', 'sisäpilarin kuormitusala', '1,67 m²'],
     ['K10', 'N<sub>t</sub> = 2,0 · 1,67 → k<sub>t</sub> = 1,67', 'sisäpilarin kuorma, 1,67× keskiarvo', '3,33 kN'],
@@ -427,7 +427,7 @@ const ESIMERKIT = [
 /* Mitä laskuri ei laske. Tämä luettelo kuuluu kaavakokoelmaan yhtä paljon kuin
    kaavat: ilman sitä kaavat lupaavat enemmän kuin ne lunastavat. */
 const PUUTTUU = [
-  ['Rakenteen omapaino g<sub>k</sub>','Kannen, rungon, seinien ja katon paino. Suuruusluokka 2–5 kN/m², eli laskettu kuorma voi olla kolmasosa todellisesta. BCE.'],
+  ['Rakenteen omapaino g<sub>k</sub>','<strong>Kysymys on olemassa (K7), luvut eivät.</strong> Asiakas valitsee luokan tai syöttää oman luvun; luokkien <em>avoin terassi</em> ja <em>katettu rakennus</em> kN/m²-arvot puuttuvat, joten niillä omapaino on nolla. Suuruusluokka 2–5 kN/m². BCE, T19.'],
   ['Katon omapaino g<sub>k,katto</sub>','Autokatoksen katerakenne. BCE.'],
   ['Lumi rakennuksille','Vain autokatos saa lumikuorman. Katettu terassi ohjataan KP:lle lumen takia, mutta lumi ei tule sen kuormaan.'],
   ['Lumivyöhykkeet s<sub>k</sub>','Postinumerokohtainen kartta. Nyt käytössä Suomen suurin ominaisarvo 3,5 kN/m². BCE.'],
