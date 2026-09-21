@@ -62,11 +62,30 @@
        akselit[2] = korkeus w  (alkaa siirrosta, ei keskitetty)
      Siksi w:n suunnassa siirtoon tulee −h/2 kun kappale halutaan keskelle. */
   var PARIT = {
+    /* ⚠️ TÄMÄ PARI ON VÄÄRIN, EIKÄ SITÄ SAA KÄYTTÄÄ — jätetty tänne siksi, että
+       se oli TP-perhesivulla 18.–21.9.2026 ja virhe kannattaa olla luettavissa.
+
+       Pari piirtää PIK 50-70:een pystytolpan. Asiakkaan oma materiaali sanoo
+       neljässä paikassa, että kenkä on lankulle:
+         pilariesite 2023 s. 10–11  «Terassirakenteissa runkoon. Tarkoitettu
+                                    yhteen lankkuun»
+         nykysivusto                «Yksi lankku (50–70 mm) terassin runkoon»
+         tarvikesivun kortti        «Yhdelle 50–70 mm:n lankulle»
+         laskurin sääntö            näkyvä kiinnitys + palkki 48 × 148 → PIK 50-70
+       Viides lähde oli TP-perhesivun rivi «Pystytolpalle», ja **se oli Generon
+       omaa copya** — ei ristiriita asiakkaan lähteissä vaan meidän virhe.
+       Pystytolppa on PIK 90-140:n tehtävä (esite: «katosten puiset
+       kannatintolpat»), ja sille on oma parinsa.
+
+       Oikea pari tähän kenkään on «pik-50-70-palkki». */
     "pik-50-70": {
-      osa: "pik-50-70", otsikko: "PIK 50-70 ja 70 × 70 tolppa",
+      osa: "pik-50-70", otsikko: "PIK 50-70 ja 70 × 70 tolppa (VÄÄRIN, ei käyttöön)",
       selite: "Tolppa nousee uran pohjalta levyjen välistä. Etulevy jää tolpan " +
               "eteen, ja ruuvit menevät levyn reikien läpi tolppaan molemmilta " +
               "puolilta.",
+      avoin: "Tämä pari on väärin: asiakkaan oma materiaali sanoo PIK 50-70:n " +
+             "olevan yhdelle lankulle, ei pystytolpalle. Käytä paria " +
+             "«pik-50-70-palkki».",
       puut: function (T, p) { return [tolppa(T, p || 190)]; }
     },
     "pik-90-140": {
@@ -121,26 +140,33 @@
        puu menee kiinnikkeeseen; täysi liitos kertoo mihin se johtaa — että
        tästä tulee terassin pinta. Sama kolmikerroksinen rakenne kuin
        terassikuva.js:ssä, mutta yhden liitoksen kohdalta. */
+    /* ---- PIK 50-70 ja runkopalkki, ilman laudoitusta -----------------------
+       Lisätty 21.9.2026, kun «pik-50-70» todettiin vääräksi (ks. sen kommentti).
+       Ero «pik-50-70-terassi»:iin on se, mitä kuva on näyttämässä: siinä aihe on
+       terassin pinta ja kerroksia on kolme, tässä aihe on liitos ja kerroksia on
+       kaksi. Asennuskuvassa on lisäksi pilari, jolloin kolme kerrosta olisi
+       neljä ja ylin jäisi rivin kuvapaikassa muutamaan pikseliin.
+
+       Sama rakenne kuin «pak-100x150»:llä: kiinnike ja siihen tuleva palkki,
+       ei enempää. */
+    "pik-50-70-palkki": {
+      osa: "pik-50-70", otsikko: "PIK 50-70 ja runkopalkki 48 × 148",
+      selite: "Runkopalkki lasketaan kengän uraan ja ruuvataan levyjen reikien " +
+              "läpi molemmilta puolilta. Ura on 70 mm, eli yhdelle 50–70 mm:n " +
+              "lankulle — sen minkä nimi lupaa.",
+      puut: function (T, p) { return palkit(T, "48x148", 1, p || 270); }
+    },
     "pik-50-70-terassi": {
       osa: "pik-50-70", otsikko: "PIK 50-70, runkopalkki 48 × 148 ja laudoitus",
       selite: "Runkopalkki lasketaan kengän uraan ja ruuvataan levyjen läpi " +
               "molemmilta puolilta. Terassilauta tulee palkin päälle poikittain.",
-      /* ⚠️ TÄMÄ KUVA OLETTAA, ETTÄ PIK 50-70:EEN TULEE VAAKAPALKKI, ja se on
-         eri oletus kuin parilla «pik-50-70», jossa on pystytolppa. Lähteet
-         sanovat molempia:
-           laskurin sääntö   fixing='nakyva' + palkki 48×148 → PIK 50-70,
-                             perusteluteksti «tarkoitettu yhdelle lankulle»
-           tarvikesivun kortti «Terassin runkopalkki — ohuemmat runkopalkit ja
-                             välilankut, 50–70 mm»
-           TP-sivun rivi     «Pystytolpalle. Puutolppa asetetaan kengän sisään»
-         Ura on 70 mm kummassakin luennassa, eikä geometria ratkaise asiaa:
-         70 × 70 tolppa ja 48 mm:n palkki mahtuvat molemmat.
-         Kysyttävä BCE:ltä: onko PIK 50-70 tolpalle vai runkopalkille — vai
-         molemmille? Siihen asti molemmat kuvat ovat olemassa eikä kumpaakaan
-         ole valittu toisen puolesta. */
-      avoin: "Laskuri ja tarvikesivu sanovat PIK 50-70:n olevan runkopalkille, " +
-             "TP-sivun rivi pystytolpalle. Tämä kuva noudattaa ensimmäistä, " +
-             "pari «pik-50-70» jälkimmäistä.",
+      /* Tämä kuva olettaa, että PIK 50-70:een tulee vaakapalkki, ja **oletus on
+         21.9.2026 alkaen varmistettu asiakkaan omasta materiaalista** eikä enää
+         ristiriita. Pilariesite 2023 (s. 10–11): «Terassirakenteissa runkoon.
+         Tarkoitettu yhteen lankkuun.» Sama sanoo nykysivusto, tarvikesivun
+         kortti ja laskurin sääntö. Pystytolppa on PIK 90-140:n tehtävä, ja
+         esite sanoo senkin suoraan: «Esim. katosten puiset kannatintolpat.»
+         Ks. pari «pik-50-70», joka on jäljellä vain varoituksena. */
       puut: function (T, p) { return palkit(T, "48x148", 1, p || 300); },
       nosto: 95,
       paalla: function (T) {

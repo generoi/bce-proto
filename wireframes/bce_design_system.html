@@ -173,20 +173,20 @@ const kuvaDemo=(function(){
     pilarit:rivi(perheet.map(o=>o.svg),perheet.map(o=>window.tuotekuva.koodi(o.perhe,o.koko))),
     tarvikkeet:rivi(tkuvat,tavaimet.map(k=>TKU.tieto(k).koodi)),
     palkit:rivi(pkuvat,pavaimet.map(k=>window.palkkikuva.nimi(k))),
-    parit:rivi([YKU({pari:"pik-50-70",korkeus:200,koriste:true,id:"dsy1"}),
+    parit:rivi([YKU({pari:"pik-50-70-palkki",korkeus:200,koriste:true,id:"dsy1"}),
                 YKU({pari:"pak-100x150",korkeus:200,koriste:true,id:"dsy2"}),
                 YKU({pari:"tl-150x150",korkeus:200,koriste:true,id:"dsy3"})],
-               ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta"]),
+               ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta"]),
     /* Asennuskuvat yhteiseen mittakaavaan ja yhdelle kankaalle. Tasaus «ala»,
        koska neljällä kuvalla on nyt yhteinen alataso: pilarin rajaus. */
     asennus:(function(){
-      const kuvaukset=[{pari:"pik-50-70"},{pari:"pak-100x150"},
+      const kuvaukset=[{pari:"pik-50-70-palkki"},{pari:"pak-100x150"},
                        {pari:"tl-150x150"},{osa:"nostokorva-m20"}];
       const AK=window.asennuskuva;
       const sk=190/Math.max.apply(null,kuvaukset.map(k=>AK.laajuus(k)));
       return rivi(KAN(kuvaukset.map((k,i)=>AK(Object.assign({},k,
                {skaala:sk,koriste:true,id:"dsa"+i}))),"ala"),
-        ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta",
+        ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta",
          "Nostokorva M20"]);
     })(),
     /* Oma piirtokutsu eikä sama SVG kahdesti: kuvan sisäiset id:t (rakeisuus,
