@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BCE-pilarilaskuri – työpajaprototyyppi v0.2</title>
+<title>Laske pilarien määrä — BCE Pilarimaailma</title>
+<meta name="robots" content="noindex, nofollow">
+<!-- Sivuston tyylit ENNEN laskurin omia: laskurin <style> on saman design systemin
+     osajoukko samoilla luokkanimillä (.btn, .lbl, .lede, .fine), joten se saa jäädä
+     päälle siellä missä se poikkeaa. Toisin päin sivuston sivupohja ylikirjoittaisi
+     laskurin paneelin. -->
+<link rel="stylesheet" href="../wireframes/bce-v4.css">
+<script src="../wireframes/bce-spec-shell.js"></script>
 <style>
 /* ---------------------------------------------------------------------------
    BCE-pilarilaskuri v0.2 – työpajaprototyyppi.
@@ -119,13 +126,13 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .wordmark{font-family:var(--ff-d);text-transform:uppercase;font-weight:600;font-size:var(--fs-h3);letter-spacing:.02em;margin:0 auto 0 0;line-height:1.2}
 .wordmark small{display:block;font-family:var(--ff);font-weight:400;text-transform:none;font-size:var(--fs-fine);color:var(--ink-3);letter-spacing:0}
 .langs{display:flex;gap:var(--s1)}
-.lang{
+.langs .lang{
   background:var(--surface);border:1px solid var(--rule-2);border-radius:var(--r-ctl);
   padding:0 var(--s3);min-height:var(--tap);min-width:var(--tap);cursor:pointer;
   font-size:var(--fs-small);font-weight:600;text-transform:uppercase;
 }
-.lang:hover{border-color:var(--ink)}
-.lang[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.langs .lang:hover{border-color:var(--ink)}
+.langs .lang[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .wsbtn{
   font-family:var(--ff-d);text-transform:uppercase;font-weight:600;font-size:16px;letter-spacing:.02em;
   background:var(--surface);color:var(--ink);border:2px solid var(--rule-2);
@@ -139,6 +146,51 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .stage.ws-on{justify-content:flex-start}
 @media (max-width:980px){ .stage{flex-direction:column;align-items:center;gap:var(--s6);padding:var(--s5) var(--s4) var(--s7)} }
 @media (min-width:981px){ .panel{min-height:720px} }
+
+/* --- kaksi tilaa ----------------------------------------------------------
+   Sama laskuri sivuston sivuna ja työpajan työkaluna. Vain kuori vaihtuu:
+   paneelin sisus on molemmissa sama, jotta työpajassa katsottu ruutu on se
+   ruutu joka on julkaistu. */
+[data-tila="tuotanto"] .top{display:none}
+[data-tila="tyopaja"] .urow,
+[data-tila="tyopaja"] header.site,
+[data-tila="tyopaja"] .crumb,
+[data-tila="tyopaja"] .kf-yla,
+[data-tila="tyopaja"] footer{display:none}
+/* Kiinteä 720 px on puhelinmallin korkeus: se on koriste, joka näyttää
+   laitteelta erillisen työkalun näyttämöllä. Sivun sisällä se on aukko —
+   aloitusruudun välike työntäisi painikkeen kortin pohjalle ja jättäisi
+   väliin tyhjän, joka lukee keskeneräisyytenä. Sivulla kortti on sisältönsä
+   korkuinen. */
+[data-tila="tuotanto"] .panel{min-height:0}
+[data-tila="tuotanto"] .stage{padding:var(--s5) var(--s5) var(--s7)}
+/* Kuoren «Laske pilarien määrä» osoittaisi tällä sivulla sivulle itselleen.
+   Umpikuja on pahempi kuin puuttuva painike: sivun toiminto on paneelissa. */
+[data-tila="tuotanto"] .hdr-cta{display:none}
+
+/* Otsikkolohko. Sivun oma ääni on tässä, laskurin ääni paneelissa: otsikko
+   lupaa lopputuloksen ja ingressi kertoo mitä siihen tarvitaan. */
+.kf-yla{padding-top:var(--s6)}   /* vaakapehmuste tulee .w:ltä, ei tästä */
+.kf-yla h1{font-size:var(--fs-h1);display:flex;align-items:center;
+  gap:var(--s3);flex-wrap:wrap;margin:0 0 var(--s3)}
+.kf-yla .lede{margin:0}
+/* Beta on tieto eikä koriste: se kertoo että laskenta on vielä tarkistettavana.
+   Siksi se on otsikon vieressä eikä alatunnisteessa, ja siksi se on harmaa
+   eikä oranssi — oranssi on toiminnon väri. */
+.kf-beta{font-family:var(--ff);font-size:var(--fs-fine);font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);
+  border:1px solid var(--rule-2);border-radius:var(--r-ctl);
+  padding:3px 9px;line-height:1.4}
+/* Mobiili on 80,9 % istunnoista, ja siellä otsikkolohko kilpailee suoraan
+   ensisijaisen toiminnon kanssa: jokainen rivi otsikkoa työntää «Laske
+   tarvitsemani pilarit» -painiketta alemmas. Siksi otsikko on täällä pienempi
+   kuin sisältösivuilla ja lohkon välit ovat tiukemmat — kortin luettelo kertoo
+   loput. */
+@media (max-width:980px){
+  .kf-yla{padding-top:var(--s4)}
+  .kf-yla h1{font-size:clamp(26px,7vw,34px);gap:var(--s2);margin-bottom:var(--s2)}
+  [data-tila="tuotanto"] .stage{padding:var(--s3) var(--s4) var(--s6)}
+}
 
 /* --- laskuripaneeli ------------------------------------------------------- */
 /* Kiinteä 720 px:n korkeus sai puhelimen näyttämään puhelimelta työpöydällä,
@@ -515,15 +567,66 @@ details > *:not(summary){margin-bottom:var(--s4)}
   document.head.appendChild(l);
 })();
 </script>
+<!-- =========================================================================
+     Kaksi tilaa, yksi laskuri.
+
+       tuotanto (oletus)   Sivuston sivu /konfiguraattori/. Sivuston kuori,
+                           murupolku ja alatunniste; työpajan yläpalkki piilossa.
+                           Tämä on se, minkä «Laske pilarien määrä» avaa.
+       tyopaja (?tyopaja=1) Työpajaprototyypin oma näkymä: säätöpaneelin kytkin,
+                           kielivalinta ja versiotunnus. Sivuston kuori piilossa.
+
+     Tila valitaan ennen kuoren piirtoa, jotta sivu ei välähdä väärässä asussa.
+     Työpajan yläpalkki jää DOMiin molemmissa tiloissa: laskurin skripti kiinnittää
+     kuuntelijat #langs- ja #wstoggle-elementteihin, ja puuttuva elementti kaataisi
+     sen. Piilotus on siis CSS:ää eikä poistoa.
+     ========================================================================= -->
+<script>
+(function(){
+  var tyopaja = /(^|[?&])tyopaja=1(&|$)/.test(location.search);
+  document.documentElement.setAttribute('data-tila', tyopaja ? 'tyopaja' : 'tuotanto');
+  if (tyopaja) document.title = 'BCE-pilarilaskuri \u2013 ty\u00f6pajaprototyyppi v0.2';
+})();
+</script>
+
+<a class="skip" href="#main">Siirry sisältöön</a>
+
 <div class="top">
   <h1 class="wordmark">BCE-pilarilaskuri<small>Työpajaprototyyppi v0.2 · ei tuotantokoodia</small></h1>
   <div class="langs" id="langs" role="group" aria-label="Kieli"></div>
   <button class="wsbtn" id="wstoggle" type="button" aria-pressed="false">Työpajanäkymä</button>
 </div>
-<div class="stage" id="stage">
-  <div class="panel" id="phone"></div>
-  <aside class="ws" id="ws" hidden aria-label="Työpajanäkymä"></aside>
-</div>
+
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main">
+  <div class="w kf-yla">
+    <h1>Laske pilarien määrä<span class="kf-beta">beta</span></h1>
+    <p class="lede">Kerro mitä rakennat ja kohteen mitat.</p>
+  </div>
+  <div class="stage" id="stage">
+    <div class="panel" id="phone"></div>
+    <aside class="ws" id="ws" hidden aria-label="Työpajanäkymä"></aside>
+  </div>
+</main>
+<footer><div class="w"></div></footer>
+
+<script>
+/* Sivuston kuori vain tuotantotilassa. Kuoren alapalkkia ei pyydetä (bar:false):
+   sen ensisijainen toiminto on «Laske pilarien määrä», ja tällä sivulla se osoittaisi
+   sivulle itselleen. Mobiilissa palkki veisi myös sen pystytilan, jossa laskuri
+   tekee työnsä. */
+(function(){
+  if (document.documentElement.getAttribute('data-tila') !== 'tuotanto') return;
+  if (!window.SPECSHELL) return;
+  var E = function(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  };
+  SPECSHELL(E, { crumb:[['Etusivu','/'], ['Laske pilarien määrä']], bar:false });
+})();
+</script>
 
 <!-- =========================================================================
      SÄÄNTÖMOOTTORI. Tämä skripti on irrallinen UI:sta ja ajettavissa Nodessa
@@ -1325,6 +1428,7 @@ if (typeof module !== 'undefined' && module.exports){
 <script id="ui">
 (function(){
 'use strict';
+var TYOPAJA = document.documentElement.getAttribute('data-tila') === 'tyopaja';
 var LANG = 'fi', WS = false, SCREEN = 'start', RESULT = null, HIST = [], SENT = null, SNOWDELTA = null;
 var state = freshState();
 window.dataLayer = window.dataLayer || [];
@@ -2768,15 +2872,59 @@ function renderLangs(){
   box.innerHTML = ['fi','sv','en'].map(function(l){
     return '<button class="lang" type="button" data-lang="' + l + '" aria-pressed="' + (LANG === l ? 'true' : 'false') + '">' + l + '</button>';
   }).join('');
+  merkitseKuorenKieli();
 }
-document.getElementById('langs').addEventListener('click', function(e){
-  var b = e.target.closest ? e.target.closest('[data-lang]') : null;
-  if (!b) return;
-  LANG = b.getAttribute('data-lang');
+
+/* Kuoren apurivillä on sivuston oma kielivalinta (FI · SV · EN). Prototyypissä se
+   on koriste kaikilla muilla sivuilla, mutta tällä sivulla kieli on olemassa:
+   laskuri on käännetty kolmelle kielelle. Kaksi kielivalitsinta samalla sivulla
+   olisi virhe, ja niistä väärä olisi se, joka ei tee mitään — siksi kuoren valinta
+   kytketään laskuriin eikä laskurin omaa valintaa näytetä tuotantotilassa. */
+function kuorenKielet(){
+  return [].slice.call(document.querySelectorAll('.urow .lang a'));
+}
+
+/* Kieli on valmis, kun sen sanakirja ei ole etuliitetty paikanpitäjä (prefixAll).
+   Ehto luetaan sanakirjasta eikä listasta, jotta valitsin kasvaa itsestään sinä
+   päivänä kun käännös tulee — eikä kukaan joudu muistamaan tätä kohtaa.
+
+   Tuotantotilassa keskeneräistä kieltä ei tarjota lainkaan. «[sv] Montako
+   pilaria» on oikea tieto työpajalle ja rikki asiakkaalle, ja tämä sivu on
+   asiakkaan. Työpajatilassa kaikki kolme ovat yhä omassa valitsimessaan. */
+function kieliValmis(koodi){
+  var d = I18N[koodi];
+  return !!d && String(d['start.h'] || '').charAt(0) !== '[';
+}
+function merkitseKuorenKieli(){
+  var tuotanto = document.documentElement.getAttribute('data-tila') === 'tuotanto';
+  kuorenKielet().forEach(function(a){
+    var koodi = (a.textContent || '').trim().toLowerCase();
+    if (tuotanto && !kieliValmis(koodi)){ a.remove(); return; }
+    if (koodi === LANG) a.setAttribute('aria-current', 'true');
+    else a.removeAttribute('aria-current');
+  });
+}
+document.addEventListener('click', function(e){
+  var a = e.target && e.target.closest ? e.target.closest('.urow .lang a') : null;
+  if (!a) return;
+  var koodi = (a.textContent || '').trim().toLowerCase();
+  if (['fi','sv','en'].indexOf(koodi) < 0) return;
+  e.preventDefault();
+  vaihdaKieli(koodi);
+});
+
+function vaihdaKieli(koodi){
+  if (koodi === LANG) return;
+  LANG = koodi;
   document.documentElement.setAttribute('lang', LANG);
   renderLangs();
   if (RESULT) RESULT = compute(state, RULES, LANG);
   render();
+}
+document.getElementById('langs').addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('[data-lang]') : null;
+  if (!b) return;
+  vaihdaKieli(b.getAttribute('data-lang'));
 });
 window.addEventListener('popstate', function(){
   if (HIST.length){ SCREEN = HIST.pop(); render(); }
@@ -2789,7 +2937,14 @@ wsBtn.addEventListener('click', function(){
   try { sessionStorage.setItem('bce-ws', WS ? '1' : '0'); } catch (err){}
   renderWS();
 });
-try { if (sessionStorage.getItem('bce-ws') === '1'){ WS = true; wsBtn.setAttribute('aria-pressed','true'); } } catch (err){}
+/* Säätöpaneelin tila muistetaan istunnon yli, mutta vain työpajatilassa. Ilman
+   ehtoa yksi työpajassa jäänyt kytkin seuraa mukana samassa istunnossa avattuun
+   sivuun ja avaa säätöpaneelin asiakkaan sivulle — se on työkalun sisus, ei sivu. */
+try {
+  if (TYOPAJA && sessionStorage.getItem('bce-ws') === '1'){
+    WS = true; wsBtn.setAttribute('aria-pressed','true');
+  }
+} catch (err){}
 
 renderLangs();
 render();
@@ -2834,7 +2989,7 @@ var OHJAUKSET = {
      43 kertaa on pelkkää kohinaa, eikä se kuulu polkukaavioon. */
   if (q.karsi){
     var tyyli = document.createElement('style');
-    tyyli.textContent = '.top,header,.wsbtn{display:none!important}'
+    tyyli.textContent = '.top,header,.wsbtn,.urow,.crumb,.kf-yla,footer,.bar{display:none!important}'
       + '.stage{padding-top:0!important}body{background:#fff}';
     document.head.appendChild(tyyli);
   }
