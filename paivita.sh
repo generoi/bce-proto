@@ -7,7 +7,11 @@
 set -euo pipefail
 
 LAHDE="${1:-$HOME/Claude/BCE/analytiikka/docs}"
-KOHDE="$(cd "$(dirname "$0")" && pwd)"
+# Kohde on oletuksena repon juuri (main julkaistaan juureen). julkaise.sh antaa
+# haaroille oman alihakemiston haarat/<haara>, jolloin jokainen haara saa oman
+# esikatselu-URLin eivätkä agentit ylikirjoita toistensa julkaisua.
+KOHDE="${2:-$(cd "$(dirname "$0")" && pwd)}"
+mkdir -p "$KOHDE"
 
 [ -d "$LAHDE/wireframes" ] || { echo "Lähdettä ei löydy: $LAHDE/wireframes" >&2; exit 1; }
 
@@ -43,7 +47,8 @@ grep -rhoE '"kuvat/[A-Za-z0-9._-]+\.(svg|png|jpg)"' "$KOHDE/wireframes/" 2>/dev/
   | tr -d '"' | sed 's#^kuvat/##' | sort -u \
   | while read -r f; do cp "$LAHDE/kuvat/$f" "$KOHDE/wireframes/kuvat/$f"; done
 
+echo "Kohde:             $KOHDE"
 echo "Wireframe-sivuja:  $(ls "$KOHDE"/wireframes/*.html | wc -l | tr -d ' ')"
 echo "Kuvia juuressa:    $(ls "$KOHDE"/kuvat | wc -l | tr -d ' ')"
 echo "Kuvia wireframeis: $(ls "$KOHDE"/wireframes/kuvat | wc -l | tr -d ' ')"
-echo "Koko:              $(du -sh "$KOHDE" --exclude=.git 2>/dev/null | cut -f1 || du -sh "$KOHDE" | cut -f1)"
+echo "Koko:              $(du -sh "$KOHDE/wireframes" "$KOHDE/pilarilaskuri" "$KOHDE/kuvat" | awk '{s+=$1}END{printf "%.1fM\n", s/1024}' 2>/dev/null || echo "?")"
