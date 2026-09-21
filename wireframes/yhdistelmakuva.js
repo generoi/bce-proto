@@ -24,15 +24,12 @@
    `tarvikekuva.tieto(osa)`:n arvoista (ura, palkki, kork, t, syvyys), joten jos
    tarvikkeen mitta korjataan, puu seuraa perässä eikä jää leijumaan.
 
-   ---- Neljä asiaa, jotka on varmistettava BCE:ltä ----
-   Nämä ovat kuvan väitteitä, eivät tuotetietoa. Ensimmäinen on eri luokkaa kuin
-   muut: siinä lähteet ovat keskenään ristiriidassa, ja kuva on toisen puolella.
+   ---- Kolme asiaa, jotka on varmistettava BCE:ltä ----
+   Nämä ovat kuvan väitteitä, eivät tuotetietoa.
 
-     0  P-PIK: PIILOKIINNIKE VAI EI. Tarvikesivu, laskurin tuotetieto ja laskurin
-        oma sääntö sanovat kaikki, että P-PIK on piilokiinnike. Silti sen
-        geometriassa levy on tolpan kyljessä, jolloin se näkyy. Jos levy kuuluu
-        tolpan päähän sahattuun uraan, tämä kuva on väärin päin. Älä käytä paria
-        ennen vastausta.
+   (Neljäs, P-PIK:n suunta, ratkesi 21.9.2026 BCE:n omasta tuotekuvastosta: P-PIK on
+   puolikas PIK, puu seisoo pohjalevyllä ja levy tulee sen kylkeen. Perustelu on
+   parin omassa kommentissa alempana. Paria saa käyttää.)
 
      1  PALKKIKENKÄÄN PIIRRETTY KAKSI LAUTAA. PAK-100×150:n satula on 100 mm
         leveä ja laskurin palkki on 48 mm. Kaksi lautaa vierekkäin on 96 mm, ja
