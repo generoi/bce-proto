@@ -90,7 +90,8 @@ section{padding-bottom:var(--s7)}
 .k-taulu{width:100%;border-collapse:collapse;font-size:var(--fs-small);background:none;margin-top:var(--s4)}
 .k-taulu th,.k-taulu td{text-align:left;padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
 .k-taulu th{font-family:var(--ff-d);text-transform:uppercase;font-size:14px;letter-spacing:.03em}
-.k-taulu td.num{text-align:right;font-variant-numeric:tabular-nums;padding-right:var(--s6)}
+.k-taulu th.num,.k-taulu td.num{text-align:right;padding-left:var(--s5)}
+.k-taulu td.num{font-variant-numeric:tabular-nums}
 .k-taulu td.sym{font-family:Georgia,"Times New Roman",serif;font-style:italic}
 .k-ei{color:var(--k-vajaa)}
 
@@ -359,6 +360,7 @@ const TAULUT = [
   johdanto:'Käytetty rivi on kunkin perheen suurimman epäkeskisyyden rivi, koska kuluttaja säätää kengän sinne minne palkki osuu.',
   pääOtsikot:['Perhe','Käytetty R<sub>d</sub>','Rivi','Vaadittu pohjapaine','Laatan sivu b<sub>p</sub>','Pysyvän osuus g'],
   sanaOtsikot:['Perhe','Käytetty kantavuus','Rivi','Vaadittu pohjapaine','Laatan sivu','Pysyvän kuorman osuus'],
+  tasaus:['v','o','v','o','o','o'],
   rivit:[
     ['AP','10 kN','10 kN @ 20 mm','170 kN/m²','330 mm','0,4'],
     ['TP','16 kN','16 kN @ 60 mm','160 kN/m²','450 mm','0,5'],
@@ -370,6 +372,7 @@ const TAULUT = [
   johdanto:'Kestopuu ry 2018, tukien väli pääpalkin alla. Laskuri käyttää taulukon alarajaa.',
   pääOtsikot:['Palkki h<sub>p</sub>','Kestopuun väli','Laskuri käyttää <i>a</i>'],
   sanaOtsikot:['Palkkikoko','Kestopuun väli','Laskuri käyttää'],
+  tasaus:['v','o','o'],
   rivit:[
     ['48 × 123 mm','1,4–1,5 m','1,4 m'],
     ['48 × 148 mm','1,6–2,2 m','1,6 m'],
@@ -381,6 +384,7 @@ const TAULUT = [
   johdanto:'Korkeusvara Δh_max on kaavan K11 tulos. Maaston korkeusero verrataan siihen, ei pilarin korkeuteen.',
   pääOtsikot:['Perhe','Korkeudet','Δh<sub>max</sub>','Painot'],
   sanaOtsikot:['Perhe','Korkeudet','Korkeusvara','Painot'],
+  tasaus:['v','v','o','o'],
   rivit:[
     ['AP','200 · 300 · 400 mm','200 mm','19–27 kg'],
     ['TP','200–600 mm, 100 mm välein','400 mm','43–67 kg'],
@@ -506,13 +510,15 @@ function taulu(t){
   if (t.johdanto) w.appendChild(el('p', { class:'johdanto' }, t.johdanto));
   const tb = el('table', { class:'k-taulu' });
   const otsikot = SANAT ? t.sanaOtsikot : t.pääOtsikot;
+  const tasaus = t.tasaus || [];
+  const luokka = i => tasaus[i] === 'o' ? { class:'num' } : null;
   const tr = el('tr');
-  otsikot.forEach(function(o){ tr.appendChild(el('th', null, o)); });
+  otsikot.forEach(function(o, i){ tr.appendChild(el('th', luokka(i), o)); });
   const thead = el('thead'); thead.appendChild(tr); tb.appendChild(thead);
   const tbody = el('tbody');
   t.rivit.forEach(function(r){
     const row = el('tr');
-    r.forEach(function(c, i){ row.appendChild(el('td', i > 0 ? { class:'num' } : null, c)); });
+    r.forEach(function(c, i){ row.appendChild(el('td', luokka(i), c)); });
     tbody.appendChild(row);
   });
   tb.appendChild(tbody);

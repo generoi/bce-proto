@@ -80,34 +80,31 @@
     },
     "p-pik-50x70": {
       osa: "p-pik-50x70", otsikko: "P-PIK 50×70 ja 70 × 70 tolppa",
-      selite: "Puolikas kenkä: yksi levy ja jalka pilarin päälle. Kuvassa levy on " +
-              "tolpan kyljessä, mutta tuote on kaikkialla muualla nimetty " +
-              "piilokiinnikkeeksi — ristiriita on kesken, ks. alla.",
-      /* ⚠️ TÄMÄ PARI ON RISTIRIIDASSA LÄHTEIDENSÄ KANSSA, EIKÄ SITÄ SAA KÄYTTÄÄ
-         ENNEN KUIN BCE VASTAA.
-         Kolme lähdettä neljästä sanoo P-PIK:n olevan piilokiinnike:
-           tarvikesivun copy   "Piilokiinnike silloin kun kiinnikkeitä ei haluta
-                               näkyviin", tagit 50-70 + piilo
-           laskurin tuotetieto "kiinnike ei näy ulospäin"
-           laskurin sääntö     fixing='piilo' → P-PIK (näkyvä on PIK 50-70)
-         Neljäs, pilari-tarvike-matriisin luku 4, sanoo "näkyvät liitokset".
-         Piilossa oleva levy tarkoittaa, että levy uppoaa tolpan päähän sahattuun
-         uraan eikä ole sen kyljessä. Silloin tämä kuva on väärin päin: tolpan
-         pitäisi niellä levy, ja näkyviin jäisi vain jalka ja tapit.
-         Kuva ei kuitenkaan piirrä uraa arvaukselta, koska tarvikekuva.js:n
-         geometria (luettu BCE:n tuotekuvasta) on yksi 5 mm:n levy ilman uraa —
-         eli geometria ja tuoteteksti ovat eri mieltä. Toinen niistä on väärä.
-         Kysyttävä BCE:ltä: uppoaako P-PIK:n levy tolpan uraan vai ruuvataanko
-         tolppa levyn kylkeen? */
-      avoin: "Kolme lähdettä sanoo P-PIK:n olevan piilokiinnike, mutta " +
-             "tarvikekuvan geometriassa levy on tolpan kyljessä. Kuva noudattaa " +
-             "geometriaa. Jos levy uppoaa tolpan uraan, kuva on väärin päin.",
-      /* Pystylevy on x-välillä 0…t, joten tolppa on sen takana (x < 0). */
-      puut: function (T, pit) {
-        var p = tolppa(T, pit || 190);
-        p.siirto[0] = -T.ura / 2;
-        return [p];
-      }
+      selite: "Puolikas kenkä: tolppa seisoo pohjalevyllä ja yksi pystylevy tulee " +
+              "sen kylkeen. Naulat menevät levyn kuudesta reiästä tolppaan vain " +
+              "yhdeltä puolelta — siksi tuote on piilokiinnike: levy käännetään " +
+              "sille puolelle, joka ei näy.",
+      /* ---- Avoin kohta 0 ratkesi 21.9.2026, ja vastaus oli kolmas ---------
+         Kysymys oli, uppoaako P-PIK:n levy tolpan päähän sahattuun uraan (jolloin
+         tämä kuva olisi väärin päin) vai ruuvataanko tolppa levyn kylkeen. Kumpikaan
+         ei ollut se, mikä «piilokiinnike» tarkoittaa.
+
+         BCE:n oma tuotekuva (bcepilarimaailma.fi, p-pik-50-70-mm-1.jpg) rinnan
+         PIK 50-70:n tuotekuvan kanssa näyttää, että P-PIK on kirjaimellisesti
+         puolikas PIK: sama pohjalevy, sama säätömutteri, samat 2 × 3 reikää — mutta
+         pystylevyjä on yksi kahden sijaan. Puu seisoo pohjalevyllä kuten PIK:ssä.
+         Piiloon ei jää levy vaan kiinnikkeet: kun naulattava puoli on vain yksi,
+         se käännetään sinne päin mistä sitä ei nähdä. Se sopii myös BCE:n omiin
+         käyttökohteisiin — «hirsirakennuksen pitkän sivun SISÄPUOLINEN kiinnitys»
+         ja terassirungon välilankut.
+
+         Uraa ei siis ole, eikä tarvikekuva.js:n geometria ollut ristiriidassa
+         tuotetekstin kanssa — luenta oli. Levyn puoli vaihdettiin samalla niin,
+         että jalka osoittaa katsojasta poispäin; muuten puu peittäisi levyn. */
+      /* Tolppa ei tarvitse siirtoa: pohjalevy on kierretapin ympärillä
+         symmetrisesti, ja tolppa seisoo sen päällä keskitettynä samaan akseliin.
+         Pystylevy on tolpan katsojan puoleisessa kyljessä. */
+      puut: function (T, p) { return [tolppa(T, p || 190)]; }
     },
     "pak-100x150": {
       osa: "pak-100x150", otsikko: "PAK-100×150 ja 2 × 48 × 148",

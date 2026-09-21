@@ -226,6 +226,10 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
    kentän samassa linjassa painikkeiden kanssa, ja rivin alapehmuste varaa sille tilan.
    Pystysäätimessä yksikkö saa jäädä oikealle: siellä laatikot ovat päällekkäin eikä
    sivulla oleva yksikkö häiritse mitään. */
+/* Ilman nimilappua rivillä on vain säädin, joten se on pidettävä oikeassa reunassa:
+   space-between veisi sen vasempaan laitaan ja kohdistus kuvan reunaan katoaisi. */
+.step.nimeton{justify-content:flex-end}
+.step.pysty.nimeton{justify-content:center}
 .step:not(.pysty) .ctl{padding-bottom:18px}
 .step:not(.pysty) .arvo{position:relative;display:block}
 .step:not(.pysty) .arvo .unit{position:absolute;left:50%;top:100%;transform:translateX(-50%);
@@ -238,8 +242,12 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
    noudattivat tätä jo (Leveys alareunassa, Pituus vasemmalla), mutta säätimet olivat
    allekkain listana, jolloin kumpi on kumpi piti lukea labelista. Pystysäädin kuvan
    oikealla ja vaakasäädin sen alla tekevät yhteyden ilman lukemista. */
-.mitat{display:grid;grid-template-columns:1fr auto;
-  grid-template-areas:"ala ala" "kuva pituus" "leveys leveys";
+.mitat{display:grid;
+  /* Sarake on enintään 280 px, koska sen levyisenä piirros taytyy pystysuunnassa
+     eika letterboxaa. Letterboxatussa SVG:ssa elementin reuna ei ole kuvan reuna,
+     jolloin leveyssaadinta ei voi kohdistaa koordinaatiston reunaan lainkaan. */
+  grid-template-columns:minmax(0,280px) auto;justify-content:start;
+  grid-template-areas:"ala ala" "kuva pituus" "leveys .";
   column-gap:var(--s3);align-items:center;margin:0 0 var(--s3);
   /* Yhteinen oikea kouru. Pystysäätimen yksikkö m roikkuu laatikoiden oikealla
      puolella virran ulkopuolella, ja ilman samaa kourua leveysrivillä säätimien
@@ -253,14 +261,34 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
    varten. Ruudukossa ne siirtäisivät kuvan alareunan säätimen alareunan yläpuolelle,
    vaikka align-items:end asettaa itse ruudukkopalat kohdakkain. Väleistä vastaa grid. */
 .m-kuva .plan{margin:0}
+/* Korkeuskatto pois: leveys ratkaisee koon, ja silloin kuva tayttaa elementtinsa.
+   overflow:visible, jotta kentan kehysviivan ulompi puolikas ei rajaudu pois nyt kun
+   kentan reuna on tasan kuvan reunassa. */
+.m-kuva .plan.plan-s svg{max-height:none;overflow:visible}
 .m-ala{grid-area:ala}
 /* Säädin keskitetään ruudukkoon, ei koko kuvaan: kuvan ylämarginaali on 14 px ja
    alamarginaali 40 px (leveysmitan teksti), joten SVG:n keskus on 13 px ruudukon
    keskuksen alapuolella. Alamarginaali nostaa keskitetyn palan puolikkaallaan.
    Luku on likimääräinen, koska kuva skaalautuu leveyden mukaan — kapealla ruudulla
    ero on muutaman pikselin pienempi, mikä ei erotu. */
-.m-pituus{grid-area:pituus;padding-right:var(--kouru);margin-bottom:26px}
-.m-leveys{grid-area:leveys;padding-right:var(--kouru)}
+/* Pystysäädin venyy koordinaatiston korkuiseksi: + ylös, − alas, arvo väliin. Suhteet
+   ovat piirroksen omat (padT 14 : kenttä 232 : padB 40 = 286), ja ne toteutetaan
+   flex-osuuksina, koska prosenttipehmuste ratkeaisi leveydestä eikä korkeudesta.
+   Jos planSVG():n marginaalit muuttuvat, nämä kolme lukua muuttuvat samalla. */
+.m-pituus{grid-area:pituus;padding-right:var(--kouru);align-self:stretch;
+  display:flex;flex-direction:column}
+.m-pituus::before{content:"";flex:14 0 0}
+.m-pituus::after{content:"";flex:40 0 0}
+.m-pituus .step.pysty{flex:232 0 0}
+/* Painikesäiliön on venyttävä ruudun korkuiseksi, muuten se jää sisältönsä mittaiseksi
+   ja space-between ei levitä mitään. */
+.m-pituus .step.pysty .ctl{flex:1 1 auto;justify-content:space-between}
+/* Leveyssäädin on kuvan sarakkeessa eikä koko ruudukon levyinen, jotta +-painikkeen
+   oikea reuna osuu koordinaatiston oikeaan reunaan: säädin mittaa sitä reunaa.
+   Vasen pehmuste 42/274 on piirroksen vasen marginaali, jossa kulkee pituusmitta —
+   sen jälkeen − osuu kentän vasempaan reunaan ja + oikeaan. */
+.m-leveys{grid-area:leveys;padding-left:15.328%}
+.m-leveys .ctl{flex:1 1 auto;justify-content:space-between}
 /* Pystysäätimessä + on ylhäällä ja − alhaalla, koska suunta on sama kuin mitalla.
    Kolme laatikkoa ovat päällekkäin, joten niillä on pakko olla sama leveys: vaakasuunnassa
    64 px:n kenttä ja --tap:n painikkeet eivät häiritse, pystyssä ero näkyy heti. Leveys
@@ -272,6 +300,9 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .step.pysty .arvo .unit{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%)}
 /* Kapealla ruudulla kuva kutistuisi säätimen tieltä lukukelvottomaksi, joten
    pystysäädin siirtyy kuvan alle ja molemmat ovat taas vaakasäätimiä. */
+/* Nimilapun poistuttua leveysrivi on enää kolme laatikkoa (~184 px), joten vierekkäinen
+   asettelu mahtuu myös puhelimeen. Raja on takaisin siinä, missä kuva itse kutistuisi
+   lukukelvottomaksi: sen alla molemmat ovat taas vaakasäätimiä ja koko rivin levyisiä. */
 @media (max-width:359px){
   .mitat{grid-template-columns:1fr;grid-template-areas:"kuva" "pituus" "leveys"}
   .step.pysty{flex-direction:row;justify-content:space-between;
@@ -519,7 +550,10 @@ var SOURCES = {
   GEN:      { label:'Generon oletus – ei sallittu sääntömoottorissa', tier:'warn' },
   /* Tarkistuslaskelmat eivät ole sääntöjä: ne raportoidaan, mutta eivät valitse
      tuotetta. Erillinen koodi, jotta ne erottuvat sääntömoottorin lähteistä. */
-  LASKENTA: { label:'Laskurin oma tarkistuslaskelma, ei BCE:n sääntö', tier:'warn' }
+  LASKENTA: { label:'Laskurin oma tarkistuslaskelma, ei BCE:n sääntö', tier:'warn' },
+  /* Asiakkaan itse antama luku ei ole sääntö eikä oletus: se on syöte. Omana
+     lähteenään siksi, ettei se sekoitu BCE:n vahvistamiin arvoihin tulosteessa. */
+  ASIAKAS:  { label:'Asiakkaan itse ilmoittama arvo', tier:'ok' }
 };
 
 /* --- pilarit --------------------------------------------------------------
@@ -601,7 +635,12 @@ function defaultRules(){
     spacingUnknownBeam: null,                                           /* PUUTTUU: tulos haarukkana */
     areaLimit:          { sauna:30, piha:30, mokki:30, katos:50, terassi:null }, /* RAKL; terassille ei lakirajaa */
     liveLoad:           { terassi:2.0, piha:2.0, sauna:2.0, mokki:2.0 }, /* KESTOPUU q = 2,0 kN/m² */
-    selfWeight:         null,                                           /* PUUTTUU: kuormatarkistus on alaraja */
+    /* Rakenteen omapaino luokittain. Luokka on kysymys, luku on sääntö — siksi
+       nimet ovat täällä ja arvot tyhjinä, kuten lumivyöhykkeillä. Niin kauan kuin
+       luku puuttuu, kuormatarkistuksessa on vain hyötykuorma, ja tulos sanoo sen.
+       PUUTTUU (T19): BCE antaa kN/m². */
+    selfWeightByClass:  { terassi:null, rakennus:null },
+    selfWeight:         null,                                           /* PUUTTUU: yleisarvo, ohittaa luokan jos annettu */
     roofSelfWeight:     null,                                           /* PUUTTUU: katon omapaino */
     snowShape:          0.8,                                            /* EN 1991-1-3 μ1, ≤ 30° katot. YM */
     snowDefault:        3.5,                                            /* YM: Suomen suurin ominaisarvo */
@@ -610,6 +649,11 @@ function defaultRules(){
     heightRange:        { AP:[200,400], TP:[200,600], KP:[400,1000], PP:[600,600] }, /* SITE, KRQ */
     terrainClasses:     [ {id:'alle20',maxDiff:200}, {id:'20-40',maxDiff:400}, {id:'40-60',maxDiff:600}, {id:'yli60',maxDiff:Infinity} ],
     heightSplitRule:    null,                                           /* PUUTTUU (T4) */
+    /* Kysymyskatto on 5, mutta polku on 21.9.2026 alkaen 2–9 ruutua: rakenteen
+       omapaino oli yhdeksäs. Katto ei ole voimassa missään — se ei rajoita steps():iä
+       eikä mitään muutakaan, vaan on jäänyt tänne muistuttamaan alkuperäisestä
+       tavoitteesta. Joko luku päivitetään tai polku lyhennetään; kumpikin on päätös
+       eikä korjaus, joten se on työpajan listalla eikä tässä. */
     questionCap:        5,
     _edited:            {},                                             /* säätöpaneelin muuttamat polut */
     _workshopSrc:       'Työpaja',
@@ -664,8 +708,6 @@ var FI = {
   'k2.poles.tolppa.lead':'Jokainen tolppa saa oman pilarin.',
   'k2.poles.lbl':'Tolppia',
 
-  'k2t.h':'Millainen tontti on?',
-  'k2t.lead':'Kaksi kysymystä maasta. Molemmat vaikuttavat pilarin valintaan.',
   'k3.h':'Kuinka paljon maa viettää?',
   'k3.lead':'Arvioi korkeusero rakennuksen alimman ja ylimmän kulman välillä.',
   'k3.alle20':'Alle 20 cm', 'k3.alle20.d':'lähes tasainen',
@@ -702,6 +744,16 @@ var FI = {
   'k6.98':'Yksi 4 tuuman palkki',           'k6.98.d':'98 mm, esimerkiksi liimapuu',
   'k6.eos':'En tiedä vielä',                'k6.eos.d':'',
   'k6.short':'palkin paksuus',
+
+  'k7.h':'Kuinka raskas rakenne pilarien päälle tulee?',
+  'k7.lead':'Rakenteen oma paino on se osa kuormasta, jota hyötykuorma ei kata.',
+  'k7.terassi':'Avoin terassi',                  'k7.terassi.d':'kansi ja runko, ei kattoa eikä seiniä',
+  'k7.rakennus':'Katettu tai seinällinen rakennus', 'k7.rakennus.d':'sauna, piharakennus, mökki, lasitettu terassi',
+  'k7.itse':'Määritä itse',                      'k7.itse.d':'syötä omapaino kN/m²',
+  'k7.itse.lbl':'Omapaino',
+  'k7.short':'rakenteen paino',
+  'k7.src.itse':'asiakkaan antama',
+  'k7.src.luokka':'työpajan luku luokalle {luokka}',
   'k5.katos.h':'Kuinka paksut kannatintolpat?',
   'k5.90-140':'Tolppa 90–140 mm', 'k5.90-140.d':'tavallinen puutolppa',
   'k5.yli140':'Tolppa yli 140 mm', 'k5.yli140.d':'järeä tolppa tai liimapuu',
@@ -826,6 +878,9 @@ var FI = {
   'how.acc.post.eos':'Tolpan paksuus puuttuu, joten kiinnikkeestä näytetään molemmat vaihtoehdot.',
   'how.acc.nostokorva':'Yksi nostokorva riittää: se siirretään pilarista toiseen.',
   'how.pak':'PAK-palkkikengän valintasääntöä ei ole missään lähteessä, joten laskuri ei ehdota sitä.',
+  'how.self':'Rakenteen omapaino {sw} kN/m², {mista}. Se lasketaan hyötykuorman päälle.',
+  'how.self.miss':'Rakenteen omapainolle ei ole lukua luokassa {luokka}, joten kuormassa on vain hyötykuorma {live} kN/m². Todellinen omapaino on suuruusluokkaa 2–5 kN/m², eli kuormatarkistus on alaraja eikä tulos.',
+  'how.self.ask':'Rakenteen painoa ei ole valittu, joten kuormassa on vain hyötykuorma {live} kN/m².',
 
   'install.1':'Kaiva koko rakennuksen alta häiriintymättömään moreenipohjaan, vähintään metri rakennuksen ulkoreunojen yli. Perusmaan kallistus vähintään 5 %.',
   'install.2':'Aseta suodatinkangas perusmaan päälle. Salaojaputket kaivannon ulkoreunaan.',
@@ -848,7 +903,7 @@ var FI = {
   'f.v.trib':'sisäpilarin ala', 'f.v.tribF':'sisäpilarin kuorma',
   'eng.tributary':'Kuorma jaetaan tasan kaikille pilareille. Todellisuudessa sisäpilari kantaa oman ruutunsa kokonaan ja reunapilari puolikkaan: ruutu {sw} × {sl} m = {a} m² eli {kN} kN, mikä on {ratio}× keskiarvo {pp} kN. Laskuri ei käytä tätä lukua tuoteperheen valintaan.',
   'eng.tributary.katos':'Katoksen pilarit eivät muodosta ruudukkoa, joten ruutukohtaista kuormaa ei lasketa. Kuorma jaetaan tasan asiakkaan ilmoittamien {n} tolpan kesken.',
-  'eng.height.inputs':'Korkeuden laskemiseen tarvitaan neljä lukua, joista laskurilla on yksi: palkin korkeus {beam} mm (K3). Puuttuvat kiinnikkeen rakennekorkeus, kiinnikkeen säätövara ja lattian korkeus maasta, jota ei kysytä. Lisäksi on auki, onko Kronqvistin {fill} mm täyttö pohjalaatan päällä vaatimus vai laskentaoletus (T4).',
+  'eng.height.inputs':'Korkeuden laskemiseen tarvitaan neljä lukua, joista laskurilla on yksi: palkin korkeus {beam} mm (K5). Puuttuvat kiinnikkeen rakennekorkeus, kiinnikkeen säätövara ja lattian korkeus maasta, jota ei kysytä. Lisäksi on auki, onko Kronqvistin {fill} mm täyttö pohjalaatan päällä vaatimus vai laskentaoletus (T4).',
   'eng.height.q':'Jos lattiakorkeus kysyttäisiin, korkeus olisi laskettavissa eikä lueteltavissa. Se on rakentajalle helpompi kysymys kuin korkeusero, koska hän päättää sen itse.',
   'eng.row':'Käytetty kapasiteettirivi: {kN} kN, kun epäkeskisyys on enintään {ecc} mm ja maapohja kestää {soil} kN/m². Taulukossa ei ole riviä suuremmalle epäkeskisyydelle.',
   'eng.ap':'AP:lle on julkaistu vain yksi rivi: 10 kN, kun epäkeskisyys on enintään 20 mm. TP:n varovaisin rivi on 60 mm ja KP:n 80 mm, joten AP:ta ei ole mitoitettu samalle epäkeskisyydelle kuin kahta muuta. AP:n tarjoaminen vaihtoehtona nojaa tähän yhteen riviin.',
@@ -856,6 +911,7 @@ var FI = {
   'eng.cover.snow':'Katettu tai lasitettu terassi ohjataan KP:lle lumen takia, mutta kuormana on vain hyötykuorma {q} kN/m². Saman kokoinen autokatos laskettaisiin arvolla {snow} kN/m².',
   'eng.mokki.load':'Mökin kuormana on terassin hyötykuorma {q} kN/m² (Kestopuu). Katon lumikuorma sekä katon ja seinien omapaino eivät ole mukana.',
   'eng.spacing.q':'Palkkivälin taulukko on laadittu hyötykuormalle 2,0 kN/m². Laskennassa käytetty kuorma on {q} kN/m², joten jakoväli ei enää vastaa palkin kestävyyttä.',
+  'n.self.miss':'Kuormatarkistuksessa on mukana vain hyötykuorma. Rakenteen oma paino on suuruusluokkaa 2–5 kN/m², joten tarkistus on alaraja eikä lopullinen mitoitus.',
   'disclaimer':'Laskuri antaa suosituksen yleisimpiin tilanteisiin. Pilarien kantavuus perustuu valmistajan rakennesuunnittelijan mitoitukseen. Maapohjan kantavuus, routasuojaus, salaojitus ja maanpinnan korkeus suunnitellaan aina kohteen mukaan. Jos olet epävarma, kysy meiltä: vastaamme tunnin sisällä arkisin.'
 };
 
@@ -1038,7 +1094,7 @@ function compute(state, R, lang){
   }
 
   /* Vaihe 4 – kuorma ja tuoteperheen lopullinen valinta. */
-  var q, sk = null, usedPostcode = false, liveOnly = null, selfW = null;
+  var q, sk = null, usedPostcode = false, liveOnly = null, selfW = null, massLahde = null;
   if (state.building === 'katos'){
     var pre = String(state.postcode || '').slice(0, 2);
     if (pre && R.snowByPostcodePrefix && R.snowByPostcodePrefix[pre] !== undefined){
@@ -1057,7 +1113,16 @@ function compute(state, R, lang){
     q = R.liveLoad[state.building];
     if (q === null || q === undefined) q = 0;
     liveOnly = q;
-    if (R.selfWeight != null){ q = r6(q + R.selfWeight); selfW = R.selfWeight; }
+    /* Kolme lähdettä, tässä järjestyksessä: asiakkaan oma luku, luokan luku,
+       säätöpaneelin yleisarvo. Asiakkaan luku voittaa luokan, koska hän tietää
+       oman rakenteensa paremmin kuin luokkakeskiarvo. */
+    var omaLuku = (state.mass === 'itse' && state.massValue > 0) ? state.massValue : null;
+    var luokkaLuku = (state.mass && state.mass !== 'itse' && R.selfWeightByClass)
+      ? R.selfWeightByClass[state.mass] : null;
+    if (omaLuku != null){ selfW = omaLuku; massLahde = 'itse'; }
+    else if (luokkaLuku != null){ selfW = luokkaLuku; massLahde = 'luokka'; }
+    else if (R.selfWeight != null){ selfW = R.selfWeight; massLahde = 'yleis'; }
+    if (selfW != null) q = r6(q + selfW);
   }
   var pp = r6(q * area / n);
   var diff = terrainDiff(R, state.terrain);
@@ -1108,6 +1173,21 @@ function compute(state, R, lang){
       state.building === 'mokki' ? 'warn' : tierOf(R, 'liveLoad.' + state.building, 'ok'),
       selfW != null ? (R._workshopSrc || 'Työpaja')
         : (state.building === 'katos' ? srcOf(R, 'snowShape', 'YM') : srcOf(R, 'liveLoad.' + state.building, 'KESTOPUU')));
+  /* Omapaino omalle riville: se on ainoa kuorman osa, jonka asiakas itse valitsee,
+     ja ainoa jonka puuttuminen tekee tarkistuksesta alarajan. */
+  if (state.building !== 'katos'){
+    if (selfW != null){
+      how('how.self',
+          { sw:selfW, mista: massLahde === 'itse' ? t('k7.src.itse')
+                           : t('k7.src.luokka', { luokka:t('k7.' + state.mass) }) },
+          massLahde === 'itse' ? 'ok' : tierOf(R, 'selfWeightByClass.' + state.mass, 'ok'),
+          massLahde === 'itse' ? 'ASIAKAS' : (R._workshopSrc || 'Työpaja'));
+    } else {
+      how(state.mass ? 'how.self.miss' : 'how.self.ask',
+          { luokka: state.mass ? t('k7.' + state.mass) : '', live:liveOnly }, 'miss', 'PUUTTUU');
+      note('warn', 'n.self.miss');
+    }
+  }
   how('how.terrain',
       { label:t('k3.' + state.terrain), family:fam, min:R.heightRange[fam][0], max:R.heightRange[fam][1] },
       'ok', srcOf(R, 'heightRange.' + fam, 'SITE'));
@@ -1250,9 +1330,11 @@ var state = freshState();
 window.dataLayer = window.dataLayer || [];
 
 function freshState(){
+  /* massValue on 0 eikä esimerkkiluku: esitäytetty luku valuisi laskentaan
+     vastauksena, jota asiakas ei antanut. Nolla tarkoittaa "ei annettu". */
   return { building:null, w:4, l:3, cover:null, heated:null, poles:2, terrain:null,
-           soil:null, beam:null, thickness:null, fixing:null, post:null, postcode:'', email:'', tips:false,
-           contact:'', message:'' };
+           soil:null, beam:null, thickness:null, fixing:null, post:null, mass:null, massValue:0,
+           postcode:'', email:'', tips:false, contact:'', message:'' };
 }
 function t(k, v){ return fmt(k, v, LANG); }
 function num(v, d){ return nf(v, LANG, d); }
@@ -1272,8 +1354,9 @@ var wsEl  = document.getElementById('ws');
 /* Ruutujärjestys 18.9.2026, kierros 2: **yksi kysymys per ruutu.**
    Kierroksella 1 ruutuja oli neljä, mutta kolme niistä kantoi kaksi kysymystä
    (rakennus + ehdollinen, korkeusero + maapohja, palkki + liitostyyppi). Olli hylkäsi
-   sen: kahta kysymystä ei panna samaan ruutuun. Ruutuja on nyt kahdesta seitsemään
-   rakennustyypin mukaan, ja koska jokaisella on tasan yksi kysymys, jokainen etenee
+   sen: kahta kysymystä ei panna samaan ruutuun. Ruutuja on **kahdesta yhdeksään**
+   rakennustyypin mukaan (tolppa 2, katos 5, terassi ja mökki 9), ja koska jokaisella
+   on tasan yksi kysymys, jokainen etenee
    klikkauksesta itsestään — Jatka-painike jää vain mittaruudulle, joka ei ole klikki.
    Napautusmäärä ei kasvanut: poistuneet Jatka-painikkeet korvaavat uudet ruudut.
 
@@ -1296,6 +1379,11 @@ function steps(){
       a.push('palkki');
       if (state.fixing !== 'tasainen') a.push('paksuus');
     }
+    /* Omapaino kysytään juuri ennen mittoja, koska kuorma on paino kertaa pinta-ala:
+       kysymykset ovat siinä järjestyksessä, jossa ne kertolaskuun menevät.
+       Katokselta ei kysytä — katon omapaino on oma vakionsa (roofSelfWeight) eikä
+       tämän kysymyksen luokat kuvaa kattorakennetta. Se on yhä auki. */
+    if (b !== 'katos') a.push('massa');
   }
   a.push('mitat');
   return a;
@@ -1377,9 +1465,13 @@ function opt(key, val, tk, dk, on, kuva){
    siis kentästä kokonaan, vaikka arvo oli tallessa kuvassa ja pinta-alassa.
    inputmode="decimal" antaa yhä numeronäppäimistön, ja rajat tarkistaa numLimits()
    muutoskäsittelijässä — attribuuttien min ja max eivät olleet ainoa vahti. */
-function stepper(key, label, val, min, max, stepv, unit){
+function stepper(key, label, val, min, max, stepv, unit, nimeton){
   var id = 'num-' + key;
-  return '<div class="step"><label class="slbl" for="' + id + '">' + esc(label) + '</label><div class="ctl">'
+  /* nimeton: kuva nimeää mitan itse mittaviivallaan, joten nimilappu olisi toistoa.
+     Kentän aria-label kantaa nimen ruudunlukijalle, joten mitään ei menetetä. */
+  return '<div class="step' + (nimeton ? ' nimeton' : '') + '">'
+    + (nimeton ? '' : '<label class="slbl" for="' + id + '">' + esc(label) + '</label>')
+    + '<div class="ctl">'
     + '<button type="button" data-act="bump" data-key="' + key + '" data-d="-' + stepv + '" aria-label="' + esc(t('ui.less')) + '"'
     + (val <= min ? ' disabled' : '') + '>&#8722;</button>'
     + '<span class="arvo"><input class="val" id="' + id + '" type="text" inputmode="decimal" data-num="' + key + '"'
@@ -1388,9 +1480,13 @@ function stepper(key, label, val, min, max, stepv, unit){
     + '<button type="button" data-act="bump" data-key="' + key + '" data-d="' + stepv + '" aria-label="' + esc(t('ui.more')) + '"'
     + (val >= max ? ' disabled' : '') + '>+</button></div></div>';
 }
-function stepperPysty(key, label, val, min, max, stepv, unit){
+function stepperPysty(key, label, val, min, max, stepv, unit, nimeton){
   var id = 'num-' + key;
-  return '<div class="step pysty"><label class="slbl" for="' + id + '">' + esc(label) + '</label><div class="ctl">'
+  /* Sama kuin vaakasäätimessä: kuva nimeää mitan mittaviivallaan, ja kentän aria-label
+     kantaa nimen ruudunlukijalle. */
+  return '<div class="step pysty' + (nimeton ? ' nimeton' : '') + '">'
+    + (nimeton ? '' : '<label class="slbl" for="' + id + '">' + esc(label) + '</label>')
+    + '<div class="ctl">'
     + '<button type="button" data-act="bump" data-key="' + key + '" data-d="' + stepv + '" aria-label="' + esc(t('ui.more')) + '"'
     + (val >= max ? ' disabled' : '') + '>+</button>'
     + '<span class="arvo"><input class="val" id="' + id + '" type="text" inputmode="decimal" data-num="' + key + '"'
@@ -1402,6 +1498,7 @@ function stepperPysty(key, label, val, min, max, stepv, unit){
 }
 function numLimits(key){
   if (key === 'poles') return { min:(state.building === 'katos' ? 4 : 1), max:20, dec:0 };
+  if (key === 'massValue') return { min:0, max:10, dec:1 };
   return { min:1, max:50, dec:1 };
 }
 
@@ -1501,6 +1598,26 @@ function rPaksuus(){
   ['48','96','98','eos'].forEach(function(k){ o += opt('thickness', k, 'k6.' + k, 'k6.' + k + '.d', state.thickness === k); });
   return kysymys('paksuus', t('k6.h'), t('k6.lead'), o);
 }
+/* Rakenteen omapaino. Kysymys on olemassa, luvut eivät: kaksi luokkaa on tyhjiä
+   työpajavakioita, ja Määritä itse on ainoa haara, joka tuottaa luvun tänään.
+   Ilman tätä ruutua kuormatarkistuksessa oli vain hyötykuorma 2,0 kN/m², vaikka
+   rakenteen oma paino on 2–5 — eli näytetty marginaali oli kolminkertainen
+   todelliseen nähden, ja isoimmissa tapauksissa perhekin väärä. */
+function rMassa(){
+  var o = opt('mass', 'terassi',  'k7.terassi',  'k7.terassi.d',  state.mass === 'terassi')
+        + opt('mass', 'rakennus', 'k7.rakennus', 'k7.rakennus.d', state.mass === 'rakennus')
+        + opt('mass', 'itse',     'k7.itse',     'k7.itse.d',     state.mass === 'itse');
+  var sisus = '<div class="scr">' + nav('massa') + '<h2>' + esc(t('k7.h')) + '</h2>'
+    + '<p class="lede">' + esc(t('k7.lead')) + '</p><div class="opts">' + o + '</div>';
+  /* Vain Määritä itse tuo lukukentän, ja vain silloin ruutu tarvitsee painikkeen:
+     muut vaihtoehdot etenevät klikkauksesta kuten muillakin ruuduilla. */
+  if (state.mass === 'itse'){
+    sisus += stepper('massValue', t('k7.itse.lbl'), state.massValue, 0, 10, 0.5, 'kN/m²')
+      + '<div class="spacer"></div>'
+      + '<button class="btn btn-1 wide" type="button" data-act="next">' + esc(t('ui.continue')) + '</button>';
+  }
+  return sisus + '</div>';
+}
 /* Ainoa ruutu, jossa ei klikata vaan kirjoitetaan luku, ja siksi ainoa jolla on painike. */
 function rMitat(){
   var b = state.building, o = '';
@@ -1553,7 +1670,14 @@ function planSVG(o){
   /* Kiinteässä kentässä alue on aina kiinni kentän alareunassa, joten leveysmitan
      teksti on aina samalla korkeudella (padT + fh + 31). Ruudun kokoteksti mahtuu
      samalle riville oikeaan reunaan, jolloin alamarginaali on 52 sijasta 40. */
-  var padL = 42, padT = 14, padR = 16, padB = F ? 40 : 62;
+  /* padR on 2 kiinteässä kentässä: oikealla ei ole mitään (mittaviivat ovat
+     vasemmalla ja alhaalla), ja kun kuvan oikea reuna on kentän oikea reuna,
+     leveyssäädin voi kohdistua siihen ilman skaalautuvaa korjausta. Kaksi
+     pikseliä jää kehysviivan vuoksi. */
+  /* padR on 0 kiinteässä kentässä: kentän oikea reuna ON kuvan oikea reuna, jolloin
+     leveyssäätimen voi kohdistaa siihen ilman vakiota. Kehysviivan ulompi puolikas
+     jäisi rajautumaan, ja siksi SVG saa overflow:visible (ks. .m-kuva CSS). */
+  var padL = 42, padT = 14, padR = F ? 0 : 16, padB = F ? 40 : 62;
   var vw = Math.round(fw + padL + padR), vh = Math.round(fh + padT + padB);
   var oy = F ? F - L : 0;                     /* alue kiinni kentän alareunassa */
   var FX = function(m){ return padL + m * sc; }, FY = function(m){ return padT + m * sc; };
@@ -1673,8 +1797,8 @@ function mitatLohko(){
   return '<div class="mitat">'
     + '<div class="m-ala">' + k2ala() + '</div>'
     + '<div class="m-kuva" id="k2plan">' + k2plan() + '</div>'
-    + '<div class="m-pituus">' + stepperPysty('l', t('k2.l'), state.l, 1, 50, 0.5, 'm') + '</div>'
-    + '<div class="m-leveys">' + stepper('w', t('k2.w'), state.w, 1, 50, 0.5, 'm') + '</div>'
+    + '<div class="m-pituus">' + stepperPysty('l', t('k2.l'), state.l, 1, 50, 0.5, 'm', true) + '</div>'
+    + '<div class="m-leveys">' + stepper('w', t('k2.w'), state.w, 1, 50, 0.5, 'm', true) + '</div>'
     + '</div>';
 }
 /* Kuva ja pinta-alarivi erikseen, koska ne ovat mittaruudussa eri ruudukkoriveillä. */
@@ -2062,7 +2186,9 @@ var TUNE = [
   { p:'liveLoad.piha',        l:'Hyötykuorma piharakennus (kN/m²)', src:'KESTOPUU', tier:'ok' },
   { p:'liveLoad.sauna',       l:'Hyötykuorma pihasauna (kN/m²)', src:'KESTOPUU', tier:'ok' },
   { p:'liveLoad.mokki',       l:'Hyötykuorma mökki (kN/m²)', src:'KESTOPUU', tier:'warn' },
-  { p:'selfWeight',           l:'Rakenteen omapaino (kN/m², tyhjä = ei mukana)', src:'', tier:'miss' },
+  { p:'selfWeightByClass.terassi',  l:'Omapaino: avoin terassi (kN/m²)', src:'', tier:'miss' },
+  { p:'selfWeightByClass.rakennus', l:'Omapaino: katettu tai seinällinen rakennus (kN/m²)', src:'', tier:'miss' },
+  { p:'selfWeight',           l:'Rakenteen omapaino, yleisarvo (kN/m², ohittaa luokan)', src:'', tier:'miss' },
   { p:'roofSelfWeight',       l:'Katon omapaino (kN/m², tyhjä = ei mukana)', src:'', tier:'miss' },
   { p:'snowShape',            l:'Lumen muotokerroin μ1', src:'YM', tier:'ok' },
   { p:'snowDefault',          l:'Lumen oletusarvo (kN/m²)', src:'YM', tier:'ok' },
@@ -2414,7 +2540,8 @@ var TESTCASES = [
 /* --- renderöinti ja tapahtumat -------------------------------------------- */
 function renderPhone(){
   var m = { start:rStart, rakennus:rRakennus, lisa:rLisa, kaltevuus:rKaltevuus,
-            maapohja:rMaapohja, liitos:rLiitos, palkki:rPalkki, paksuus:rPaksuus, mitat:rMitat,
+            maapohja:rMaapohja, liitos:rLiitos, palkki:rPalkki, paksuus:rPaksuus,
+            massa:rMassa, mitat:rMitat,
             result:rResult, lead:rLead, sent:rSent, handoff:rHandoff };
   phone.innerHTML = (m[SCREEN] || rStart)();
 }
@@ -2450,13 +2577,21 @@ phone.addEventListener('click', function(e){
     if (k === 'building'){
       state.cover = null; state.heated = null; state.post = null; state.beam = null;
       state.thickness = null; state.fixing = null;
+      /* Omapaino nollataan muiden mukana: luokat on nimetty rakennuksen kielellä
+         (avoin terassi / katettu tai seinällinen), joten terassille annettu vastaus
+         olisi saunalla sekä väärä että näkymätön — ruutu on jo ohitettu. */
+      state.mass = null; state.massValue = 0;
       state.poles = (v === 'katos') ? 4 : 2;
     }
     push('laskuri_step', { step:SCREEN, value:v });
     render();
     /* Jokaisella klikkiruudulla on tasan yksi kysymys, joten valinta vie eteenpäin
-       eikä erillistä Jatkaa tarvita. Viive jättää valinnan näkyviin hetkeksi. */
-    setTimeout(next, 150);
+       eikä erillistä Jatkaa tarvita. Viive jättää valinnan näkyviin hetkeksi.
+       Poikkeus luetaan ruudulta eikä koodata tänne: jos valinta toi ruutuun oman
+       painikkeen — kuten omapainon Määritä itse tuo lukukentän ja Jatkan — ruutu ei
+       ole vielä valmis, ja eteneminen jää painikkeen varaan. Ilman tätä lukukenttä
+       ehti näkyä 150 millisekuntia eikä siihen päässyt koskaan kirjoittamaan. */
+    if (!phone.querySelector('[data-act="next"]')) setTimeout(next, 150);
     return;
   }
   if (a === 'bump'){

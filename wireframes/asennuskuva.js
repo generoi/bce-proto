@@ -34,9 +34,9 @@
    Piirtofunktiot käyttävät samaa lukua, joten kenkä ei voi leijua tai upota.
 
    ---- Kolme asiaa, jotka on varmistettava BCE:ltä --------------------------
-   Nämä ovat tämän kuvan omia väitteitä. Parien omat avoimet kohdat (P-PIK:n
-   suunta, palkkikengän lautojen määrä, uran mitta) ovat yhdistelmakuva.js:ssä
-   eivätkä toistu tässä.
+   Nämä ovat tämän kuvan omia väitteitä. Parien omat avoimet kohdat (palkkikengän
+   lautojen määrä, uran mitta) ovat yhdistelmakuva.js:ssä eivätkä toistu tässä.
+   P-PIK:n suunta ratkesi 21.9.2026 tuotekuvasta, ks. yhdistelmakuva.js.
 
      1  PALKKIKENGÄN KIINNITYS PILARIIN EI NÄY EIKÄ SITÄ OLE PIIRRETTY. A-601
         sanoo kaikista tarvikkeista «ruuvataan min. 25 mm sisään valuankkuriin»,

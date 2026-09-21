@@ -368,9 +368,9 @@
       nimi: "Pieni L-mallinen pilarikenkä P-PIK 50×70", koodi: "P-PIK 50×70",
       ryhma: "Pilarikengät",
       ura: 70, lev: 70, kork: 100, t: 5, jalka: 70, av: 30,
-      pilariZ: -16,          /* jalan alapinta on 0, mutteri sen alla */
+      pilariZ: -21,          /* pohjalevy 5 mm + säätömutteri 16 mm, kuten PIK */
       arvio: "levyn korkeus, jalan pituus, reikäjako",
-      laatikko: {x: [-40, 80], y: [-40, 40], z: [-KIERRE - 24, 100 + 5]},
+      laatikko: {x: [-40, 45], y: [-40, 40], z: [-KIERRE - 24, 100 + 5]},
       piirra: function (C, o) { ppik(C, o); }
     },
     "pak-100x150": {
@@ -476,28 +476,55 @@
       var reuna = [[-sy, 0], [sy, 0], [sy, h - 20], [sy - 22, h], [-sy, h]];
       C.levy(reuna, "yz", x, t);
       /* Reiät käyvät levyn läpi, joten ne näkyvät kummallakin. */
-      for (var r = 0; r < 3; r++) for (var c = 0; c < 2; c++) {
-        C.reika("yz", [x + t, -sy / 2.4 + c * sy / 1.2, 24 + r * (h - 48) / 2], 4);
-      }
+      reiat(C, x + t, sy, h);
     });
   }
 
-  /* P-PIK: puolikas kenkä. Yksi pystylevy ja siitä sivulle taittuva jalka. */
-  function ppik(C, o) {
-    var sy = o.lev / 2, h = o.kork, t = o.t, jx = o.jalka;
-    var tx = t + jx * 0.34;
-    C.kierre(tx, 0, o.pilariZ - KIERRE, o.pilariZ, TAPPI);
-    C.mutteri(tx, 0, o.pilariZ, o.av, 16);
-    /* Tolppa on pystylevyn takana (x < 0) ja jalka sen edessä (x > 0), joten
-       puu piirtyy jalan ja pystylevyn väliin — ei kummankaan päälle. */
-    C.puu();
-    /* jalka lähtee pystylevyn juuresta sivulle: siitä tunnistaa puolikkaan kengän */
-    C.levy([[t, -sy], [t + jx, -sy], [t + jx, sy], [t, sy]], "xy", 0, t);
-    C.reika("xy", [t + jx * 0.72, 0, t], 4.5);
-    C.levy([[-sy, 0], [sy, 0], [sy, h - 20], [sy - 20, h], [-sy, h]], "yz", 0, t);
-    for (var r = 0; r < 3; r++) for (var c = 0; c < 2; c++) {
-      C.reika("yz", [t, -sy / 2.4 + c * sy / 1.2, 24 + r * (h - 48) / 2], 4);
+  /* Naulareiät pystylevyssä: kaksi riviä, kolme reikää rivissä. Jako on luettu
+     BCE:n tuotekuvista — sekä PIK 50-70:ssä että P-PIK:ssä reiät ovat leveys-
+     suunnassa kolmessa ja korkeussuunnassa kahdessa. Tarkkaa mittaa ei ole
+     julkaistu, joten `arvio` sanoo edelleen «reikäjako».
+
+     Reikä on naulalle: BCE ei kerro kiinnikettä, mutta tämän kokoluokan
+     naulauslevyn vakio on ankkurinaula 4,0 × 40. */
+  function reiat(C, x, sy, h) {
+    for (var r = 0; r < 2; r++) for (var c = 0; c < 3; c++) {
+      C.reika("yz", [x, (c - 1) * sy * 0.55, 24 + r * (h - 48)], 4);
     }
+  }
+
+  /* P-PIK: puolikas kenkä eli PIK 50-70 toinen pystylevy poistettuna. Sama
+     pohjalevy ja sama kierretappi, mutta vain yksi levy — ja siitä tulee sekä
+     nimi «puolikas» että se, miksi tuote on piilokiinnike: kiinnikkeet jäävät
+     yhdelle puolelle, joka käännetään näkymättömiin.
+
+     Rakenne on luettu BCE:n omasta tuotekuvasta (p-pik-50-70-mm-1.jpg) rinnan
+     PIK 50-70:n tuotekuvan kanssa: molemmissa on sama pohjalevy, sama säätö-
+     mutteri ja samat 2 × 3 reikää levyä kohti. Puu SEISOO pohjalevyllä ja levy
+     tulee sen kylkeen — se on kengän ainoa mahdollinen tapa kantaa kuorma,
+     koska pelkkien naulojen varaan ei tolppaa jätetä.
+
+     Pystylevy on pohjalevyn KATSOJAN PUOLEISESSA päässä (x = +jalka/2), jolloin
+     puu jää levyn taakse ja levyn reiät näkyvät — ja reiät ovat se, mitä kuvasta
+     pitää nähdä. Toisin päin levy katoaisi puun taakse kokonaan.
+
+     ⚠️ NOLLAPISTE ON KIERRETAPPI, EI LEVY. Osan origo on se piste, jonka
+     asennuskuva asettaa pilarin akselille. Pilarin kierre on pilarin keskellä,
+     joten tapin on oltava x = 0 — muuten kenkä istuu pilarin reunan yli. Sama
+     sopimus kuin kenka():ssa. Pohjalevy on siis tapin ympärillä symmetrisesti ja
+     pystylevy sen reunassa, ei toisin päin. */
+  function ppik(C, o) {
+    var sy = o.lev / 2, h = o.kork, t = o.t, px = o.jalka / 2;
+    C.kierre(0, 0, o.pilariZ - KIERRE, o.pilariZ, TAPPI);
+    C.mutteri(0, 0, o.pilariZ, o.av, 16);
+    /* Pohjalevy z-välillä [-t, 0], kuten PIK:ssä: puun alapinta on taso 0. */
+    C.levy([[-px, -sy], [px, -sy], [px, sy], [-px, sy]], "xy", -t, t);
+    /* Tuotekuvassa tapin reikä on pitkittäinen — siitä tulee sivusäätö. Tässä
+       se on pyöreä, koska uran mitta ei ole tiedossa; ks. `arvio`. */
+    C.reika("xy", [0, 0, 0], 11);
+    C.puu();
+    C.levy([[-sy, 0], [sy, 0], [sy, h - 20], [sy - 20, h], [-sy, h]], "yz", px, t);
+    reiat(C, px + t, sy, h);
   }
 
   /* Palkkikenkä: U-satula palkille, kaksi korkeaa selkälevyä ja niiden yläpäässä
