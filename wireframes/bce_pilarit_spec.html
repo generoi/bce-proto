@@ -35,7 +35,7 @@
    16.9.2026, auditin P1: sivu toisti etusivun neljä lohkoa sanasta sanaan (.claims,
    .cases, JeKi-.side, .img-band) ja oli 657 sanaa etusivun 665:tä vastaan. Kävijä, joka
    klikkasi Pilarit, luki saman sivun eri otsikolla. Ne poistettiin. Jäljelle jäi se, mitä
-   vain tällä sivulla on: käyttökohteet, neljä perhettä, tuotekoodihaku, tarvikkeet,
+   vain tällä sivulla on: neljä perhettä, tuotekoodihaku, käyttökohteet, tarvikkeet,
    konfiguraattori, jälleenmyyjät, isompi kohde. JeKi tavoitetaan navigaatiosta ja
    alatunnisteesta; miksi pilari eikä valu on etusivun ja käyttökohdesivun asia. */
 const C={
@@ -55,29 +55,24 @@ const C={
   /* Jälleenmyyjät tulevat kuoresta (SPEC.dealers, SPECDEALERS). */
 
   /* 1 · Hero. Ensimmäinen lause määrittelee tuotteen, koska kategoriahakija
-     ei välttämättä tiedä mikä perustuspilari on. Kolme reittiä kolmelle tulijalle. */
+     ei välttämättä tiedä mikä perustuspilari on. Kaksi reittiä: laskuri ja tuotekoodi.
+
+     22.9.2026: kolmas reitti «Vertaile pilariperheitä ↓» poistettu Ollin pyynnöstä.
+     Kun perheet nousivat heti heron alle, ankkuri vieritti seuraavaan lohkoon, joka
+     oli jo puoliksi ruudussa — se lupasi siirtymän eikä tehnyt mitään. Lohko itse
+     on se reitti. Jäljelle jäävä `.cta-2` on nyt yksi linkki, kuten muillakin
+     sivuilla. Tapahtuma `cta_vertailu_ankkuri` katosi samalla; se ei ollut
+     mittarilistalla eikä muualla koodissa. */
   hero:{h1:"BCE-pilarit — valmis betoniperustus ilman valua",
     lede:"Perustuspilari on valmiiksi valettu betonielementti. Se lasketaan sorapatjan päälle ja kantaa terassin, saunan, autokatoksen tai mökin ilman että työmaalla valetaan mitään. Neljä perhettä, 16 kokoa.",
     /* 16.9.2026: painike lataa konfiguraattorin kuten muilla sivuilla. Aiemmin se oli
        ankkuri #loyda, eli oranssi nappi vieritti toiseen oranssiin nappiin. */
     cta1:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori","hero"],
-    cta2:["Vertaile pilariperheitä","#perheet","cta_vertailu_ankkuri"],
-    cta3:["Etsi tuotekoodilla","#koodi","cta_koodihaku_ankkuri"],
+    cta2:["Etsi tuotekoodilla","#koodi","cta_koodihaku_ankkuri"],
     img:"Hero-kuva: pilari asennettuna käyttöyhteydessä"},
 
-  /* 2 · Käyttökohteet ennen tuoteperheitä: enemmistö tietää projektinsa, ei tuotettaan.
-     Etusivun käyttökohdevalitsin sellaisenaan. */
-  use:{h2:"Mihin pilariperustusta käytetään",
-    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
-    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
-      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
-      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
-      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
-      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
-      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
-
-  /* 3 · Neljä perhettä. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
-     PP:llä. Kantavuusarvot ovat perhesivuilla — niitä ei ole tällä tasolla.
+  /* 3 · Neljä perhettä, sivun ensimmäinen lohko heron jälkeen (22.9.2026).
+     Etusivun .serie-kortti kuvineen, sama copy, laajennettuna PP:llä. Kantavuusarvot ovat perhesivuilla — niitä ei ole tällä tasolla.
 
      Rivin kolmas kenttä oli kuvapaikan teksti ("Kuva: AP-pilari"); 18.9.2026 se on
      perheen tunnus, jolla tuotekuva.js piirtää kortin kuvan. Etusivun sama lohko on
@@ -105,6 +100,22 @@ const C={
     /* tuotekoodilista kierrätetään nykysivustolta, koodien on oltava kopioitavassa
        muodossa. Tähän tulevat myös EAN-koodit jos jälleenmyyjäosio toteutetaan. */
     note:"[TÄYTETTÄVÄ]"},
+
+  /* 2 · Käyttökohteet. 22.9.2026: lohko on nyt perheiden jälkeen, ei ennen niitä.
+     Peruste oli aiemmin, että enemmistö tietää projektinsa eikä tuotettaan — se
+     pätee etusivulla, mutta tänne on tultu klikkaamalla Pilarit. Se klikkaus on jo
+     tuotevalinta, ja käyttökohdevalitsin veisi kävijän heti pois tuotesivulta.
+     Perheet vastaavat ensin siihen mitä tältä sivulta haettiin; käyttökohde jää
+     reitiksi sille, joka ei perheistä tunnistanut omaansa. Lohko on etusivun
+     käyttökohdevalitsin sellaisenaan. */
+  use:{h2:"Mihin pilariperustusta käytetään",
+    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
+    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
+      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
+      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
+      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
+      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
+      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
 
   /* 5 · Tarvikkeet. Jokaisesta on kerrottava mitä se tekee ja missä yhteydessä —
      nimilista ei kerro kumpaakaan, ja tarvikkeiden jääminen tilaamatta on yleisin
@@ -194,16 +205,11 @@ const C={
         '" data-sijainti="'+E(C.hero.cta1[3])+'">'+E(C.hero.cta1[0])+"</a></div>"+
       '<div class="cta cta-2">'+
         '<a class="more" href="'+E(C.hero.cta2[1])+'" data-event="'+E(C.hero.cta2[2])+'">'+down(C.hero.cta2[0])+"</a>"+
-        '<a class="more" href="'+E(C.hero.cta3[1])+'" data-event="'+E(C.hero.cta3[2])+'">'+down(C.hero.cta3[0])+"</a>"+
       "</div></div>"+
     '<div class="hero-img">'+E(C.hero.img)+"</div></section></div>"+
 
-  /* 2 · Käyttökohteet — etusivun .pick */
-  sect(head(C.use.h2,C.use.ing)+
-    '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
-      '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
-
-  /* 3 · Neljä perhettä — etusivun .series kuvineen, neljä korttia kolmen sijaan */
+  /* 3 · Neljä perhettä — etusivun .series kuvineen, neljä korttia kolmen sijaan.
+     Ennen käyttökohteita 22.9.2026: perustelu on konfiguraation kohdassa 2. */
   sect(head(C.fam.h2,C.fam.ing)+
     '<div class="series series-4">'+C.fam.series.map(s=>'<div class="serie"><div class="im piirros">'+KUVA[s[2]]+
       "</div><h3>"+E(s[0])+"</h3><p>"+E(s[1])+"</p>"+
@@ -214,6 +220,11 @@ const C={
       '<form onsubmit="return false"><input class="field" type="search" aria-label="'+E(C.find.ph)+'" placeholder="'+E(C.find.ph)+'">'+
       '<button class="btn btn-2" type="submit" data-event="haku_tuotekoodi">'+E(C.find.cta)+"</button></form>"+
       '<p class="tbd-l">'+T(C.find.note)+"</p></div>","perheet")+
+
+  /* 2 · Käyttökohteet — etusivun .pick, perheiden jälkeen */
+  sect(head(C.use.h2,C.use.ing)+
+    '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
+      '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
 
   /* 5 · Tarvikkeet — etusivun .pick-kortti kahdella tietorivillä: tehtävä ja käyttöyhteys */
   sect(head(C.parts.h2,C.parts.ing)+
