@@ -24,6 +24,11 @@ rsync -a \
   --exclude 'arkisto/' --exclude '*.md' --exclude '_*' --exclude 'kuvat' \
   "$LAHDE/wireframes/" "$KOHDE/wireframes/"
 
+# Yksi md tulee silti mukaan: design system -katalogi linkittää siihen sivulla,
+# joten ilman sitä julkaistulla sivulla on kuollut linkki. Muu dokumentaatio
+# (CLAUDE.md, README.md, inventaariot) jää lähdereppuun.
+cp "$LAHDE/wireframes/DESIGN-SYSTEM.md" "$KOHDE/wireframes/"
+
 # --- pilarilaskuri ----------------------------------------------------------
 # Mukaan vain se mitä selain lataa. paatospuu.js on generaattori (node),
 # rules.*.js testejä, *.py kuvageneraattoreita — ne jäävät lähdereppuun.
