@@ -1,0 +1,1755 @@
+/* BCE Pilarimaailma, prototyypin jaetut tyylit. Brändi: bcepilarimaailma.fi */
+/* Brändi: bcepilarimaailma.fi. Oswald on sijainen Prohibitionille (kaupallinen). */
+:root{
+  /* Väri. Semanttiset roolit, ei sävynimiä. Oranssi vain ensisijaiselle
+     toiminnolle ja pilareille piirustuksissa; pienessä tekstissä --accent-dark. */
+  --accent:#e25d25; --accent-dark:#b8420f;
+  --ink:#252425; --ink-2:#515151; --ink-3:#6f6d6b;
+  --dark:#323132;
+  --paper:#faf9f7; --paper-2:#f2f0ec;
+  --rule:#e1ded9; --rule-2:#cfcac3;
+  /* Tuotekuvien betonipinnat (tuotekuva.js). Yksi valo ylävasemmalta, joten sama
+     betoni saa eri sävyn pinnan suunnan mukaan — siitä muoto luetaan. Kolme sävyä
+     on jo neutraaleissa, kolme on johdettu niiden väliin ja jatkoksi. */
+  --bet-yla:#fdfcfa;       /* yläpinta, suoraan valoa vasten */
+  --bet-viiste-a:#eeeae3;  /* jalkaviiste valon puolella */
+  --bet-viiste-b:#d5cec2;  /* jalkaviiste varjon puolella */
+  --bet-sivu-a:#cdc6bb;    /* pystysivu valon puolella */
+  --bet-sivu-b:#aca396;    /* pystysivu varjon puolella */
+  --bet-syva:#8e8479;      /* kaapeliaukot ja syvennykset */
+  --bet-kiilto:#ffffff;    /* valoa nappaava särmä. Vain viivana, ei pintana:
+                              betoni on mattaa, joten leveä kiilto olisi muovia */
+  --bet-teras:#8e8b87;     /* valuankkurin teräs */
+  --bet-viiva:#6d675e;     /* särmä. Ei mustaa: musta tekisi kuvasta sarjakuvan */
+  /* Tarvikekuvien teräspinnat (tarvikekuva.js). Kuumasinkitty teräs luetaan
+     kovista heijastuksista, betoni pehmeistä sävyeroista — siksi tämä on oma
+     viileä asteikkonsa eikä betoniasteikon jatke, ja särmä on viileä. */
+  --met-yla:#dfe3e6;       /* valoon kääntyvä pinta */
+  --met-sivu:#c3c9ce;      /* neutraali kylki */
+  --met-varjo:#9aa2a9;     /* varjopuoli */
+  --met-syva:#6e767d;      /* reiät ja urat */
+  --met-tumma:#555c62;     /* takorengas ja reiän pohja */
+  --met-viiva:#6b7278;     /* särmä */
+  /* Palkkikuvien puupinnat (palkkikuva.js). Sama valo samasta suunnasta kuin
+     betonissa. Sävy on kuivaa sahattua havupuuta; kyllästysväriä ei ole
+     piirretty, koska sitä ei ole valittu — ks. palkkikuva.js, avoimet kohdat. */
+  --puu-yla:#e7d7b6;       /* yläsyrjä, suoraan valoa vasten */
+  --puu-viiste:#eee2c8;    /* särmän viiste, kirkkain kapea kaistale */
+  --puu-sivu-a:#dcc9a4;    /* lape valon puolella */
+  --puu-sivu-b:#c6b189;    /* alasärmän viiste, varjon puolella */
+  --puu-paa:#d2bd97;       /* päätypuu: himmeämpi, koska syyt ovat poikki */
+  --puu-syy:#9b7c4c;       /* syykuvio ja vuosirenkaat */
+  --puu-oksa:#6e5432;      /* oksa */
+  --puu-viiva:#5d4a33;     /* särmä. Ei mustaa, samasta syystä kuin betonissa */
+  /* Maakerrokset terassikuvassa (terassikuva.js). Sama valo samasta suunnasta
+     kuin betonissa, puussa ja teräksessä: -sivu-a on +y eli kuvassa vasemmalle
+     kääntyvä kylki (valon puoli), -sivu-b on +x eli oikealle kääntyvä (varjo).
+     Routaeriste on tarkoituksella viileä: XPS on sinistä, ja juuri siitä kerros
+     tunnistetaan murskeen ja soran välistä. Paksuudet ovat asennus.py:ssä. */
+  --maa-sora-yla:#e8e2d6;    /* tasaussora, pilarien alla oleva tasattu pinta */
+  --maa-sora-sivu-a:#dbd4c2;
+  --maa-sora-sivu-b:#cec6b4;
+  --maa-xps-yla:#c4d0d2;     /* routaeriste XPS */
+  --maa-xps-sivu-a:#b1bfc1;
+  --maa-xps-sivu-b:#9fadb0;
+  --maa-murske-yla:#c9c1b1;  /* kantava murskekerros */
+  --maa-murske-sivu-a:#b8af9d;
+  --maa-murske-sivu-b:#ada492;
+  --maa-viiva:#8d8577;       /* särmä. Vaaleampi kuin betonin, koska maa on
+                                taustaa eikä tuote — tuotteen on erotuttava */
+  --ff:"Raleway",system-ui,sans-serif;
+  --ff-d:"Oswald","Raleway",sans-serif;
+  --w:1200px;
+
+  /* Design system 16.9.2026. Asteikot, joista uudet säännöt valitsevat arvon.
+     Vanhat säännöt käyttävät yhä pikseleitä; ne siirretään asteikolle sitä mukaa
+     kun lohko käydään läpi (ks. DESIGN-SYSTEM.md, siirtotaulukko). */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --fs-fine:13px; --fs-small:15px; --fs-body:17px; --fs-lede:19px;
+  --fs-h3:18px; --fs-h2:clamp(23px,2.2vw,30px); --fs-h1:clamp(32px,4vw,52px);
+  --r-ctl:3px; --r-card:4px;
+  --tap:44px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  /* Katkaisukohdat (CSS-muuttuja ei toimi media queryssä, arvot ovat tässä
+     dokumentaationa): 980 navigaatio ja kaksipalstaiset lohkot, 820 ruudukot
+     kahteen sarakkeeseen, 560 yhteen sarakkeeseen. Uudet säännöt käyttävät vain näitä. */
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ff);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:600;text-transform:uppercase;line-height:1.1}
+h1{font-size:clamp(32px,4vw,52px)}
+h2{font-size:clamp(23px,2.2vw,30px)}
+h3{font-size:18px}
+p{margin:0 0 1em;max-width:68ch}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent-dark);outline-offset:2px}
+.w{max-width:var(--w);margin:0 auto;padding:0 24px}
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:8px;top:8px;background:var(--dark);color:#fff;padding:10px 16px;z-index:99}
+
+/* wireframe-merkintä: yksi hiljainen rivi, ei kilpaile sisällön kanssa */
+.note{background:var(--paper-2);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-3)}
+.note .w{padding-top:8px;padding-bottom:8px}
+.tbd{color:var(--ink-3);background:var(--paper-2);padding:0 4px;border-radius:2px;font-size:.92em}
+
+/* ylätunniste: konventio, logo vasemmalla, toiminto oikealla */
+header.site{background:#fff;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:40}
+/* Ankkuriin hyppäämisen kohdistus. Ilman tätä kiinteä ylätunniste peittää osion
+   otsikon: 77px työpöydällä, 123px mobiilissa jossa CTA kietoutuu omalle rivilleen.
+   Tarvikesivun hakemisto on kahdeksan ankkurilinkkiä, joten virhe koskee koko sivua. */
+/* proximity eikä mandatory: snap auttaa konfiguraattorilohkon asettumaan ruutuun
+   animaatiota varten, mutta mandatory tarttuisi vierittäjään kiinni koko sivulla
+   ja tekisi pitkistä tekstilohkoista hankalia. Snap-kohtia on vain yksi (.cfg). */
+html{scroll-padding-top:96px;scroll-snap-type:y proximity}
+body{overflow-x:clip}
+@media(prefers-reduced-motion:reduce){html{scroll-snap-type:none}}
+@media(max-width:980px){html{scroll-padding-top:140px}}
+header.site .w{display:flex;align-items:center;gap:24px;min-height:76px}
+.logo{width:120px;height:38px;background:var(--paper-2);border:1px dashed var(--rule-2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink-3);flex:none;text-decoration:none}
+header.site nav{margin-left:auto;display:flex;gap:6px}
+header.site nav a,header.site nav .navtop{text-decoration:none;font-weight:600;font-size:15px;padding:9px 12px;border-radius:3px;color:var(--ink)}
+header.site nav .navtop{font-family:inherit;line-height:inherit;background:none;border:0;cursor:pointer;display:inline-flex;align-items:center}
+header.site nav a:hover,header.site nav .navtop:hover{background:var(--paper-2)}
+header.site nav a[aria-current],header.site nav .navtop[aria-current]{box-shadow:inset 0 -3px 0 var(--accent);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.menu-btn{display:none;font:inherit;font-weight:600;font-size:15px;align-items:center;gap:9px;background:#fff;border:1px solid var(--rule-2);border-radius:3px;padding:10px 14px;cursor:pointer}
+.menu-btn .ic{display:grid;gap:3px}
+.menu-btn .ic i{display:block;width:16px;height:2px;background:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--ff-d);text-transform:uppercase;font-size:19px;font-weight:600;letter-spacing:.02em;padding:14px 24px;border:2px solid transparent;border-radius:3px;text-decoration:none;cursor:pointer}
+.btn-1{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.btn-2{background:#fff;color:var(--ink);border-color:var(--rule-2)}
+.btn-2:hover{border-color:var(--ink)}
+.btn-s{font-size:16px;padding:11px 18px}
+.hdr-cta{flex:none}
+/* Kuudes valikkokohta (Yhteystiedot, 21.9.2026) vie palkin yli reunan kaistalla
+   981–1120 px: 1024 px:ssä ylivuoto oli 53 px eli sivu sai vaakavierityksen.
+   Palkki oli jo viisi kohtaa laaja täysin äärimmillään 1024 px:ssä, joten kyse ei ole
+   yhden kohdan vaan koko kaistan mitoituksesta. Tiivistetään välit tällä välillä,
+   ei fonttikokoa: 15 px on luettavuuden alaraja tässä navigaatiossa. Alle 981 px
+   koko valikko on jo hampurilaisessa. */
+@media(min-width:1024px) and (max-width:1120px){
+  header.site nav{gap:3px}
+  header.site nav a,header.site nav .navtop{padding:9px 8px}
+}
+
+/* murupolku */
+.crumb{font-size:14px;color:var(--ink-3);border-bottom:1px solid var(--rule);background:#fff}
+.crumb .w{padding-top:11px;padding-bottom:11px}
+.crumb a{text-decoration:none}
+.crumb a:hover{text-decoration:underline}
+
+section{padding:60px 0}
+section+section{border-top:1px solid var(--rule)}
+.head{max-width:62ch;margin-bottom:32px}
+.head p{margin-top:10px;color:var(--ink-2)}
+
+/* yläosa: vasen kertoo, oikea laskee */
+.top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:56px;align-items:start;padding-top:48px}
+.top h1{margin-bottom:18px}
+.lede{font-size:19px;color:var(--ink-2)}
+.sure{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--rule)}
+.sure li{padding:13px 0 13px 30px;border-bottom:1px solid var(--rule);position:relative;font-weight:600}
+.sure li::before{content:"";position:absolute;left:2px;top:20px;width:11px;height:11px;background:var(--accent);border-radius:50%}
+.sure li span{display:block;font-weight:400;font-size:15px;color:var(--ink-2)}
+
+/* työkalu: yksi kokonaisuus, syötteet ja piirustus yhdessä */
+.tool{border:1px solid var(--rule-2);background:#fff;border-radius:4px;overflow:hidden}
+.tool h2{font-size:19px;padding:16px 20px;border-bottom:1px solid var(--rule);background:var(--paper-2)}
+.tool-in{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.f label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.f .val{font-family:var(--ff-d);font-size:26px;font-weight:600}
+.f input[type=range]{width:100%;accent-color:var(--accent);margin-top:4px}
+.tool svg{display:block;width:100%;height:auto;border-top:1px solid var(--rule)}
+.tool-key{display:flex;gap:18px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink-2)}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px;border:2px solid var(--accent)}
+
+/* tulos: konversion hetki */
+.result{background:#fff;border:1px solid var(--rule-2);border-radius:4px;padding:28px 30px}
+.result h2{margin-bottom:4px}
+.result .sub{color:var(--ink-2);font-size:15px;margin-bottom:20px}
+table.bom{width:100%;border-collapse:collapse;font-size:16px}
+table.bom td{padding:12px 0;border-bottom:1px solid var(--rule)}
+table.bom td.n{text-align:right;font-weight:700;white-space:nowrap}
+table.bom tr:last-child td{border-bottom:0}
+.acts{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:22px;padding-top:22px;border-top:2px solid var(--ink)}
+.acts input{font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--rule-2);border-radius:3px;min-width:230px}
+.msg{font-size:15px;color:var(--accent-dark);font-weight:600;min-height:22px;margin-top:10px}
+
+/* näin se tehdään */
+.build{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.build svg{width:100%;height:auto;border:1px solid var(--rule-2);background:#fff;border-radius:4px}
+.build ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.build li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--rule)}
+.build li::before{content:counter(s);font-weight:700;color:var(--ink-3);font-size:15px;padding-top:1px}
+.build li b{grid-column:2}
+.build li span{grid-column:2;font-size:15px;color:var(--ink-2)}
+
+/* mistä ostat */
+.buy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;align-items:start}
+.shops{display:grid;gap:0;border-top:1px solid var(--rule)}
+.shops a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule);text-decoration:none;font-weight:600;font-size:18px}
+.shops a:hover{color:var(--accent-dark)}
+.shops a span{font-size:14px;font-weight:400;color:var(--ink-3)}
+
+/* kysyttyä */
+details{border-bottom:1px solid var(--rule)}
+summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;font-size:18px;display:flex;gap:16px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary .c{margin-left:auto;color:var(--ink-3);transition:transform .18s cubic-bezier(.22,1,.36,1)}
+details[open] summary .c{transform:rotate(180deg)}
+details .b{padding:0 0 20px;color:var(--ink-2);max-width:68ch}
+
+/* muut käyttökohteet */
+.rel{display:flex;gap:10px;flex-wrap:wrap}
+.rel a{text-decoration:none;font-weight:600;font-size:15px;padding:10px 16px;border:1px solid var(--rule-2);border-radius:3px;background:#fff}
+.rel a:hover{border-color:var(--ink)}
+
+footer{background:var(--dark);color:#e9e7e5;margin-top:0;padding:44px 0 34px;font-size:15px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px}
+footer h3{font-size:13px;letter-spacing:.08em;color:#fff;margin-bottom:12px}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+footer a{color:#c8c5c2;text-decoration:none}
+footer a:hover{color:#fff;text-decoration:underline}
+footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:#a5a2a0;font-size:13px}
+
+/* mobiili: yksi toiminto aina näkyvissä */
+.bar{display:none;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--rule-2);padding:10px 14px;gap:10px;z-index:50}
+.bar .btn{flex:1;font-size:16px;padding:13px 8px}
+@media(max-width:980px){
+  .top,.build,.buy{grid-template-columns:1fr;gap:32px}
+  .tool-in{grid-template-columns:1fr 1fr}
+  .menu-btn{display:inline-flex;margin-left:auto}
+  .hdr-cta{display:none}
+  header.site .w{flex-wrap:wrap}
+  header.site nav{order:3;width:100%;margin-left:0;display:none;flex-direction:column;gap:0;border-top:1px solid var(--rule);padding:6px 0 10px}
+  header.site nav a{padding:13px 4px;border-radius:0;font-size:17px}
+  header.site nav[data-open="true"]{display:flex}
+  .bar{display:flex}
+  body.has-bar{padding-bottom:74px}
+  section{padding:44px 0}
+}
+
+/* Kaista 981–1023 px on liian kapea kuudelle kohdalle ja painikkeelle yhtaikaa
+   (ylivuoto 29 px välit tiivistettyinäkin). Tässä välissä valikko pysyy vaakarivinä
+   ja ensisijainen toiminto siirtyy alapalkkiin — sama ratkaisu kuin mobiilissa,
+   jolloin konversiolinkki ei katoa miltään leveydeltä. Hampurilainen pysyy 980:ssä. */
+@media(min-width:981px) and (max-width:1023px){
+  .hdr-cta{display:none}
+  .bar{display:flex}
+  body.has-bar{padding-bottom:74px}
+}
+
+/* --- sivukohtaiset lohkot, samaa kieltä --- */
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+@media(max-width:760px){.pick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.pick{grid-template-columns:1fr}}
+.pick a{text-decoration:none;border:1px solid var(--rule-2);border-radius:4px;background:#fff;overflow:hidden;display:block}
+.pick a:hover{border-color:var(--ink)}
+.pick .im{aspect-ratio:4/3;background:var(--paper-2);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:12px;color:var(--ink-3);border-bottom:1px solid var(--rule)}
+.pick .nm{padding:13px 16px;font-family:var(--ff-d);text-transform:uppercase;font-size:18px;font-weight:600}
+
+/* Taulukko on läpinäkyvä. Valkoinen levy oli oletuksena 17.9.2026 asti, ja jokainen
+   käyttökohde (.dims .loads .spec) joutui kumoamaan sen erikseen — oletus oli väärä,
+   ei käyttökohteet. Jos joskus tarvitaan valkoinen taulukko, se on oma varianttinsa. */
+table.data{width:100%;border-collapse:collapse;font-size:16px;background:transparent}
+table.data caption{text-align:left;font-weight:700;padding:0 0 10px}
+table.data th,table.data td{text-align:left;padding:13px 16px 13px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+table.data thead th{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);border-bottom:2px solid var(--ink)}
+table.data td.n{text-align:right;font-weight:700;white-space:nowrap;padding-right:0}
+.tw{overflow-x:auto}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+/* Kuvapaikka, kanoninen. Sama katkoviivalaatikko on määritelty 15 kertaa eri
+   lohkoissa (.hero-img .quote .im .case .im .serie .im .side .im .pitem .im .gal .im
+   .tim .plot .im ...). Uudet lohkot käyttävät tätä ja kuvasuhde-modifieria; vanhat
+   siirretään lohko kerrallaan (DESIGN-SYSTEM.md). Ei min-heightia: yhdessä
+   aspect-ration kanssa se venytti laatikon ulos sarakkeesta. */
+.ph{background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:var(--r-card);display:flex;align-items:center;justify-content:center;text-align:center;padding:var(--s3);color:var(--ink-3);font-size:var(--fs-fine);line-height:1.45;width:100%;overflow:hidden}
+.ph-43{aspect-ratio:4/3}.ph-1610{aspect-ratio:16/10}.ph-169{aspect-ratio:16/9}.ph-1{aspect-ratio:1}
+.codes{background:#fff;border:1px solid var(--rule-2);border-radius:4px;padding:22px 24px}
+.code{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.code:last-of-type{border-bottom:0}
+.code code{font-family:ui-monospace,monospace;background:var(--paper-2);padding:2px 7px;border-radius:2px;font-size:14px}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.steps li::before{content:counter(s);font-family:var(--ff-d);font-size:20px;font-weight:600;color:var(--accent)}
+.steps b{grid-column:2}.steps span{grid-column:2;font-size:15px;color:var(--ink-2)}
+@media(max-width:980px){.two{grid-template-columns:1fr;gap:28px}}
+
+/* --- etusivun hero: tuntematon orgaaninen kävijä --- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center;padding:52px 0 8px}
+.hero h1{font-size:clamp(38px,5vw,64px);margin-bottom:20px}
+.hero .lede{font-size:20px;color:var(--ink-2);max-width:52ch}
+.hero .cta{display:flex;gap:14px 26px;flex-wrap:wrap;align-items:center;margin-top:30px}
+.more{font-weight:600;font-size:17px;text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:2px}
+.more:hover{border-color:var(--ink)}
+.hero .trust{margin-top:26px;padding-top:18px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}
+.hero .trust b{color:var(--ink)}
+.hero-img{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;color:var(--ink-3);font-size:13px;line-height:1.5;max-width:56ch;margin-left:auto}
+.perf{background:var(--paper-2);border:1px solid var(--rule);border-radius:4px;padding:16px 20px;font-size:14px;color:var(--ink-2);margin-top:28px}
+.perf b{color:var(--ink)}
+@media(max-width:980px){
+  .hero{grid-template-columns:1fr;gap:28px;padding-top:32px}
+  .hero-img{order:-1;aspect-ratio:16/10}
+}
+
+/* --- yksi kontrasti, ei taulukkoa --- */
+.bars{display:grid;gap:12px;max-width:660px;margin-top:4px}
+.bar-row{display:grid;grid-template-columns:132px minmax(0,1fr) 108px;gap:18px;align-items:center}
+.bar-row .lb{display:block;font-weight:600;font-size:16px}
+.bar-track{display:block;background:var(--paper-2);height:36px;border-radius:2px;overflow:hidden}
+.bar-fill{display:block;height:100%;background:#cfcac3}
+.bar-row.key .bar-fill{background:var(--accent)}
+.bar-row .vl{display:block;font-family:var(--ff-d);font-size:19px;font-weight:600;color:var(--ink-2)}
+.bar-row.key .vl{color:var(--accent-dark)}
+@media(max-width:600px){
+  .bar-row{grid-template-columns:1fr auto;gap:4px 12px}
+  .bar-track{grid-column:1/-1;height:26px}
+}
+
+/* --- yksi lainaus, ei kolmea teaseria --- */
+.quote{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:44px;align-items:center}
+.quote .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:13px;color:var(--ink-3)}
+.quote blockquote{margin:0;font-size:clamp(20px,2vw,26px);line-height:1.38;max-width:34ch}
+.quote cite{display:block;margin-top:16px;font-style:normal;font-size:15px;color:var(--ink-2)}
+@media(max-width:760px){.quote{grid-template-columns:1fr;gap:22px}}
+
+/* --- päätöslohko: viimeinen sisältö on seuraava askel --- */
+.close{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.close .acts{display:flex;gap:14px 22px;flex-wrap:wrap;align-items:center;margin-top:22px;padding:0;border:0}
+.footnote{margin-top:36px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);max-width:76ch}
+.footnote b{color:var(--ink-2)}
+@media(max-width:980px){.close{grid-template-columns:1fr;gap:28px}}
+
+/* ===== spec 1.0: globaalit elementit ===== */
+.abar{background:var(--dark);color:#fff}
+.abar a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;text-decoration:none;font-weight:600;font-size:15px;padding:8px 20px;text-align:center}
+.abar a:hover{background:#3d3c3d}
+header.site .tools{display:flex;align-items:center;gap:14px;margin-left:auto}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--rule-2);border-radius:3px;background:#fff;padding:0 12px;height:42px;min-width:min(320px,34vw)}
+.search input{font:inherit;font-size:14px;border:0;outline:0;background:none;width:100%;padding:10px 0}
+.search .mag{color:var(--ink-3);font-size:15px}
+.lang{display:flex;gap:2px;font-size:14px}
+.lang a{text-decoration:none;padding:6px 8px;border-radius:3px;color:var(--ink-2);font-weight:600}
+.lang a[aria-current]{background:var(--paper-2);color:var(--ink)}
+.lang a:hover{background:var(--paper-2)}
+
+/* numeroidut väitteet */
+.claims{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.claim .no{font-family:var(--ff-d);font-size:34px;font-weight:600;color:var(--accent);line-height:1}
+.claim h3{margin:10px 0 8px}
+.claim p{font-size:15px;color:var(--ink-2);margin:0}
+.claim .lk{display:inline-block;margin-top:14px}
+@media(max-width:860px){.claims{grid-template-columns:1fr;gap:26px}}
+
+/* sarjakortit */
+.series{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.serie{border:1px solid var(--rule-2);border-radius:4px;background:#fff;padding:24px}
+.serie h3{font-family:var(--ff-d);text-transform:uppercase;font-size:20px;margin-bottom:10px}
+.serie p{font-size:15px;color:var(--ink-2);margin:0 0 8px}
+.serie .wt{font-weight:600;color:var(--ink);font-size:15px}
+@media(max-width:860px){.series{grid-template-columns:1fr}}
+.cta-block{margin-top:32px}
+.cta-block .sub{font-size:15px;color:var(--ink-2);margin-top:10px;max-width:52ch}
+
+/* pilarit + tarvikkeet samassa lohkossa */
+.combo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.combo .part h3{margin-bottom:10px}
+.combo .part p{font-size:15px;color:var(--ink-2);margin:0}
+.combo .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:13px;color:var(--ink-3)}
+@media(max-width:900px){.combo{grid-template-columns:1fr;gap:24px}}
+
+/* referenssinostot */
+.cases{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.case .im{aspect-ratio:16/10;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:13px;color:var(--ink-3);margin-bottom:18px}
+.case h3{margin-bottom:10px}
+.case p{font-size:15px;color:var(--ink-2)}
+@media(max-width:820px){.cases{grid-template-columns:1fr;gap:30px}}
+
+/* logorivit */
+.logos{display:flex;flex-wrap:wrap;gap:16px}
+.logos .lg{flex:1 1 170px;max-width:230px;height:74px;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:12px;color:var(--ink-3)}
+.certs{margin-top:24px;font-size:15px;color:var(--ink-2)}
+
+/* yhteydenottoreitti ja opas */
+.aside-box{border:1px solid var(--rule-2);border-radius:4px;background:#fff;padding:26px 28px}
+.aside-box h3{margin-bottom:10px}
+.aside-box p{font-size:15px;color:var(--ink-2)}
+.aside-box .sub{font-size:14px;color:var(--ink-3);margin-top:12px}
+.guide{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px;align-items:center}
+.guide form{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+@media(max-width:900px){.guide{grid-template-columns:1fr;gap:24px}}
+
+/* kapea ammattilaislohko */
+.pro-strip{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:36px;align-items:center;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:34px 0}
+.pro-strip p{font-size:15px;color:var(--ink-2);margin:8px 0 0}
+@media(max-width:820px){.pro-strip{grid-template-columns:1fr;gap:18px}}
+
+/* footer spec-mukaisena */
+footer .addr{font-size:15px;color:#c8c5c2;margin:0 0 10px}
+footer .social{display:flex;gap:12px;margin-top:16px;font-size:14px}
+footer .certrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12px;font-size:12px;color:#a5a2a0}
+@media(max-width:980px){.search{min-width:0;flex:1}}
+
+
+/* ===== spec-etusivun korjaukset ===== */
+/* Haku ja kieli omalle apuriville: logo + valikko + toiminto eivät mahdu yhdelle riville. */
+.urow{background:var(--paper-2);border-bottom:1px solid var(--rule)}
+.urow .w{display:flex;align-items:center;justify-content:flex-end;gap:14px;min-height:var(--tap);padding-top:0;padding-bottom:0}
+.urow .search{height:36px;min-width:min(300px,40vw)}
+.spec-head .w{gap:20px}
+.spec-head nav a,.spec-head nav .navtop{white-space:nowrap}
+.spec-head .btn{white-space:nowrap}
+.spec-head .tools{margin-left:auto}
+/* H1 on spec:ssä kokonainen virke, joten se ei voi olla 64px */
+.pick .im{aspect-ratio:16/10}
+.hero-spec h1{font-size:clamp(30px,3.4vw,46px)}
+.hero-spec .lede{max-width:58ch}
+/* Kuvapaikat eivät saa olla sivun suurin elementti */
+.img-band{aspect-ratio:auto;height:clamp(200px,26vw,320px);max-width:none;margin:34px 0 0}
+@media(max-width:980px){
+  .urow .w{justify-content:space-between}
+  .urow .search{flex:1}
+}
+
+/* ===== kommenttikierros 1, 11.9.2026 ===== */
+
+/* hero: jälleenmyyjien logot luottamussignaalina (kommentti 3) */
+.hero .trust{display:block}
+.hero .trust .dealers{margin-top:12px}
+.hero .trust .lgrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.hero .trust .lgrow span{min-width:112px;height:42px;padding:6px 14px;background:var(--paper-2);
+  border:1px dashed var(--rule-2);border-radius:3px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;color:var(--ink-3);text-align:center}
+
+/* väitelohko: ikoni numeron sijaan (kommentti 4) */
+.claim .ic{width:34px;height:34px;color:var(--accent)}
+.claim .ic svg{width:100%;height:100%;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* näin se toimii: yksi kuva per vaihe, luetaan ylhäältä alas */
+.flow{max-width:980px}
+.flow .st{display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;align-items:center;
+  padding:22px 0;border-bottom:1px solid var(--rule)}
+.flow .st:first-child{padding-top:4px}
+.flow .st:last-child{border-bottom:0}
+.flow .st .im{aspect-ratio:16/10;background:var(--paper-2);border:1px dashed var(--rule-2);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:14px;font-size:12px;color:var(--ink-3);line-height:1.45}
+.flow .st .tx{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px}
+.flow .st .n{font-family:var(--ff-d);font-size:20px;font-weight:600;color:var(--accent);line-height:1.25}
+.flow .st b{grid-column:2;font-size:17px;display:block;margin-bottom:8px}
+.flow .st p{grid-column:2;font-size:15px;color:var(--ink-2);margin:0;max-width:58ch}
+/* Linkki lihavoidussa askelotsikossa. Sama käsittely `.flow`-askeleissa ja
+   `.steps`-listassa (ja `.kids`-listassa alempana): ei alleviivausta vaan
+   2 px reunaviiva, joka tummenee osoitettaessa. Otsikko on toiminnon nimi,
+   joten se on myös se sana, jota klikataan — ei erillistä «lue lisää». */
+.flow .st b a,.steps b a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
+.flow .st b a:hover,.steps b a:hover{border-color:var(--ink)}
+.fsub{display:block;margin-top:10px;font-size:14px;color:var(--ink-3)}
+
+/* sarjakortteihin kuva (ss1) */
+.serie .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:14px;font-size:12px;color:var(--ink-3);margin-bottom:18px}
+
+/* pienet huomautukset */
+.fine{font-size:13px;color:var(--ink-3);max-width:76ch;margin-top:12px}
+
+/* oma CTA-lohko isommille kohteille (kommentti 6) */
+.band{border:1px solid var(--rule-2);border-radius:4px;background:var(--paper-2);
+  padding:30px 32px;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);
+  gap:32px;align-items:center}
+.band h2{font-size:26px;margin:0 0 8px}
+.band p{font-size:15px;color:var(--ink-2);margin:0;max-width:62ch}
+.band .sub{font-size:14px;color:var(--ink-3);margin-top:10px}
+
+@media(max-width:700px){.flow .st{grid-template-columns:1fr;gap:16px}
+  .flow .st .im{aspect-ratio:16/10}}
+@media(max-width:820px){.band{grid-template-columns:1fr;gap:20px}}
+
+/* neljä väitettä kolmen sijaan (sade-USP 11.9.2026) */
+.claims{grid-template-columns:repeat(4,1fr);gap:28px}
+@media(max-width:1100px){.claims{grid-template-columns:repeat(2,1fr);gap:30px 28px}}
+@media(max-width:640px){.claims{grid-template-columns:1fr;gap:26px}}
+
+
+/* ===== koontisivu /bce-pilarit/ ===== */
+/* Sivu käyttää etusivun lohkoja. Nämä ovat ne kolme kohtaa, joihin etusivulla ei
+   ole vastinetta: murupolun erotin, neljä sarjakorttia kolmen sijaan, ja
+   tuotekoodihaku. Vertailutaulukko purettiin .serie-korteiksi — valkoinen
+   taulukkoslabi oli sivun raskain elementti eikä sillä ollut esikuvaa etusivulla. */
+.crumb .sep{padding:0 8px;color:var(--rule-2)}
+
+/* etusivulla kolme sarjaa, tällä sivulla neljä perhettä */
+.series-4{grid-template-columns:repeat(4,1fr)}
+.series-4 .serie h3{font-size:19px}
+/* kortit ovat samankorkuisia, joten linkki tasataan pohjaan kaikissa neljässä */
+.series-4 .serie{display:flex;flex-direction:column}
+.series-4 .lk{margin-top:auto;padding-top:16px;align-self:flex-start}
+@media(max-width:1080px){.series-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.series-4{grid-template-columns:1fr}}
+
+/* tuotekoodihaku käyttää etusivun .guide-lomakkeen ilmettä ilman valkoista pohjaa */
+.find{margin-top:40px;padding-top:28px;border-top:1px solid var(--rule)}
+.find h3{margin-bottom:6px}
+.find p{font-size:15px;color:var(--ink-2);margin:0 0 16px}
+.find form{display:flex;gap:12px;flex-wrap:wrap}
+.find .field{background:var(--paper)}
+.tbd-l{font-size:14px;color:var(--ink-3);margin:14px 0 0}
+
+/* Koontisivulla käyttökohdevalitsin on reitti eteenpäin, ei sivun sisältöä.
+   Yhdessä sarakkeessa kuusi korttia veisi 390px:llä noin 1 500 px. */
+@media(max-width:430px){.pick.pick-tight{grid-template-columns:repeat(2,1fr)}}
+.pick.pick-tight .nm{font-size:15px;padding:11px 13px}
+
+/* Tarvikekortti on etusivun .pick-kortti, johon on lisätty kaksi tietoriviä:
+   mitä tarvike tekee ja missä yhteydessä sitä käytetään. Pelkkä nimilista ei
+   kerro kumpaakaan, ja tarvikkeiden jääminen tilaamatta on yleisin virhe. */
+.pick-parts{grid-template-columns:repeat(4,1fr)}
+.pick-parts a{display:flex;flex-direction:column}
+.pick-parts .nm{padding-bottom:0;font-size:17px}
+.pick-parts .fn{display:block;padding:8px 16px 0;font-size:15px;color:var(--ink-2)}
+.pick-parts .cx{display:block;margin-top:auto;padding:10px 16px 16px;font-size:14px;font-weight:600;color:var(--ink)}
+@media(max-width:1080px){.pick-parts{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.pick-parts{grid-template-columns:1fr}}
+
+/* konfiguraattorin oma lohko */
+.cfg{background:var(--paper-2);border:1px solid var(--rule);border-radius:6px;padding:44px 48px}
+.cfg .head{max-width:62ch}
+/* Kuva on läpinäkyvä PNG, joten se sulautuu paneelin pohjaväriin.
+   Valkoinen tausta tekisi siitä irrallisen laatan paneelin päälle. */
+.cfg .shot{display:block;width:100%;height:auto;margin:30px 0 0}
+/* Konfiguraattorilohkon kuva on inline-SVG eikä <img>, koska vierityksen
+   aikajana ei ylety toisen dokumentin sisään. Mitat tulevat samasta
+   säännöstä kuin ennenkin, jotta lohkon asettelu ei muutu. */
+/* Kuva täyttää sen mitan, joka ensin rajoittaa, ja keskittyy toiseen. Korkeutta
+   ei saa rajata nollaan: se voittaisi sticky-palstan `min-height:100svh`:n ja
+   jättäisi kuvan ruudun ylälaitaan tyhjän päälle. */
+.cfg .shot{display:flex;align-items:center;justify-content:center}
+.cfg .shot>svg{display:block;width:auto;height:auto;max-width:100%;max-height:100%}
+/* Ratkaisijat ja konfiguraattori ovat sama tarve, joten ne ovat samassa lohkossa. */
+.cfg .steps{margin:26px 0 0}
+.cfg .steps li:last-child{border-bottom:0}
+.cfg .act{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin:30px 0 0}
+.cfg .act .sub{font-size:15px;color:var(--ink-2)}
+
+/* JeKi-sokkeli — toinen tuoteperhe */
+.side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center}
+.side .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;
+  font-size:13px;color:var(--ink-3)}
+.side .uses{margin:20px 0 0}
+.side .use{margin-top:16px;font-size:15px;color:var(--ink);font-weight:600}
+/* Kaksiosainen otsikko: tuotenimi display-fontilla, kuvaava rivi leipätekstinä.
+   Sama elementti, jotta ne pysyvät yhdessä myös taittuessaan. */
+.head h2 .h2b{display:block;margin-top:8px;font-family:var(--ff);font-weight:400;
+  text-transform:none;font-size:20px;line-height:1.35;color:var(--ink-2)}
+/* Valintaohje kahden tuoteperheen välillä: erotettu viivalla, ei oma laatikkonsa. */
+.side .cmp{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule);
+  font-size:15px;color:var(--ink-2);max-width:56ch}
+.side .cmp b{color:var(--ink)}
+
+@media(max-width:900px){.side{grid-template-columns:1fr;gap:26px}}
+@media(max-width:700px){.cfg{padding:28px 22px}}
+
+/* apurivin tekstilinkki (Yhteystiedot) */
+.urow .ulink{font-size:14px;color:var(--ink-2);text-decoration:none;padding:0 4px}
+.urow .ulink:hover{color:var(--ink);text-decoration:underline}
+
+/* Apurivi: haku + Yhteystiedot + kielivalinta eivät mahdu 390 px:n riville, ja
+   rivi työnsi koko sivun 398 px leveäksi. Haku saa kutistua kapealla. */
+@media(max-width:560px){
+  .urow .w{gap:8px}
+  .urow .search{min-width:0}
+  .urow .ulink{padding:0}
+}
+
+/* ===== tuoteperhesivu /bce-pilarit/tp/ ===== */
+/* Sivutyyppi neljälle perheelle. Käyttää koontisivun lohkoja siltä osin kuin ne
+   sopivat (.side .cfg .logos .band .codes table.data .tw .ph .fine); alla ovat vain
+   ne kohdat, joihin ei ollut valmista luokkaa. */
+
+/* Hero: H1 on tuotetunnus, joten se saa olla iso — mutta kuvaava selite on sen
+   alla omana rivinään. Työpaja: "tuotenimet KP ja TP vaativat rinnalleen
+   kuvaavan selitteen". */
+.hero-fam h1{margin-bottom:6px}
+.subh{font-family:var(--ff-d);text-transform:uppercase;font-size:clamp(18px,1.6vw,22px);
+  font-weight:500;color:var(--ink-2);margin:0 0 18px}
+
+/* Faktarivi: kolme lukua, ei koristelua. Arvo on lihavoitu leipätekstikoko, ei
+   display-numero — iso luku olisi koristelua tietona. */
+.facts{display:flex;flex-wrap:wrap;gap:12px 40px;margin:26px 0 0;padding-top:18px;
+  border-top:1px solid var(--rule)}
+.facts div{margin:0}
+.facts dt{font-size:19px;font-weight:700;line-height:1.2}
+.facts dd{margin:2px 0 0;font-size:14px;color:var(--ink-2)}
+
+/* Sopii / ei sovi: kaksi listaa rinnakkain. "Ei sovi" -puoli on ohjaus toiseen
+   perheeseen, joten jokaisella rivillä on aito linkki. */
+.fitlist{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule);max-width:780px}
+.fitlist li{padding:13px 0 13px 26px;border-bottom:1px solid var(--rule);position:relative;font-size:16px}
+.fitlist li::before{content:"";position:absolute;left:2px;top:20px;width:11px;height:11px;
+  background:var(--accent);border-radius:50%}
+/* Ohjaus toiseen perheeseen on sivun lopussa, ei sopii-listan vieressä: se on vastaus
+   lukijalle joka luki sivun eikä vakuuttunut. */
+.alt{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.alt p{margin:0 0 10px;font-size:15px;color:var(--ink-2)}
+@media(max-width:820px){.alt{grid-template-columns:1fr;gap:24px}}
+
+/* Mittataulukko: vaakavieritettävä, ei typistetty. Ammattilainen katsoo lukuja
+   työmaalla puhelimella. */
+.dims{min-width:1120px}
+.dims .c1{white-space:nowrap}
+.dims code{font-family:ui-monospace,monospace;background:var(--paper-2);padding:3px 8px;
+  border-radius:2px;font-size:14px;white-space:nowrap}
+/* Kopiointi riveittäin: myyjä tiskillä kopioi yhden tuotteen, ei koko listaa.
+   Nappi on rivin oikeassa reunassa omana sarakkeenaan, ei tuotekoodin perässä:
+   koodisarake pysyy luettavana ja napit ovat yhdessä pystysuorassa linjassa. */
+.dims .cpc{text-align:right;padding-right:0;white-space:nowrap;width:1%}
+/* Kosketuskoko vähintään 44 px, ja kuittaus näkyy tekstissä eikä pelkkänä reunavärinä. */
+.cp{font:inherit;font-size:13px;font-weight:600;padding:0 14px;min-height:44px;min-width:92px;
+  background:none;border:1px solid var(--rule-2);border-radius:3px;color:var(--ink-2);cursor:pointer}
+.cp:hover{border-color:var(--ink);color:var(--ink)}
+.cp[data-copied]{border-color:var(--accent-dark);color:var(--accent-dark);font-weight:700}
+.cp[data-failed]{border-color:var(--ink);color:var(--ink)}
+/* Ruudunlukijan kuittaus, ei näkyvissä. */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dims-act{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;margin:20px 0 0}
+/* Mittakaavio on selite taulukolle, ei kuvituskuva: vaalea pohja ilman kehystä,
+   jotta se lukeutuu taulukon jatkeeksi eikä omaksi nostokseen. Leveys on rajattu,
+   koska kirjainmerkinnät eivät kasva luettavammiksi venyttämällä. */
+.mk{margin:30px 0 0;max-width:682px}
+.mk svg{display:block;width:100%;height:auto}
+
+/* Tarvikkeet: rivilista, ei korttiruudukkoa — edellinen lohko on jo taulukko ja
+   seuraava kuva, joten rytmi ei kestä kolmatta ruudukkoa. */
+.plist{border-top:1px solid var(--rule)}
+.pitem{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:16px 28px;
+  align-items:center;padding:18px 0;border-bottom:1px solid var(--rule)}
+.pitem .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;
+  font-size:11px;line-height:1.35;color:var(--ink-3)}
+.pitem h3{font-size:18px;margin:0 0 6px}
+.pitem p{margin:0;font-size:15px;color:var(--ink-2)}
+@media(max-width:760px){.pitem{grid-template-columns:96px minmax(0,1fr);gap:12px 16px}
+  .pitem a{grid-column:2}}
+
+/* Lataukset korttirivinä: arvo–selite-rivit ja latauslista näyttivät samalta lohkolta. */
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.dl a{display:block;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
+  padding:18px 20px;text-decoration:none}
+.dl a:hover{border-color:var(--ink)}
+.dl .ty{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.dl b{display:block;margin-top:8px;font-size:16px}
+.dl .st{display:block;margin-top:10px;font-size:13px}
+@media(max-width:900px){.dl{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.dl{grid-template-columns:1fr}}
+
+/* Tekniset tiedot: kaksi palstaa, vasen arvot, oikea lataukset. */
+.sh{font-size:18px;margin:34px 0 14px}
+
+/* Video on kuvapaikka, ei upotus: kahdeksan upotettua videota hukuttaisi sisällön. */
+.side .im.vid{aspect-ratio:16/9}
+
+.mk{max-width:620px}
+/* Kuormitustaulukko on lukumuoto, ei palsta: se luetaan riveittäin. */
+.loads{max-width:720px}
+.sh.first{margin-top:0}
+
+/* navigaation luurankosivu */
+.urlrow code,.kids code{font-family:ui-monospace,monospace;font-size:13px;color:var(--ink-3);
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:3px;padding:2px 7px}
+.kids{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--rule);max-width:70ch}
+.kids li{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 0;
+  border-bottom:1px solid var(--rule);font-size:16px}
+.kids a{font-weight:600;text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
+.kids a:hover{border-color:var(--ink)}
+.stub{margin-top:32px;font-size:15px;color:var(--ink-2);max-width:70ch}
+
+/* alavalikko. Yksi sarake, paitsi Tuotteet, jossa on kolme tuoteperhettä omina
+   ryhminään. Kolmas sarake ei tee tästä mega-valikkoa: pelkkiä tekstilinkkejä,
+   ei kuvia eikä promolohkoja. */
+#mainnav .hassub{position:relative;display:inline-flex;align-items:center}
+#mainnav .chev{font-size:11px;margin-left:6px;color:var(--ink-3)}
+#mainnav .sub{position:absolute;top:100%;left:-14px;z-index:40;display:none;
+  min-width:230px;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
+  box-shadow:0 8px 24px rgba(0,0,0,.10);padding:8px 0}
+#mainnav .hassub:hover .sub,#mainnav .hassub:focus-within .sub,
+#mainnav .hassub[data-open="true"] .sub{display:block}
+#mainnav .sub a{display:block;padding:11px 20px;font-size:16px;white-space:nowrap}
+#mainnav .sub a:hover{background:var(--paper-2)}
+/* kolme ryhmää rinnakkain */
+#mainnav .hassub:hover .sub.grid,#mainnav .hassub:focus-within .sub.grid,
+#mainnav .hassub[data-open="true"] .sub.grid{display:grid}
+#mainnav .sub.grid{grid-template-columns:repeat(3,minmax(160px,max-content));
+  gap:2px 30px;padding:18px 22px}
+#mainnav .sub .sh{display:block;font-size:12px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);padding:4px 0 9px;white-space:nowrap;
+  border-bottom:1px solid var(--rule);margin-bottom:6px}
+#mainnav .sub a.sh{color:var(--ink)}
+#mainnav .sub a.sh:hover{background:none;text-decoration:underline}
+#mainnav .sub.grid a{padding:9px 0}
+@media(max-width:980px){
+  /* mobiilissa alavalikko ei roiku päällä vaan on osa listaa */
+  #mainnav .hassub{display:block;position:static}
+  #mainnav .hassub > a,#mainnav .hassub > .navtop{display:block;width:100%;text-align:left}
+  #mainnav .chev{display:none}
+  #mainnav .sub,#mainnav .hassub .sub.grid{display:block;position:static;min-width:0;
+    border:0;box-shadow:none;background:none;padding:0 0 4px 16px;
+    border-left:2px solid var(--rule)}
+  #mainnav .sub a,#mainnav .sub.grid a{padding:11px 4px;font-size:16px;color:var(--ink-2)}
+  #mainnav .sgroup{display:block;margin:2px 0 10px}
+  /* ryhmäotsikko pysyy otsikon kokoisena, vaikka se on linkki */
+  #mainnav .sub .sh,#mainnav .sub a.sh{font-size:13px;padding:9px 4px 2px;border:0;margin:0}
+}
+
+/* ===== tuotenäkymä perhesivun yläosassa =====
+   Osto tapahtuu jälleenmyyjällä, mutta jälleenmyyjäklikki on projektin toinen
+   päämittari — se ei voi olla vasta sivun pohjalla. Verkkokaupan tuotesivun
+   konventio: kuva vasemmalla, tuotetiedot ja ostolaatikko oikealla, molemmat
+   ensimmäisessä ruudussa. */
+.shop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);gap:56px;
+  align-items:start;padding:44px 0 8px}
+.shop h1{margin-bottom:6px}
+/* min-width:0 on pakollinen: ilman sitä gridin solu venyy vaakavieritettävän
+   pikkukuvanauhan min-content-leveyteen ja koko sivu leviää kapealla ruudulla. */
+.gal{position:sticky;top:96px;min-width:0}
+.gal .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;
+  font-size:13px;color:var(--ink-3)}
+.thumbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}
+/* Pikkukuvat ovat painikkeita: klikattavan näköinen elementti, joka ei toimi, on
+   lupaus jota ei lunasteta. */
+.thumbs button{font:inherit;aspect-ratio:1;background:var(--paper-2);border:1px dashed var(--rule-2);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:8px;font-size:11px;line-height:1.3;color:var(--ink-3);cursor:pointer}
+.thumbs button:hover{border-color:var(--ink-3)}
+.thumbs button[aria-pressed="true"]{border-style:solid;border-color:var(--ink);color:var(--ink)}
+
+/* Ostolaatikko: yksi rajattu alue, jossa valinta, toiminto ja ostopaikka. */
+.box{border:1px solid var(--rule-2);border-radius:5px;background:#fff;padding:22px 24px;margin-top:26px}
+/* Selite (eyebrow), kanoninen: sama 13 px versaali on määritelty kuudesti
+   (.box .lbl, h2.lbl, .idx .lbl, .dl .ty, table.data thead th, footer h3). */
+.lbl{font-family:var(--ff);font-size:var(--fs-fine);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 10px}
+.box .lbl+*{margin-top:0}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.sizes button{font:inherit;text-align:left;background:#fff;border:1px solid var(--rule-2);
+  border-radius:4px;padding:9px 12px;cursor:pointer;line-height:1.25}
+.sizes button b{display:block;font-size:15px}
+.sizes button span{display:block;font-size:12px;color:var(--ink-3)}
+.sizes button:hover{border-color:var(--ink)}
+.sizes button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.btn.wide{width:100%}
+/* Valittu koko näyttää tuotekoodin ja EANin heti laatikossa, jottei sivua tarvitse
+   vierittää taulukkoon asti. */
+.sku{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 20px;
+  padding:10px 12px;background:var(--paper-2);border-radius:4px}
+.sku .k{font-family:ui-monospace,monospace;font-size:14px}
+.sku .e{font-size:14px;color:var(--ink-2)}
+.sku .cp{margin-left:auto}
+/* display:flex kumoaisi selaimen oman [hidden]-säännön, jolloin tyhjä harmaa palkki
+   jää näkyviin ennen kuin kokoa on valittu. */
+.sku[hidden]{display:none}
+.box .lbl+.dealers{margin-top:0}
+.box .btn+.lbl{margin-top:24px}
+/* Jälleenmyyjälinkki (17.9.2026): logo, toiminnon nimi ja ↗. Klikattavan näköinen ja
+   klikattava: yhtenäinen reuna (katkoviiva on varattu kuvapaikoille), toiminnon nimi
+   lihavoituna, hover tummentaa reunan ja nostaa pohjan. Linkki vie ketjun
+   verkkokauppaan uuteen välilehteen, mistä ↗ kertoo. Renderöidään aina
+   SPECDEALERS-funktiolla, ei käsin. */
+.dealers{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.dealers a{display:grid;gap:8px;padding:10px 12px 12px;border:1px solid var(--rule-2);border-radius:var(--r-card);
+  background:#fff;text-decoration:none;color:var(--ink);transition:border-color .15s var(--ease),background-color .15s var(--ease)}
+.dealers a:hover{border-color:var(--ink);background:var(--paper-2)}
+.dealers a:hover .dgo{color:var(--accent-dark)}
+.dealers .dlogo{display:flex;align-items:center;justify-content:center;min-height:44px;padding:4px 8px;text-align:center;
+  background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:var(--r-ctl);font-size:12px;color:var(--ink-3)}
+.dealers .dgo{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:14px;line-height:1.3}
+.dealers .dgo span[aria-hidden]{font-weight:600}
+.box .fine{margin:14px 0 12px}
+.jump{margin-top:20px}
+
+/* Valittu koko merkitään mittataulukossa. */
+.dims tr[data-pick] td{background:var(--paper-2)}
+
+@media(max-width:980px){
+  .shop{grid-template-columns:1fr;gap:28px;padding-top:28px}
+  .gal{position:static}
+  .gal .im{aspect-ratio:16/10}
+}
+@media(max-width:420px){.dealers{grid-template-columns:1fr}}
+/* Kapealla pikkukuvat ovat vaakavieritettävä nauha, kuten verkkokaupoissa: viisi
+   ruutua rinnakkain ei mahdu 342 px:n sisältöleveyteen kutistumatta lukukelvottomaksi. */
+@media(max-width:700px){
+  .thumbs{display:flex;overflow-x:auto;gap:10px}
+  .thumbs button{flex:0 0 100px}
+}
+/* Tuotenäkymässä faktat ovat kapeassa palstassa: kolme lukua rinnakkain ei mahdu,
+   joten ne luetaan riveinä kuten verkkokaupan tuotetiedot. */
+.shop .facts{display:block;gap:0;margin:22px 0 0;padding-top:0;border-top:0}
+.shop .facts div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:11px 0;border-bottom:1px solid var(--rule)}
+.shop .facts div:first-child{border-top:1px solid var(--rule)}
+.shop .facts dt{order:2;font-size:17px}
+.shop .facts dd{order:1;margin:0;font-size:15px}
+.sizes{display:grid;grid-template-columns:repeat(3,1fr)}
+/* Alapalkin nimi on sama kuin sivun ensisijaisella toiminnolla, joten se ei saa
+   katketa kahdelle riville 390 px:n leveydellä. */
+.bar .btn{font-size:15px;padding:12px 6px;white-space:nowrap;letter-spacing:0}
+
+/* ===== tarvikesivu /pilarien-kiinnitystarvikkeet/ — build spec 1.0 =====
+   Sivu on valintatyökalu, ei luettelo. Siksi kaksi asiaa ohjaa tyylejä: lohkon 2
+   suodatinkorttien on luettava toiminnoiksi eikä navigaatioksi, ja lohkon 3
+   korttien on oltava rakenteeltaan identtisiä, koska vertailu vaatii sen.
+
+   Edellisen luonnoksen .lead, .idx, .plot, .fitt, .dl-1 ja .sizes-s poistettiin
+   samalla: yksikään ei ollut enää käytössä millään sivulla. */
+
+/* Kärki ilman kuvaa: H1 ja yksi kappale, jotta lohko 2 nousee ruudun alareunaan. */
+.topline{padding:48px 0 34px}
+.topline h1{margin-bottom:18px;max-width:20ch}
+.topline .lede{font-size:19px;color:var(--ink-2);max-width:62ch;margin:0}
+
+/* Lohko 2. Kortit ovat suodattimia: valittu tila on paksu reuna ja tumma pohja,
+   ei pelkkä väri. Ilman JavaScriptiä samat elementit ovat ankkurilinkkejä. */
+.pick-how{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.pick-how a{display:block;border:1px solid var(--rule-2);border-radius:4px;background:#fff;
+  padding:18px 20px;text-decoration:none;min-height:96px}
+.pick-how a:hover{border-color:var(--ink)}
+.pick-how b{display:block;font-family:var(--ff-d);text-transform:uppercase;font-size:19px;
+  font-weight:600;line-height:1.15;margin-bottom:8px}
+.pick-how span{display:block;font-size:14px;color:var(--ink-2)}
+.pick-how a[aria-current]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.pick-how a[aria-current] b::after{content:" ✓";color:var(--accent-dark)}
+/* Viisi korttia ei jakaudu tasan kahteen eikä kolmeen, joten välivaiheita on
+   yksi: 1200 px:n sisältöleveydellä viides kortti puristaisi otsikot neljälle
+   riville alle 1160 px:n leveydessä. */
+@media(max-width:1160px){.pick-how{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.pick-how{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.pick-how{grid-template-columns:1fr}.pick-how a{min-height:0}}
+
+/* Suodattimen kuittaus sanoin ja purkupainike samalla rivillä. */
+.fstate{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin:20px 0 0;min-height:44px}
+.fstate .msg{font-size:15px;color:var(--ink-2)}
+.lnk{font:inherit;font-size:15px;font-weight:600;background:none;border:0;padding:11px 0;
+  color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px}
+.lnk:hover{color:var(--accent-dark)}
+
+/* Lohko 3. Neljä ryhmää, jokainen oma ankkurinsa. Ryhmät ovat samassa osiossa,
+   joten niiden väliin tulee ohut viiva eikä osioiden välinen 60px rako. */
+.tgroup+.tgroup{margin-top:52px;padding-top:44px;border-top:1px solid var(--rule)}
+.tgroup .gh{margin-bottom:26px}
+.tgroup[hidden]{display:none}
+
+/* Yksi nimike per rivi (variantti 2, valittu 15.9.2026). Kolmen sarakkeen
+   ruudukko antoi asennuskuvalle 212 px ja tuotekuvalle 106 px; rivissä ne ovat
+   592 px ja 160 px. Kiinnikkeen tunnistaa siitä miltä se näyttää palkissa kiinni,
+   joten asennuskuva on rivin suurin elementti — ja koska rivin korkeuden määrää
+   oikean palstan kenttätaulukko, kuva venytetään sen mittaan sen sijaan että sen
+   alle jäisi tyhjää. Tuotekuva on tunniste kaupan hyllyllä, ei esittelykuva. */
+.tgrid{display:grid;gap:28px}
+.tcard{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:40px;
+  align-items:stretch;border:1px solid var(--rule-2);border-radius:4px;background:#fff;
+  padding:22px}
+.tcard[hidden]{display:none}
+.timcol{display:flex;flex-direction:column;min-width:0}
+/* width:100% ja overflow:hidden ovat suoja: ilman niitä kuvapaikan teksti
+   kasvattaa laatikon korkeutta ja aspect-ratio vetää leveyden perässä ulos
+   sarakkeesta. min-height on lattia sille, jos oikea palsta jää lyhyeksi. */
+.tim{background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;
+  font-size:11px;line-height:1.35;color:var(--ink-3);width:100%;overflow:hidden}
+.tim.ta{flex:1;min-height:300px}
+.tim.tt{aspect-ratio:1/1}
+
+/* Tuotekuva, tuotekoodi, nimi ja ingressi samalla rivillä: ingressi luetaan heti
+   nimen jälkeen, ei kuvalohkon alapuolelta. */
+.tid{display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:start;
+  margin-bottom:18px}
+.tcard .tk{font-family:ui-monospace,monospace;font-size:13px;color:var(--ink-3);margin:0 0 4px}
+.tcard h3{font-size:22px;margin:0}
+.tcard .tu{font-size:15px;color:var(--ink-2);margin:10px 0 0}
+
+/* Kenttärivit: sama järjestys joka kortissa, jotta silmä vertailee riviä eikä
+   etsi kenttää. */
+.frs{border-top:1px solid var(--rule)}
+.fr{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:9px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.fr:last-child{border-bottom:0}
+.fr span{color:var(--ink-3)}
+.fr b{font-size:14px;text-align:right}
+
+/* Yhden palstan leveydellä ei ole rivikorkeutta täytettäväksi, joten kuva palaa
+   kuvasuhteeseen — venytetty 300 px korkea kuva olisi pystymallinen. */
+@media(max-width:820px){.tcard{grid-template-columns:1fr;gap:22px}
+  .tim.ta{flex:0 0 auto;aspect-ratio:16/10;min-height:0}}
+/* 375 px:llä otsikon pisin sana ei mahdu 160 px:n tuotekuvan viereen, ja rivi
+   työnsi sivun 399 px:n levyiseksi. Mitattu. */
+@media(max-width:560px){.tid{grid-template-columns:96px minmax(0,1fr);gap:14px}
+  .tcard h3{font-size:19px}}
+
+/* Lohkot 5–7 */
+.mt{margin-top:20px}
+.faq{max-width:80ch}
+.dealers-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:700px){.dealers-4{grid-template-columns:repeat(2,1fr)}}
+/* ===== kommenttikierros 2, tuoteperhesivu 15.9.2026 =====
+   Seitsemän lappua. Kolme muutosta koskee jaettuja lohkoja (.cfg, .dl, taulukot),
+   joten ne yhtenäistävät samalla koontisivun ja tarvikesivun. */
+
+/* Vasen palsta jatkuu kuvan alta: ostolaatikko on pidempi kuin galleria, ja tyhjä
+   palsta sen vieressä luki turhana valkoisena tilana. */
+.shop{align-items:start}
+/* Galleriapalsta venytetään rivin korkeuteen, vaikka .shop on muuten
+   `align-items:start`. Ilman tätä `.col` on täsmälleen yhtä korkea kuin `.gal`,
+   jolloin `.gal`:n `position:sticky` ei saa liikkumavaraa eikä kuva jää kiinni
+   mihinkään — mitattuna liikkumavara oli 0 px, vaikka sticky oli voimassa.
+   Venytettynä vara on oikean palstan ja gallerian korkeuden erotus, eli kuva
+   pysyy paikallaan niin kauan kuin ostolaatikkoa vieritetään ohi ja irtoaa
+   vasta kun lohko loppuu.
+
+   `align-self` eikä `.shop{align-items:stretch}`: oikea palsta saa jäädä
+   sisältönsä korkuiseksi, eikä sen taustoja tai reunoja venytetä turhaan. */
+.col{min-width:0;align-self:stretch}
+.desc{margin-top:36px}
+.desc .head{margin-bottom:18px}
+
+/* Kolme taulukkoa, yksi tyyli: mitat, kuormat ja tekniset tiedot luetaan samalla
+   tavalla. Tekniset tiedot olivat aiemmin valkoinen laatikko omine tyyleineen. */
+.spec{max-width:520px}
+.spec td{padding:13px 16px 13px 0}
+.spec td.n{text-align:right;font-weight:700;padding-right:0}
+
+/* Latauskorttiin ikoni, joka kertoo että linkki lataa tiedoston. */
+.dl .ty{display:flex;align-items:center;gap:7px}
+.dl .ic{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* Konfiguraattorilohko kahteen palstaan: kuva vei aiemmin koko leveyden ja yli 600 px
+   korkeutta, vaikka toiminto on lohkon sisältö.
+
+   18.9.2026: lohko on ruudun korkuinen ja kuva sen sisältö. Syy on animaatiossa —
+   kuva purkaa rakenteen kerros kerrokselta vierityksen mukaan, ja sillä on oltava
+   tilaa sekä pysty- että vaakasuunnassa. Tekstipalsta kapeni 54 %:sta 34 %:iin;
+   lohkossa on otsikko, kaksi riviä ingressiä ja painike, eikä se tarvitse enempää.
+   Kuvapalsta sai vapautuneen tilan, ja selitteet mahtuvat siihen. */
+/* Koko ruudun levyinen: lohko irrotetaan .w-rajauksesta margin-inline-tempulla,
+   jolloin markkausta ei tarvitse muuttaa kuudella sivulla. `overflow-x:clip`
+   bodyssa estää vaakavierityksen, jonka 100vw muuten aiheuttaa pystypalkin
+   levyisenä — clip eikä hidden, koska hidden tekisi bodystä vierittäjän ja
+   rikkoisi sivun scroll-snapin. */
+/* Lohko on 200 svh korkea **vieritysmatka**, jonka sisällä molemmat palstat ovat
+   sticky ja täyttävät ruudun. Siitä seuraa kolme asiaa, jotka kaikki tarvittiin:
+
+     1  animaatiolla on pitkä matka eikä se siksi reagoi vierittämiseen äkisti.
+        Vieritysajetussa animaatiossa «hitaampi» on nimenomaan pidempi matka —
+        kestoa ei ole, on vain matka.
+     2  liike tapahtuu paikallaan pysyvässä kuvassa eikä ohi kiitävässä.
+     3  snap osuu matkan alkuun (`start`), ja animaatio alkaa vasta sen jälkeen.
+
+   Korkeus oli ensin 250 svh. Se lyhennettiin 200:aan, koska lohkon ohi pääseminen
+   kesti 2 375 px eikä sitä kompensoinut mikään: alalaidassa ei ole snap-vetoa
+   lainkaan (mitattu: 0 px kolmesta kohdasta, kun sisääntulossa veto on 204 px),
+   joten raskaus oli pelkkää matkaa. Nyt matka on 1 900 px ja siitä 950 px
+   kiinnityksessä.
+
+   **Aikajana on tässä eikä kuvassa.** Sticky-elementin oma kulku ruudun läpi
+   pysähtyy juuri siksi ajaksi, jonka pitäisi olla animaation ydin, joten
+   `view()` kuvan päällä antaisi lähes vakion. Nimi `--te-cfg` tulee
+   terassikuva.js:n id:stä «cfg», ja kuva viittaa siihen nimellä
+   (`ulkoinenAikajana:true`). */
+.cfg{display:grid;grid-template-columns:minmax(0,27%) minmax(0,1fr);gap:clamp(32px,4vw,64px);
+  align-items:start;min-height:200svh;scroll-snap-align:start;
+  width:100vw;margin-inline:calc(50% - 50vw);
+  border-radius:0;border-left:0;border-right:0;padding:0 clamp(24px,5vw,88px);
+  view-timeline-name:--te-cfg;view-timeline-axis:block}
+.cfg>*{position:sticky;top:0;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center}
+.cfg .head{margin-bottom:0}
+.cfg .shot{margin:0}
+.cfg .act{margin:26px 0 0}
+/* Kapealla ruudulla ei runwaytä eikä stickyä: palstat ovat allekkain, jolloin
+   250 svh olisi kaksi ruutua tyhjää ja sticky pitäisi kuvan ruudussa tekstin
+   ohi vierittäessä. */
+@media(max-width:820px){.cfg{grid-template-columns:1fr;gap:26px;min-height:0;
+  scroll-snap-align:none;padding:32px 24px;view-timeline-name:none}
+  .cfg>*{position:static;min-height:0;display:block}
+  .cfg .shot{order:-1;display:flex}}
+
+/* Matala variantti: sama lohko ilman vierityksen runwaytä. Käytössä sivulla,
+   jolla konfiguraattori on toissijainen nosto eikä sivun tehtävä — ostopaikka-
+   sivun ensisijainen toiminto on *Katso mistä ostat*, ja 1 900 px vieritys-
+   matkaa on liikaa lohkolle, joka ei ole sivun asia. Kuvapari on
+   `terassikuva.cfgMatala`: koottu rakenne, ei kerroksia joita animoida.
+
+   Palstat ovat 38/62 eivätkä 27/73: koottu terassi on matala, joten leveä
+   palsta venyttäisi sen nauhaksi ja jättäisi tekstin kapeaksi ilman syytä.
+
+   Kaksi luokkaa eikä yksi (`.cfg.matala`) on tahallista. Miro-kääre injektoi
+   kaappausta varten `<style>.cfg{min-height:860px}</style>` (ks. CLAUDE.md,
+   «Kaappauksen pahin ansa»). Yhden luokan variantti häviäisi sille ja venyisi
+   kaappauksissa 860 px:iin; kaksi luokkaa voittaa. */
+/* Snap pois yhdeltä sivulta. `html{scroll-snap-type:y proximity}` on globaali,
+   mutta snap-kohtia on vain yksi (.cfg) — joten kun tämä lohko lakkaa olemasta
+   snap-kohta, sivulla ei ole snappia lainkaan. Animaatio jää: se ajetaan
+   vierityksen aikajanalla eikä snap ole sen ehto, vaan apu joka asettaa lohkon
+   ruutuun. Ilman snappia lukija voi pysähtyä animaation puoliväliin — se on
+   hyväksytty hinta sivulla, jolla vieritys on muutenkin pitkä. */
+.cfg.ei-snap{scroll-snap-align:none}
+
+.cfg.matala{min-height:0;scroll-snap-align:none;view-timeline-name:none;
+  grid-template-columns:minmax(0,38%) minmax(0,1fr);align-items:center;
+  padding:clamp(34px,4vw,60px) clamp(24px,5vw,88px)}
+.cfg.matala>*{position:static;min-height:0;display:block}
+.cfg.matala .shot{display:flex}
+@media(max-width:820px){.cfg.matala{grid-template-columns:1fr}}
+
+/* Referenssinosto nykysivuston keissimuodossa: sitaatti, nimi ja paikka. */
+.quote .acts{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin:18px 0 0;
+  padding:0;border:0}
+.quote .fine{margin-top:12px}
+
+/* Käyttökohteet tiiviinä rivinä kuvan alla. Aiemmin tässä oli neljä täysleveää
+   riviä erottimineen, ja tuotetiedot olivat oikeassa palstassa — katse joutui
+   hyppimään puolelta toiselle etsiäkseen saman tason tietoa. */
+.uses{list-style:none;margin:0 0 26px;padding:0}
+.uses li{position:relative;padding:7px 0 7px 22px;font-size:16px}
+.uses li::before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;
+  background:var(--accent);border-radius:50%}
+.uses a{text-decoration:none;border-bottom:1px solid var(--rule-2);padding-bottom:1px}
+.uses a:hover{border-color:var(--ink);color:var(--accent-dark)}
+/* Otsikko on pieni selite eikä kilpaile H1:n kanssa, mutta pysyy otsikkoelementtinä. */
+h2.lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+  font-family:var(--ff);font-weight:600;margin:24px 0 8px}
+
+/* Referenssinosto: aiemmin sitaatti oli katkaistu 34 merkkiin ja lohko oli koko
+   sisältöleveyden levyinen, jolloin oikea kolmannes jäi tyhjäksi. Nyt lohko on
+   kapeampi, sitaatti käyttää sen leveyden ja kuva on ylälaidassa tekstin kanssa. */
+/* Lohko käyttää koko sisältöleveyden kuten muutkin: kuva on iso ja sitaatti saa
+   loput. Aiemmin lohko oli kavennettu 920 pikseliin, mikä on väärä keino — silloin
+   se näyttää eksyneeltä muiden 1 200 px:n lohkojen joukossa. */
+.quote{grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:48px;align-items:start}
+.quote blockquote{max-width:none;font-size:clamp(21px,2vw,27px)}
+.quote .im{aspect-ratio:4/3}
+/* Oma .quote-sääntö tuli tiedostossa vanhan mobiilisäännön jälkeen ja kumosi sen,
+   jolloin sitaattilohko levitti sivun 461 pikseliin 390 px:n ruudulla. */
+@media(max-width:760px){.quote{grid-template-columns:1fr;gap:20px}
+  .quote .im{aspect-ratio:16/10}}
+
+/* Lohkot 4 ja 5 ovat molemmat .side: kaksi peräkkäistä samanlaista riviä lukisi
+   yhtenä. Asennuslohkossa media siirtyy vasemmalle — video on lohkon sisältö,
+   teksti sen saate. Mobiilissa järjestys on sama molemmissa. */
+.side.flip .im{order:-1}
+@media(max-width:900px){.side.flip .im{order:0}}
+
+/* 15.9. .side .more -korjaus siirtyi yleiseksi .more-sääntöön (design system, alla). */
+
+/* Tekniset arvot kahdessa sarakkeessa: yhdeksän paria täyttää sisältöleveyden,
+   eikä puolikas palsta jää tyhjäksi. Rivi on sama otsikko–arvo-pari samoin viivoin
+   kuin mittataulukossa. */
+.spec2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 56px;margin:0}
+.spec2 div{display:flex;justify-content:space-between;align-items:baseline;gap:20px;
+  padding:13px 0;border-bottom:1px solid var(--rule)}
+.spec2 dt{color:var(--ink-2)}
+.spec2 dd{margin:0;font-weight:700;text-align:right}
+.tech-note{margin:22px 0 0;max-width:none}
+.tech-note .more{margin-left:6px}
+.dl{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* Sama ansa kuin .quote-säännössä: tämä rivi tulee tiedostossa aiempien
+   mobiilisääntöjen jälkeen ja kumoaisi ne ilman toistoa. */
+@media(max-width:900px){.dl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.dl{grid-template-columns:1fr}}
+@media(max-width:820px){.spec2{grid-template-columns:1fr;gap:0}}
+
+/* ===== palautetut luokat: versio B =====
+   Nämä poistettiin 15.9.2026 kuolleina, kun tarvikesivu rakennettiin build spec
+   1.0:n mukaan. Ne eivät olleet kuolleita: rinnakkainen versio
+   bce_tarvikkeet_b_spec.html käyttää samaa tuotelohkoa kuin perhesivu, ja poisto
+   jätti sen tyylittömäksi. Palautettu liittämällä, ei uudelleenkirjoittamalla.
+   .pick-how ja .dealers-4 EI palautettu: niistä on käytössä uudempi versio. */
+.lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:56px;
+  align-items:start;padding:44px 0 8px}
+.lead h1{margin-bottom:18px}
+.lead .lede{font-size:19px;color:var(--ink-2)}
+.lead .cta{display:flex;gap:14px 24px;flex-wrap:wrap;align-items:center;margin-top:28px}
+.idx{border:1px solid var(--rule-2);border-radius:5px;background:#fff;padding:18px 20px}
+.idx .lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 6px}
+.idx a{display:block;padding:9px 0;border-bottom:1px solid var(--rule);text-decoration:none;
+  font-weight:600;font-size:15px}
+.idx a:last-child{border-bottom:0}
+.idx a:hover{color:var(--accent-dark)}
+@media(max-width:900px){.lead{grid-template-columns:1fr;gap:28px}}
+
+.plots{border-top:1px solid var(--rule)}
+.plot{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,260px);gap:24px 32px;
+  align-items:start;padding:24px 0;border-bottom:1px solid var(--rule)}
+.plot .im{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:10px;font-size:11px;line-height:1.35;color:var(--ink-3)}
+.plot h3{font-size:19px;margin:0 0 8px}
+.plot p{margin:0;font-size:15px;color:var(--ink-2);max-width:56ch}
+.plot .fit{margin-top:12px;font-size:14px;color:var(--ink-3)}
+.plot .fit b{color:var(--ink);font-size:15px}
+.plot .sku{margin:0;flex-direction:column;align-items:flex-start;gap:6px}
+.plot .sku .cp{margin:6px 0 0}
+.sizes-s{grid-template-columns:repeat(2,1fr);margin:14px 0 0;max-width:320px}
+@media(max-width:900px){
+  .plot{grid-template-columns:140px minmax(0,1fr);gap:16px 20px}
+  .plot .sku{grid-column:2}
+}
+@media(max-width:560px){
+  .plot{grid-template-columns:1fr}
+  .plot .sku{grid-column:1}
+  .plot .im{aspect-ratio:16/10}
+}
+
+.fitt td{vertical-align:middle}
+.fitt td.n{text-align:right;font-weight:400}
+.dl-1{grid-template-columns:1fr}
+
+
+/* ===== design system, 16.9.2026: mitatut korjaukset =====
+   Heuristiikka-auditin löydökset, jotka näkyvät DOMissa eivät lähdekoodissa.
+   Jokainen on mitattu 390 px:n leveydellä ennen ja jälkeen. */
+
+/* .more (ent. .hero-2): toissijainen tekstilinkki. Nimi kuvasi vain ensimmäistä käyttöpaikkaa;
+   sama linkki on nyt jokaisen lohkon lopetus. Toissijainen tekstilinkki on kosketuskohde joka paikassa, ei vain TP-sivun
+   lohkoissa 5 ja 6: renderöity korkeus oli 24–31 px yhdeksällä sivun linkillä. */
+.more{display:inline-flex;align-items:center;min-height:var(--tap)}
+/* Leipätekstin sisällä juokseva linkki ei saa kasvattaa riviväliä. */
+.fine .more,p.fine .more{display:inline;min-height:0}
+
+/* Rivilinkit: osuma-alue kasvaa, rivikorkeus ei (padding + negatiivinen margin).
+   Vähimmäistaso on WCAG 2.5.8:n 24 px, koska 44 px kasvattaisi murupolun ja
+   alatunnisteen korkeutta mobiilissa. Mitattu ennen: murupolku 17, apurivi 22,
+   käyttökohdelinkit 21, alatunniste 18, luurankosivu 29. */
+.crumb a{display:inline-block;padding:8px 0;margin:-8px 0}
+.uses a{display:inline-block;padding:6px 0;margin:-6px 0}
+footer a{display:inline-block;padding:4px 0;margin:-4px 0}
+.kids a{padding:8px 0 9px;margin:-8px 0}
+.flow .st b a,.serie h3 a,.steps b a{display:inline-block;padding:6px 0;margin:-6px 0}
+.idx a{padding:10px 0}
+/* Apurivi: kielivalinta ja Yhteystiedot 44 px korkeiksi ilman rivin kasvua (rivi on 44). */
+.lang a{padding:11px 9px}
+.urow .ulink{padding:11px 4px}
+@media(max-width:560px){.urow .ulink{padding:11px 0}}
+
+/* Numerointi oranssilla oli 3,43:1 (20 px, paino 600 ei ole WCAG:n lihavointi).
+   Pienessä tekstissä oranssi on aina --accent-dark: 5,2:1 paperilla. */
+.flow .st .n,.steps li::before{color:var(--accent-dark)}
+
+/* Alapalkki on kuoressa (16.9.2026), ei sivukohtainen. Alle 19 px:n ensisijainen painike
+   (kuoren .btn-s 16 px, alapalkki 15 px) ei täytä 4,5:1 brändioranssilla (3,6:1), joten
+   pienissä painikkeissa pohja on --accent-dark: valkoinen sen päällä on 5,5:1. Iso
+   painike säilyy brändioranssina. */
+.btn-s.btn-1,.bar .btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
+.btn-s.btn-1:hover,.bar .btn-1:hover{background:#9a3609;border-color:#9a3609}
+
+/* ===== tarvikesivu, yhdistelmä A + B (16.9.2026) =====
+   Suodatin korostaa ja merkitsee, ei piilota: osuva rivi saa tekstimerkinnän, muut
+   vaimennetaan. Vaimennus ei ole ainoa signaali, joten pelkkä väri ei kanna tietoa. */
+.plot .hitlbl{margin:-4px 0 8px;font-size:13px;font-weight:700;color:var(--accent-dark)}
+.plot .hitlbl[hidden]{display:none}
+.plot.dim{opacity:.5}
+.plot.hit{background:var(--paper-2);margin:0 -16px;padding-left:16px;padding-right:16px;border-radius:var(--r-card)}
+.plot .fit .sep2{color:var(--rule-2);padding:0 4px}
+.fstate .more{padding:0}
+.plots .plot:target{scroll-margin-top:110px}
+@media(max-width:560px){.plot.hit{margin:0 -8px;padding-left:8px;padding-right:8px}}
+
+/* ===== design system, toinen erä 16.9.2026 =====
+   Lohkon lopetuslinkki. Aiemmin jokainen sivu antoi <p>-kääreelle oman inline
+   margin-topin (18–28 px, etusivulla 14 kpl): komponentti puuttui. Yksi väli, --s5. */
+.next{margin:var(--s5) 0 0}
+.box .next{margin:0}
+/* Kenttä, kanoninen: .guide input ja .find input olivat sama kenttä eri väleillä. */
+.field{font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--rule-2);border-radius:var(--r-ctl);
+  background:#fff;min-width:250px;flex:1 1 250px;max-width:420px}
+/* Logorivin linkit: text-decoration oli inline-tyylinä joka linkissä. */
+.logos a{text-decoration:none}
+/* Osio ilman omaa väliä, kun lohko (.pro-strip) tuo viivat ja välit itse. */
+section.tight{padding:0;border:0}
+.pro-strip h2{font-size:23px}
+/* Oppaan kuvapaikka: matala nauha, ei kuvasuhdetta. Käyttää kanonista .ph-luokkaa. */
+.guide .ph{height:230px}
+/* Heron toinen toimintorivi (hubi: kaksi ankkurilinkkiä painikkeen alla). */
+.hero .cta-2{margin-top:18px}
+
+/* Heron jälleenmyyjärivi on sama .dealers-lohko kuin ostolohkossa. Hero on kahdessa
+   palstassa, joten neljä korttia menee kahteen riviin alle 1100 px:n. */
+/* Jälleenmyyjärivi kulkee heron molempien palstojen ali, joten neljä korttia
+   mahtuu rinnakkain koko työpöytäleveydellä. */
+.hero .trust{grid-column:1 / -1;margin-top:8px;padding-top:22px}
+@media(max-width:700px){.hero .trust .dealers-4{grid-template-columns:repeat(2,1fr)}}
+
+/* ===== kokovalinta ja mittakaavio vierekkäin (17.9.2026) =====
+   Valitsin oli aiemmin ostolaatikossa, jossa sen vaikutus ei näkynyt: käyttäjä
+   klikkasi eikä mikään näkyvä muuttunut. Nyt valinta on kaavion vieressä ja
+   muuttaa kaavion kirjaimet millimetreiksi samalla silmäyksellä. */
+.mitoitus{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:48px;
+  align-items:start;margin-bottom:38px}
+.mitoitus .mk{margin:0;max-width:none}
+.valitsin .lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+  font-family:var(--ff);font-weight:600;margin:0 0 10px}
+/* .koot ja .koko-m ovat kuolleita 18.9.2026 alkaen: TP-sivun kokovalitsin on
+   pystysäädin (.tval, tiedoston lopussa). Säännöt jätetään paikalleen kunnes repo
+   on committoitu, kuten muutkin kuolleet luokat. */
+.koot{display:grid;gap:8px}
+.koot button{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;
+  font:inherit;text-align:left;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
+  padding:10px 14px;cursor:pointer;min-height:48px}
+.koot button:hover{border-color:var(--ink)}
+.koot button[aria-checked="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.koot .sil{display:flex;align-items:flex-end;justify-content:center;height:34px;color:var(--rule-2)}
+.koot button[aria-checked="true"] .sil{color:var(--accent)}
+.koot b{font-size:16px}
+.koot .kg{font-size:13px;color:var(--ink-3)}
+/* Alasveto on mobiilin valitsin: viisi avointa vaihtoehtoa vie kapealla koko ruudun. */
+.koko-m{display:none;margin:0}
+select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px solid var(--rule-2);
+  border-radius:4px;background:#fff;min-height:48px}
+.mkfine{margin-top:16px}
+@media(max-width:900px){
+  .mitoitus{grid-template-columns:1fr;gap:24px}
+  .koot{display:none}
+  .koko-m{display:block}
+  .mitoitus .mk{max-width:480px;margin:0 auto}
+}
+/* Kaavio ei saa olla lohkon suurin elementti: valitsin on 370 px korkea, ja
+   täysikokoisena kaavio jätti sen viereen 300 px tyhjää. */
+.mitoitus .mk{max-width:560px}
+/* Kapealla otsikko tulee alasvedon omasta labelista, joten radioryhmän otsikko
+   piilotetaan — muuten "Valitse korkeus" lukee kahdesti peräkkäin. */
+@media(max-width:900px){.valitsin > #kokolbl{display:none}}
+
+/* Palstat samaan ylä- ja alareunaan: rivin korkeuden määrää valitsin, ja kaavio
+   skaalautuu siihen. Ilman tätä kaavio roikkui 41–112 px valitsimen alapuolella
+   ja alkoi 98 px sen alapuolelta. */
+.mitoitus{align-items:stretch}
+.valitsin{display:flex;flex-direction:column}
+/* Painikkeet pysyvät luonnollisen kokoisina, jolloin valitsin määrää rivin
+   korkeuden ja kaavio skaalautuu siihen. Näin lohko ei hyppää korkeutta kun
+   käyttäjä vaihtaa kokoa: vain piirroksen leveys muuttuu. */
+.valitsin .mkfine{margin:14px 0 0}
+@media(max-width:900px){
+  .mitoitus{align-items:start}
+  .mitoitus .mk{display:block;max-width:480px}
+  .mitoitus .mk svg{width:100%;height:auto}
+  .koot{flex:none}
+}
+.valitsin .mkfine{margin-top:auto}
+
+/* Tekniset tiedot yhdessä sarakkeessa: kahdessa sarakkeessa silmä ei tiennyt
+   kumpaa luetaan ensin, ja rivit hyppivät. Viereen kuva, jottei puolikas
+   sisältöleveys jää tyhjäksi. */
+.spec2{grid-template-columns:1fr}
+.techrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;
+  align-items:stretch}
+.techrow > div:first-child{display:flex;flex-direction:column}
+.techrow .tech-note{margin-top:auto;padding-top:22px}
+.ph.tekninen{height:100%;min-height:0;margin:0}
+@media(max-width:900px){
+  .techrow{grid-template-columns:1fr;gap:26px}
+  .ph.tekninen{min-height:240px}
+  .techrow .tech-note{margin-top:22px}
+}
+
+
+/* ===== tuoterivi: variantti 2 palautettu 17.9.2026, B:n parannukset mukana =====
+   16.9. A/B-yhdistelmä otti lohko 3:n B:stä, jolloin kahden kuvan esittäminen
+   katosi sivulta kokonaan: kuvapaikkoja jäi kahdeksan, yksi per tuote. Variantti 2
+   valittiin 15.9. juuri siksi, että siinä molemmat kuvat ovat luettavan kokoisia —
+   asennuskuva 592 px (B:ssä 212) ja tuotekuva 160 px (B:ssä 106).
+
+   B:stä säilytetään tuotekoodi, EAN ja Kopioi (.sku), kokovalinta (.sizes-s) ja
+   suodattimen tekstimerkintä (.hitlbl/.hit/.dim) — ne olivat aitoja parannuksia.
+
+   Säännöt on liitetty tiedoston loppuun eikä kirjoitettu ylemmän .tcard-lohkon
+   päälle, koska tiedostoon kirjoitti toinen istunto samaan aikaan. Yhtä suuri
+   spesifisyys, myöhempi voittaa. Lohkot voi yhdistää kun rinnakkainen työ on ohi;
+   .tim-säännöt jäivät käyttämättä, kun kuvapaikat siirtyivät kanoniseen .ph:hon. */
+
+/* Asennuskuva täyttää rivin korkeuden. Kanonisessa .ph:ssa ei ole aspect-ratiota,
+   joten min-height on tässä turvallinen — se on vain lattia sille tapaukselle,
+   että oikea palsta jää lyhyeksi. */
+.timcol{display:flex;flex-direction:column;min-width:0}
+.timcol .ph{flex:1;min-height:260px}
+
+/* Ingressi otsikon alle samaan palstaan tuotekuvan viereen. */
+.tcard h3{font-size:22px;margin:0 0 8px}
+.tcard .tu{font-size:15px;color:var(--ink-2);margin:0}
+.tcard .frs{margin-bottom:18px}
+
+/* Tilaustiedot rivin pohjalla, B:stä. */
+.tcard .sizes-s{margin:0 0 16px;max-width:320px}
+.tcard .sku{margin:0}
+
+/* Suodatin piilottaa sopimattomat (17.9.), ei vaimenna niitä. Vaimennettu kortti
+   on yhä 400 px korkea rivi, joka pitää ohittaa vierittämällä — sivulla on
+   kahdeksan riviä, joten vaimennus maksoi enemmän kuin kertoi. Tyhjä ryhmä
+   piiloutuu otsikkoineen (.tgroup[hidden]). Erillistä "Sopii valintaasi"
+   -merkintää ei tarvita, kun kaikki näkyvä sopii.
+
+   Vieritystä ei tehdä käyttäjän puolesta: se oli auditin löydös 16.9. */
+.tgrid .tcard:target{scroll-margin-top:110px}
+
+/* Yhden palstan leveydellä ei ole rivikorkeutta täytettäväksi, joten kuva palaa
+   kuvasuhteeseen — venytetty 260 px korkea kuva olisi siellä pystymallinen. */
+@media(max-width:820px){.timcol .ph{flex:0 0 auto;aspect-ratio:16/10;min-height:0}}
+
+
+/* ===== suodatinkortti: kaavio korttiin, metatekstit pois (17.9.2026) =====
+   Kortin nimi ei kerro millainen liitos on kyseessä. Matala kaaviokuva kortin
+   yläreunassa kertoo sen yhdellä silmäyksellä, eikä kortti silti kasva niin
+   korkeaksi että viisi korttia ei mahtuisi riville.
+
+   Kuvapaikka on kanoninen .ph kuvasuhteella .ph-1610. Kokeiltiin ensin 3:1, mutta
+   siihen on vaikea saada oikeaa kuvaa: 216 px:n levyisenä korkeutta jää 72 px.
+   16:10 on tavallinen valokuvan ja renderin kuvasuhde ja antaa 135 px.
+
+   Kuva on täysleveä kortin yläreunassa kuten .pick .im, joten kortin oma padding
+   siirtyy tekstiosaan .tx. Selektorit ovat kahden luokan mittaisia, jotta ne
+   voittavat ylemmän .pick-how span -säännön ilman !importantia.
+
+   `display:flex` toistetaan tässä, ja se on koko säännön tärkein rivi. .ph on
+   span, ja .pick-how span{display:block} on (0,1,1) eli vahvempi kuin .ph (0,1,0)
+   — kuvapaikka menetti siis keskityksensä sillä hetkellä kun se laitettiin
+   kortin sisään, ja kuva asettui vasempaan ylänurkkaan normaalina virtana.
+   Tyhjänä kuvapaikkana se ei näkynyt, koska paikanpitäjän teksti on keskitetty
+   `text-align`illa. Vika paljastui vasta 18.9.2026 kun paikoissa oli kuva.
+   Koskee vain näitä viittä: tuoterivien .ph ei ole .pick-how:n sisällä. */
+.pick-how a{padding:0;overflow:hidden}
+.pick-how .ph{display:flex;align-items:center;justify-content:center;
+  border-width:0 0 1px;border-radius:0}
+.pick-how .tx{display:block;padding:16px 18px;font-size:inherit;color:inherit}
+.pick-how .tx b{display:block;font-family:var(--ff-d);text-transform:uppercase;
+  font-size:19px;font-weight:600;line-height:1.15;margin:0 0 8px}
+.pick-how .tx .d{display:block;font-size:14px;color:var(--ink-2)}
+
+/* Kuittausrivillä näkyy vain purkupainike, ja vain kun valinta on päällä.
+   Määrä ja linkki ensimmäiseen osumaan olivat metatekstiä: kortin ✓ ja rivien
+   "Sopii valintaasi" kertovat saman, ja käyttöliittymä opitaan ensimmäisellä
+   klikkauksella. Kuittaus jää ruudunlukijalle .sr-alueeseen, koska napin
+   painaminen ei muuten ilmoita mitään. */
+.fstate{margin:20px 0 0;min-height:0}
+.fstate:empty{display:none}
+/* Kaksi linkkiä rivillä: tuotteeseen ja videoon. Kolmas sarake ei enää riitä
+   niille, joten linkit ovat kuvauksen alla omalla rivillään. */
+.pitem{grid-template-columns:150px minmax(0,1fr)}
+.plinks{display:flex;flex-wrap:wrap;gap:8px 22px;margin:12px 0 0}
+@media(max-width:760px){.pitem{grid-template-columns:96px minmax(0,1fr)}}
+
+/* Mobiilissa kortti kääntyy vaakaan: 16:10 täysleveänä teki kortista 312 px
+   korkean, eli viisi korttia vei kaksi ruudullista ennen kuin ensimmäinen tuote
+   näkyy. Kuva on nyt kortin korkuinen kaistale vasemmalla, teksti oikealla.
+   Mobiili on 80,9 % istunnoista. */
+@media(max-width:520px){
+  .pick-how a{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:stretch}
+  .pick-how .ph{aspect-ratio:auto;height:100%;border-width:0 1px 0 0}
+  .pick-how .tx{padding:14px 16px}
+}
+
+/* Kuvarivi kolmelle kohdekuvalle — käyttökohdesivun "Miltä valmis näyttää"
+   (17.9.2026). Sama kortti kuin referensseissä, mutta kolmessa palstassa: .cases on
+   kaksipalstainen, joten kolme kuvaa asettuisi siihen muotoon 2 + 1 ja viimeinen
+   jäisi riippumaan. Kortissa ei ole otsikkoa eikä linkkiä — kuvateksti kertoo
+   kohteen koon ja käytetyn mallin, ja se on ainoa tieto jonka lukija tästä tarvitsee.
+   Kuvapaikka on kanoninen .ph, jolla ei ole omaa alamarginaalia, joten väli
+   kuvatekstiin tulee tästä. Mitattu 390 px: yksi palsta, ei vaakavieritystä. */
+.cases-3{grid-template-columns:repeat(3,1fr);gap:var(--s5)}
+.cases-3 .ph{margin-bottom:var(--s4)}
+@media(max-width:820px){.cases-3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.cases-3{grid-template-columns:1fr}}
+
+/* ===== JeKi-sokkelisivu /jeki-sokkeli/ (17.9.2026) =====
+   Kaksi varianttia olemassa oleviin ruudukkoihin. Kumpikaan ei ole uusi lohko:
+   sama luokka, eri sarakemäärä, koska sisällön määrä on eri.
+
+   .claims-3 — kuusi väitettä kolmessa sarakkeessa. Perus-.claims on neljä saraketta
+   (etusivun neljä väitettä); kuudella kortilla se jättäisi toiselle riville kaksi
+   korttia ja kaksi tyhjää saraketta. Kolmella sarakkeella rivit ovat täydet.
+   Katkaisut sääntöjen mukaan: 980 kahteen, 560 yhteen. */
+.claims.claims-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:980px){.claims.claims-3{grid-template-columns:repeat(2,1fr);gap:var(--s6) var(--s5)}}
+@media(max-width:560px){.claims.claims-3{grid-template-columns:1fr;gap:var(--s5)}}
+
+/* .alt-2 — ohjauslohko kahdelle haaralle (Pilarit vai JeKi). Perus-.alt on kolme
+   saraketta (TP:n "Etsitkö sittenkin toista pilaria", kolme perhettä); kahdella
+   haaralla kolmas sarake jäisi tyhjäksi ja vertailu näyttäisi keskeneräiseltä.
+   Haaralla on otsikko ja kuva, joita kolmen sarakkeen .alt ei käytä: kuvat ovat
+   itse vertailu (avoin reuna vs. suljettu), eivät kuvitusta. */
+.alt.alt-2{grid-template-columns:repeat(2,1fr);gap:var(--s7)}
+.alt h3{margin-bottom:var(--s2)}
+.alt .ph{margin-bottom:var(--s4)}
+@media(max-width:820px){.alt.alt-2{grid-template-columns:1fr;gap:var(--s5)}}
+
+/* Ostorivi lohkon lopussa — käyttökohdesivun moduuli 10 "Näin pääset alkuun"
+   (17.9.2026). Sivupohjan speksi vaatii, että jälleenmyyjälista tulee yhdestä
+   lähteestä ja on samassa lohkossa kuin jakelumalli. Kolme osaa allekkain:
+   ensisijainen toiminto, selite ja jälleenmyyjät. Ilman tätä sääntöä .lbl liimautuu
+   kiinni painikkeen alareunaan, koska .cta-block antaa välin vain yläpuolelleen.
+   Mitattu 390 px: neljä jälleenmyyjäkorttia yhteen palstaan, ei vaakavieritystä. */
+.buyrow{margin-top:var(--s7)}
+.buyrow .lbl{margin-bottom:var(--s4)}
+.buyrow .fine{margin-top:var(--s4)}
+/* Puhelin ja sähköposti ovat kosketuskohteita, eivät pienoistekstiä: mobiilissa
+   numeron napautus on koko lohkon nopein reitti. 13 px:n .fine-rivillä osuma-alue oli
+   mitattuna 15 px. Nyt 17 px teksti ja 49 px osuma-alue paddingilla ja negatiivisella
+   marginilla, jolloin rivikorkeus ei kasva. */
+.buyrow .contact{margin:var(--s5) 0 0}
+.buyrow .contact a{display:inline-block;padding:11px 0;margin:-11px 0;font-weight:600}
+
+/* Videolista työvaiheen yhteydessä — käyttökohdesivun moduulit 3, 4, 6, 7, 12 ja 13
+   (17.9.2026). Sivupohjan speksi versio 2: video kuuluu sen työvaiheen viereen jota se
+   käsittelee, eikä omaksi lohkokseen, ja jokaisella videolla on aihe joka näkyy
+   tekstinä ilman että videota tarvitsee avata. Kompakti, koska lista on askeleen
+   sisällä. Rivilinkin osuma-alue on 30 px paddingilla ja negatiivisella marginilla,
+   jottei rivikorkeus kasva. Mitattu 390 px. */
+.vidlist{list-style:none;margin:var(--s3) 0 0;padding:0;font-size:var(--fs-small)}
+.vidlist li{position:relative;padding:2px 0 2px 20px;color:var(--ink-2)}
+.vidlist li::before{content:"▸";position:absolute;left:3px;top:2px;color:var(--accent-dark)}
+.vidlist a{display:inline-block;padding:7px 0;margin:-7px 0}
+.vidlist .vt{color:var(--ink-3)}
+
+/* Aito kuva lohkon koko leveydellä — käyttökohdesivun maapohjalohko (17.9.2026).
+   A-601-leikkaus on 2680 px leveä ja sen numeroselite on luettavissa vasta noin
+   1000 px:stä ylöspäin: mediaparin puolikkaassa palstassa (552 px) selite renderöityy
+   5 px:n kokoisena eli ei lainkaan. Siksi kuva on oma rivinsä tekstin alla.
+   Mitattu 390 px: kuva skaalautuu palstan leveyteen, ei vaakavieritystä. */
+.figwide{margin:var(--s6) 0 0}
+.figwide img{display:block;width:100%;height:auto}
+
+/* Menetelmätaulukko, joka pinoutuu kapealla — perustustapojen vertailusivu (18.9.2026).
+   Neljä saraketta ja neljä riviä ei mahdu 390 pikseliin luettavana. TP-perhesivun keino
+   (.tw + min-width, vaakavieritys) on tehty ammattilaiselle, joka etsii yhtä lukua
+   mittataulukosta; tämä taulukko on koko sivun tiivistelmä, eikä sitä saa joutua
+   vierittämään nähdäkseen. Alle 560 px jokainen rivi on oma lohkonsa: menetelmän nimi
+   otsikkona ja arvot sarakeotsikoineen allekkain. Sarakeotsikko tulee data-lbl-
+   attribuutista, joka täytetään samasta C-objektista kuin thead, joten copy on yhä
+   yhdessä paikassa. Mitattu 390 px: ei vaakavieritystä.
+   Läpinäkyvä pohja tulee table.data-oletuksesta, tässä ei kumota sitä.
+   Leveys 900 px eikä koko sisältöleveys: neljä lyhyttä arvoa 1 200 pikselissä jättää
+   Kalustoon ja Sää-sarakkeeseen niin ison välin, että rivin seuraaminen katkeaa, ja
+   taulukko irtoaa sivun muusta mitasta (kappale on 68ch eli noin 670 px). */
+.data.stack{max-width:900px}
+.data.stack tbody th{font-weight:700}
+@media(max-width:560px){
+  .data.stack thead{position:absolute;width:1px;height:1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap}
+  .data.stack tbody tr{display:block;padding:var(--s4) 0;border-bottom:1px solid var(--rule)}
+  .data.stack tbody tr:last-child{border-bottom:0}
+  .data.stack tbody th,.data.stack tbody td{display:block;border:0;padding:0}
+  .data.stack tbody th{font-size:var(--fs-h3);margin-bottom:var(--s2)}
+  .data.stack tbody td{padding:3px 0}
+  .data.stack tbody td::before{content:attr(data-lbl) ": ";color:var(--ink-3);font-weight:600}
+}
+
+/* Pistelistan rivi on luettavan levyinen, sama mitta kuin kappaleella (p on 68ch).
+   Aiemmin listassa oli vain lyhyitä nimikkeitä, joten mitta ei sitonut; perustustapojen
+   vertailusivun lohko "Milloin valmispilari ei ole oikea valinta" on lihavoitu väite ja
+   sen perustelu samalla rivillä, jolloin rivi venyi 1 200 pikseliin. Korjattu oletukseen
+   eikä uudella luokalla: mitta on sama syy kappaleessa ja listassa. */
+.uses li{max-width:68ch}
+
+/* Kaavio piirtyy vakiomittakaavassa: kangas on mitoitettu perheen suurimman koon
+   mukaan, joten valinta ei muuta piirroksen eikä tekstien kokoa. Palstat alkavat
+   samalta riviltä; pienillä koilla kaavion yläosaan jää tyhjää, ja se tyhjä kertoo
+   kuinka matala pilari on. */
+.mitoitus .mk{display:block;max-width:560px;min-width:0}
+.mitoitus .mk svg{width:100%;height:auto}
+
+/* Kapealla kaavio ei kutistu luettavuuden alle vaan kehys vierittyy — sama
+   ratkaisu ja sama perustelu kuin saman lohkon mittataulukolla (.tw): mitat
+   luetaan työmaalla, ja typistetty tai lukukelvoton on huonompi kuin vieritettävä.
+   Kangas on 573 px ja merkinnät 20 px, joten 390 px:n leveydellä merkintä
+   renderöityy 13,6 pikseliin — design systemin pienin koko (--fs-fine). Ilman
+   lattiaa 342 px:n palstassa se on 11,9 px, eli pienempää kuin mikään sivun teksti.
+   Raja on itsestään rajoittuva: heti kun palsta on yli 390 px, vieritystä ei ole.
+   Sivu itse ei vierity, mitattu 390 px. */
+@media(max-width:560px){
+  /* grid-template-columns:1fr on minmax(auto,1fr): sarakkeen minimi on sen
+     sisällön minimi, joten svg:n min-width kasvattaisi saraketta ja koko sivu
+     vierittyisi vaakaan. minmax(0,1fr) antaa sarakkeen kapeta, ja vieritys jää
+     kuvakehyksen sisään sinne minne se kuuluu. Tämä mitattiin: ilman ensimmäistä
+     riviä sivu vierittyi 342 pikselin palstassa. */
+  .mitoitus{grid-template-columns:minmax(0,1fr)}
+  .mitoitus .mk{overflow-x:auto;max-width:100%}
+  .mitoitus .mk svg{min-width:390px}
+}
+
+/* Kohteen lukurivi, referenssisivu 18.9.2026. Sivutyyppikortti 10 pyytää kohteen
+   "kuvina ja luvuin", ja luvut kuuluvat samaan ruutuun kuvan kanssa. Rivi on heron
+   alla omana elementtinään eikä heron tekstipalstassa: viisi arvoparia tekstipalstassa
+   työntää H1:n ja ensisijaisen painikkeen alaspäin, ja 390 px:llä painike katoaa
+   ensimmäisestä ruudusta. Arvoparit ovat kanoninen dl.spec2, joten tämä luokka on
+   pelkkä yläviiva ja väli — ei uutta leiskaa. */
+.kohdefakta{border-top:1px solid var(--rule);margin-top:var(--s6);padding-top:var(--s5)}
+.kohdefakta .lbl{margin-bottom:var(--s3)}
+/* Lukurivi on kuvan kanssa samassa palstassa, koska dl.spec2 on tarkoituksella
+   yksipalstainen (päätös 16.9.: kahdessa sarakkeessa silmä ei tiedä kumpaa luetaan
+   ensin). Täysleveänä lohkona kuusi arvoparia jättäisi oikean puolen tyhjäksi, ja
+   omana osionaan ne irtoaisivat kuvasta. Palsta alkaa ylhäältä eikä keskeltä, jotta
+   kuva ja luvut lukeutuvat yhtenä yksikkönä; kuva täyttää palstan leveyden, jolloin
+   sen ja lukurivin reunat ovat samassa linjassa. */
+.hero-ref{align-items:start}
+.hero-ref .herocol{min-width:0}
+.hero-ref .hero-img{max-width:none;margin-left:0}
+
+/* Referenssin tarinaosuus on asiakkaan omaa tekstiä, ei speksattua copya, joten
+   kappaleita on useita peräkkäin. Oletus (p 68ch) pitää rivin mitan, tämä pitää
+   kappaleiden välin samana kuin listan rivin (13 px) eikä kasvata sitä osioväliin. */
+.tarina p+p{margin-top:var(--s4)}
+
+/* ===== Piirretty kuva kuvapaikan tilalla — modifier .piirros (18.9.2026) =====
+   Kuvapaikka (.ph, .serie .im, .gal .im) on katkoviivalaatikko: --paper-2-täyttö,
+   katkoviiva ja keskitetty teksti. Kun paikalle tulee aito kuva, kaikki kolme ovat
+   väärin. tuotekuva.js piirtää läpinäkyvälle pohjalle, joten levy kuvan alla
+   lupaisi taustan, jota kuvassa ei ole (TUOTEKUVAT.md sääntö 2) — ja katkoviiva
+   sanoo yhä "kuva puuttuu".
+
+   Luokka on .piirros eikä .tk, koska .tcard .tk on jo varattu tarvikesivun
+   tuotekoodille (kuollut, mutta yhä tiedostossa) — sama nimi kahdelle tehtävälle
+   olisi rikkonut modifierin juuri sillä sivulla, jolle kuvat seuraavaksi menevät.
+
+   Oletus: kuva mahtuu laatikkoonsa omassa koossaan eikä venytä sitä. Lohko, jossa
+   kuva on itse sisältö, sanoo mittansa erikseen (.serie alla).
+
+   Mitattu 390 px: ei vaakavieritystä. */
+.ph.piirros,.im.piirros{background:transparent;border:0;border-radius:0;padding:0}
+/* Suodatinkortissa alaviiva ei ole paikanpitäjän kehys vaan kortin rakenne: se
+   erottaa kuva-alueen tekstistä. Modifier veisi sen mukanaan muun kehyksen kanssa,
+   joten se palautetaan tässä yhtenäisenä — katkoviiva tarkoittaa yhä puuttuvaa. */
+.pick-how .ph.piirros{border-bottom:1px solid var(--rule)}
+.ph.piirros>svg,.im.piirros>svg{display:block;max-width:100%;max-height:100%;width:auto;height:auto}
+
+/* Perhekortti: kuvan oma korkeus määrää kuvapaikan, ei kuvasuhde 4:3 — se on
+   paikanpitäjän mitta, ja portrettimainen pilari kuivuisi vaakalaatikon keskelle.
+   Koko tulee kuvasta (tuotekuva.rivi, korkeus-parametri), joten se on yhdessä
+   paikassa eikä sitä toisteta tänne pikseleinä.
+
+   Kuvaa ei venytetä kortin leveyteen. Kortti on mobiilissa 292 px leveä ja
+   työpöydällä 220, eli venytettynä sama lohko olisi mobiilissa puolitoista kertaa
+   korkeampi — ja korkeus olisi enimmäkseen tyhjää AP:n yläpuolella, koska matalan
+   perheen kuvassa yhteinen mittakaava jättää sinne tilaa. Luonnollisessa koossa
+   lohko on mobiilissa lähes yhtä korkea kuin paikanpitäjillä.
+
+   Alareunaan tasaus, jotta neljä pilaria seisoo samalla tasolla kuin hyllyllä.
+   Laatikot ovat yhtä korkeat ja otsikot alkavat samalta riviltä, koska kuvat on
+   viety yhteiselle kankaalle: ne ovat keskenään samankokoisia tiedostoja, joten
+   myös oletussäännön max-width skaalaa ne kaikki samalla kertoimella kun laatikko
+   on kuvaa kapeampi. Eri kokoisilla kankailla jokainen kortti skaalautuisi omalla
+   kertoimellaan, ja yhteinen mittakaava — koko lohkon peruste — hajoaisi juuri
+   kapeilla ruuduilla. */
+.serie .im.piirros{aspect-ratio:auto;align-items:flex-end}
+
+/* Tarvikerivi: sama syy kuin perhekortilla. Kuvapaikan 4:3 on paikanpitäjän
+   mitta, ja asennuskuva on pystysuuntainen — pilarin pää, tarvike ja puu
+   päällekkäin. 4:3-laatikossa max-height puristaisi jokaisen kuvan samaan
+   112 pikseliin, eli yhteinen mittakaava hajoaisi juuri sen säännön kohdalla,
+   jota varten kuvat piirretään yhdelle kankaalle (TUOTEKUVAT.md sääntö 4).
+   Korkeus tulee kuvasta (DET_KORKEUS bce_tp_spec.html:ssä), ei tästä.
+
+   Alareunaan tasaus, koska neljällä kuvalla on yhteinen alataso: pilarin
+   rajaus. Se on myös yhteisen kankaan tasaus, joten rivit ovat samassa
+   linjassa myös silloin kun kuva skaalautuu kapeaan sarakkeeseen. */
+.pitem .im.piirros{aspect-ratio:auto;align-items:flex-end}
+
+/* Pikkukuva, jossa on aito kuva. Kehys jää, koska se on painikkeen valintatila
+   (aria-pressed="true" = yhtenäinen viiva): ilman kehystä valinta ei näy. Vain
+   levy sen takaa lähtee ja kuva saa koko ruudun. */
+.thumbs button.piirros{background:transparent;padding:5px}
+.thumbs button.piirros>svg{display:block;max-width:100%;max-height:100%;width:auto;height:auto}
+
+/* Leveä piirros omalla rivillään: sama figure.figwide kuin autokatossivun
+   A-601-leikkauksella, mutta sisältönä inline-SVG eikä <img>. Kuva piirtyy
+   luonnollisessa koossaan .tw-kehyksen sisällä, joten työpöydällä se mahtuu
+   riville ja kapealla kehys vierittyy vaakaan — sama ratkaisu kuin saman lohkon
+   mittataulukolla, ja sivu itse ei vierity. */
+.figwide svg{display:block;margin:0 auto;height:auto}
+
+/* ===== tuotevalitsin: kokovalinta ja morffaava tuotekuva (18.9.2026) =========
+   Perhesivun lohko 3. Radioryhmä kertoo mitä kokoja on ja tuotekuva näyttää, mitä
+   ero tarkoittaa: valinta morffaa rungon samaan kankaaseen kiinteässä
+   mittakaavassa. Lukurivi (.tval-mitat) kirjoittaa saman millimetreinä, jotta koko
+   hahmottuu myös ilman kaavion ja taulukon vertaamista.
+
+   Kuvan alla ei ole levyä: tuotekuva on läpinäkyvä ja piirtyy sivun paperille
+   (TUOTEKUVAT.md, sääntö 2). Oranssi on vain radion valintapisteessä
+   (--accent-dark, 5,2:1) — ensisijaisen toiminnon oranssi ei kuulu tähän lohkoon. */
+.tval{display:flex;flex-direction:column}
+/* Kuva ja valinnat vierekkäin, alareunat samalla viivalla: pilari seisoo maassa ja
+   luettelo sen vieressä. Kuva määrää rivin korkeuden, koska SVG:llä on oma
+   kuvasuhde ja se skaalautuu palstan leveyteen. */
+.tval-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s5);
+  align-items:end}
+.tval-kuva{min-width:0}
+.tval-kuva svg{display:block;width:100%;height:auto}
+
+/* Vaihtoehto on laatikko samalla tyylillä kuin ostolaatikon kokovalinta
+   (.sizes button): sama reunus, sama kulma, sama valitun korostus. Osuma-alue on
+   koko laatikko, ei 20 px:n ympyrä — label kääriytyy radion ympärille. */
+.tval-valinnat{display:grid;gap:var(--s2);align-content:end}
+.tval-koko{display:flex;align-items:center;gap:10px;min-height:48px;
+  padding:9px 12px;background:#fff;border:1px solid var(--rule-2);
+  border-radius:var(--r-card);cursor:pointer}
+.tval-koko input{width:18px;height:18px;margin:0;flex:none;accent-color:var(--accent-dark)}
+.tval-koko b{font-size:15px;font-weight:600}
+/* Korkeus oikeaan reunaan: luvut allekkain samaan linjaan, jolloin ero luetaan
+   pystysuunnassa ilman että silmä etsii jokaisen rivin alusta. */
+.tval-koko span{margin-left:auto;font-size:var(--fs-fine);color:var(--ink-3)}
+.tval-koko:hover{border-color:var(--ink)}
+.tval-koko:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.tval-koko:has(input:focus-visible){outline:3px solid var(--accent-dark);outline-offset:2px}
+
+/* Lukurivi on kanoninen dl.spec2 tiiviimmällä mitalla: sama otsikko–arvo-pari ja
+   sama viiva kuin teknisissä tiedoissa ja mittataulukossa. */
+.tval-mitat{margin-top:var(--s5)}
+.tval-mitat div{padding:9px 0}
+.tval-mitat dt,.tval-mitat dd{font-size:var(--fs-small)}
+/* Purkupainike näkyy vain kun valinta on päällä — sama tapa kuin tarvikesivun
+   suodattimessa: tyhjä rivi ei ole tieto. */
+.tval-act{margin:0;min-height:var(--tap);display:flex;align-items:center}
+
+/* Valitsin on lohkon toinen puolisko: kuva tarvitsee leveyttä, jotta kokoero
+   näkyy, ja luettelo noin 150 px. Palstan leveys on kiinteä eikä sisällöstä
+   johdettu, koska SVG:n leveys on prosentti palstasta — minmax() johtaisi palstan
+   kuvasta ja kuvan palstasta. */
+.mitoitus:has(.tval){grid-template-columns:minmax(0,1fr) 520px}
+@media(max-width:900px){
+  .mitoitus:has(.tval){grid-template-columns:1fr}
+  .valitsin .tval{max-width:520px}
+}
+@media(max-width:560px){
+  /* Kapealla kuva jäisi vierekkäin 150 px:n levyiseksi, jolloin kokoero katoaa.
+     Luettelo siirtyy kuvan alle. Kuva ei silti ota koko leveyttä: 280 px riittää
+     eroon, ja koko leveydellä ensimmäinenkin radio jäisi ruudun alapuolelle. */
+  .tval-row{grid-template-columns:1fr;gap:var(--s4)}
+  .tval-kuva{max-width:280px}
+  .valitsin .tval{max-width:none}
+}
+
+/* Kokovalitsin asteikkona (tuotevalitsin.js, 18.9.2026).
+   Vaihtoehto ei ole luettelon rivi vaan piste asteikolla: se asetetaan sille
+   korkeudelle, jonka se tarkoittaa, H1-mittaviivan viereen. Silloin kuvan ja
+   valitsimen välillä ei ole käännöstä — 600 mm on molemmissa samalla korkeudella,
+   ja kokoero luetaan kahdesta paikasta yhtä aikaa.
+
+   Prosentin antaa tuotekuva.asteikko() inline-muuttujana --y. Se on ainoa inline-
+   tyyli tässä komponentissa, ja se on sitä siksi, että luku on laskettu kuvan
+   mittakaavasta eikä sitä voi kirjoittaa tyylitiedostoon.
+
+   Vain leveällä ruudulla. Alle 820 px kuva ja valinnat ovat allekkain (.mitoitus
+   putoaa yhteen palstaan), jolloin asteikkoa ei ole minkä viereen asettua — ja
+   mobiili on 80,9 % istunnoista, joten se on perusmuoto eikä poikkeus. */
+@media(min-width:821px){
+  /* Kaksi asiaa, jotka asteikko vaatii riviltä ja jotka eivät ole oletuksia:
+     palstan on oltava kuvan korkuinen (rivi on muuten align-items:end, jolloin
+     prosentit mittaisivat väärää laatikkoa), ja sillä on oltava oma leveys —
+     absoluuttisesti asemoidut lapset eivät anna auto-sarakkeelle leveyttä, joten
+     ilman tätä sarake kutistuu nollaan. */
+  .tval-row:has(.tval-asteikko){align-items:stretch}
+  .tval-asteikko{position:relative;display:block;width:212px}
+  .tval-asteikko .tval-koko{position:absolute;left:34px;right:0;top:var(--y,50%);
+    transform:translateY(-50%);margin:0}
+  /* Viiva vaihtoehdosta mittaviivaa kohti: ilman sitä laatikko kelluu eikä
+     osoita mihinkään. Pystyviiva on asteikon runko, vaakaviiva sen pykälä. */
+  .tval-asteikko::before{content:"";position:absolute;left:12px;top:0;bottom:0;
+    border-left:1px solid var(--rule-2)}
+  .tval-asteikko .tval-koko::before{content:"";position:absolute;right:100%;
+    width:22px;border-top:1px solid var(--rule-2)}
+  .tval-asteikko .tval-koko:has(input:checked)::before{border-color:var(--ink)}
+}
+
+/* Asteikkotila tarvitsee korkeamman kuvan kuin luettelotila, ja se on sen hinta.
+   Kuva on lähes neliö, joten korkeus tulee leveydestä: TP:n viisi kokoa ovat
+   37,7 % kankaan korkeudesta, eli 100 mm on 9,4 % — jotta 48 px:n laatikot eivät
+   mene päällekkäin, kuvan on oltava noin 510 px korkea. Siksi lohko on leveämpi
+   kuin luettelotilassa (520 px), ja vain silloin kun ruudulla on tilaa.
+   Kapeammalla asteikko puretaan takaisin luetteloksi: päällekkäiset laatikot
+   olisivat huonompi kuin tasavälinen lista. */
+@media(min-width:1180px){
+  .mitoitus:has(.tval-asteikko){grid-template-columns:minmax(0,1fr) 760px}
+}
+/* Varamuotoa ei tarvitse kirjoittaa tähän: tuotevalitsin.js mittaa, mahtuvatko
+   vaihtoehdot omille korkeuksilleen, ja poistaa .tval-asteikko-luokan jos eivät.
+   Silloin voimassa ovat ylempänä olevat .tval-valinnat-säännöt sellaisenaan. */
+
+
+/* ===== lohko 3 kahdelle riville (18.9.2026) ==================================
+   Rivi 1 on valinta: valitsin vasemmalla, tuotteen tekniset arvot oikealla —
+   arvot ovat valinnan seuraus, joten ne kuuluvat sen viereen eivätkä omaksi
+   lohkokseen sivun loppuun. Rivi 2 on tarkistus: mittataulukko ja sen selittävä
+   kaavio vierekkäin. Kaavio on oikealla, koska taulukko luetaan ensin ja kaavio
+   vastaa siihen mitä sarakeotsikko tarkoittaa. */
+.mitoitus:has(.tval){grid-template-columns:520px minmax(0,1fr)}
+@media(min-width:1180px){
+  .mitoitus:has(.tval-asteikko){grid-template-columns:760px minmax(0,1fr)}
+}
+@media(max-width:900px){
+  .mitoitus:has(.tval),
+  .mitoitus:has(.tval-asteikko){grid-template-columns:1fr}
+}
+/* Arvot alkavat heti selitteen alta: dl:n oma yläväli on tarkoitettu kuvan alle. */
+.tiedot .tval-mitat{margin-top:0}
+.tiedot .lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);font-family:var(--ff);font-weight:600;margin:0 0 10px}
+
+.mittarivi{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:var(--s7);
+  align-items:start}
+.mittarivi .mk{margin:0;max-width:none}
+.mittarivi .mk svg{display:block;width:100%;height:auto}
+.mittarivi .mkfine{margin:14px 0 0}
+.mittarivi .dims-act{margin-bottom:0}
+/* Taulukon luonnollinen leveys on 535 px (mitattu selaimesta EAN-sarakkeen poiston
+   jälkeen), joten pari mahtuu rinnakkain 980 pikselistä ylöspäin. Väliltä
+   980–1 060 kaavio kaventuu ensin — se kestää sen, taulukko ei. Sen alla ne menevät
+   allekkain, koska vaakavieritetty taulukko kaavion vieressä olisi kahden asian
+   puolikas. */
+@media(max-width:1060px){
+  .mittarivi{grid-template-columns:minmax(0,1fr) 320px}
+}
+@media(max-width:980px){
+  .mittarivi{grid-template-columns:1fr;gap:var(--s5)}
+  .mittarivi .mkcol{max-width:480px}
+}
+/* Mittataulukko kaavion viereen: EAN-sarake poistui, joten vähimmäisleveys laskee
+   1 120 → 660 px. Sarakeväli ja kirjasin ovat pykälän tiiviimmät, koska rivillä on
+   yhdeksän lukua eikä käytössä ole koko sisältöleveys. Vaakavieritys jää varalle:
+   kapealla ammattilainen etsii yhtä lukua, eikä taulukkoa typistetä (DESIGN-SYSTEM
+   luku 3, .dims). */
+.mittarivi .dims{min-width:540px;font-size:15px}
+.mittarivi .dims th,.mittarivi .dims td{padding-right:10px}
+.mittarivi .dims .cp{min-width:84px;padding:0 10px}
+
+/* Latauskortit puolikkaassa palstassa kahteen sarakkeeseen. Neljä korttia 550
+   pikselin palstassa puristuu 120 px:n levyisiksi ja otsikot katkeavat kolmelle
+   riville — sama virhe, joka korjattiin 15.9. leventämällä lohko koko leveyteen.
+   Nyt lohkossa on myös detaljikuva, joten korteille jää puolikas: kaksi riviä
+   kahdella kortilla mahtuu. */
+.techrow .dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+.techrow .tech-note{margin:0 0 22px}
+@media(max-width:560px){.techrow .dl{grid-template-columns:1fr}}
+
+/* Navigaation tarvikeikonit (bce-spec-shell.js, SPEC.ikonit · 18.9.2026).
+   Ikoni ei kasvata riviä: pudotuksen linkki on jo 48 px (teksti 16 px + täyte
+   22 px), ja 24 px:n ikoni mahtuu siihen. Mitattu ennen ja jälkeen: rivi 48 px,
+   pudotus 309 px, molemmissa sama. Ehto on että korkeus on rajattu — jos siluetti
+   saa pitää kuvasuhteensa, se on 26 × 43 px ja rivi venyy 65 pikseliin.
+
+   Väri tulee linkiltä (currentColor), joten ikoni seuraa hoveria ja aktiivista
+   tilaa ilman omia sääntöjä. Vaimennus on erikseen, jotta ikoni ei kilpaile
+   nimen kanssa: nimi luetaan, ikoni tunnistetaan. */
+.navik{display:inline-flex;align-items:center;flex:none;margin-right:10px;
+  color:var(--ink-3);vertical-align:-6px}
+.navik svg{display:block;height:24px;width:auto}
+header.site nav .sub a:hover .navik,
+header.site nav .sub a[aria-current] .navik{color:inherit}
+/* Mobiilissa pudotus on sisennetty lista. Ikoni pysyy, koska se on siellä sama
+   tunniste — mutta hieman pienempänä, koska rivi on tiiviimpi. */
+@media(max-width:980px){
+  .navik svg{height:20px}
+  .navik{margin-right:8px}
+}
+
