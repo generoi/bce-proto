@@ -84,7 +84,7 @@ const C={
   hero:{h1:"JeKi-sokkeli",
     lede:"Valmis elementtisokkeli, joka sulkee rakennuksen alareunan ilman valua. Asennus valmistuu samana päivänä, eikä työmaalla tarvita saumavalua eikä hitsausta.",
     cta1:["Mistä ostat","/mista-ostat/","cta_mista_ostat"],
-    cta2:["Katso soveltuuko kohteeseesi","#sopiiko","cta_soveltuvuus_ankkuri"],
+    cta2:["Katso soveltuuko kohteeseesi","#sopiiko","cta_sivuankkuri"],
     img:"Hero-kuva: valmis rakennus JeKi-sokkelilla, umpinainen alareuna maanpinnan tasolla"},
 
   /* 2 · Mikä sokkeli on. Ensimmäinen lohko vastaa kysymykseen, jota tuote ei itse
@@ -153,7 +153,7 @@ const C={
       ["Pintakäsittelyvaihtoehdot","[TÄYTETTÄVÄ]"],["CE-merkintä","[TÄYTETTÄVÄ]"],
       ["Suoritustasoilmoitus","[TÄYTETTÄVÄ]"]],
     img:"Detaljikuva: elementin päätyleikkaus, liitoksen rakenne näkyvissä",
-    dl:["Lataa mitoitusarvot ja DWG-tiedostot","/ohjeet/suunnittelijalle/","cta_dwg"]},
+    dl:["Lataa mitoitusarvot ja DWG-tiedostot","/ohjeet/suunnittelijalle/","cta_suunnittelijalle"]},
 
   /* 7 · Mihin JeKi sopii. Kuvat tekevät työn, teksti ei toista lohkon 5 luetteloa
      (ks. poikkeama 3 tiedoston alussa). Kuvateksti kertoo kohteen ja käytetyn
@@ -200,11 +200,7 @@ const C={
   const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
   const L=u=>E(SPECLINK(u));
-  /* Alapalkin pari on sivukohtainen: konfiguraattori ei laske sokkelielementtejä,
-     joten kuoren oletuspari (Laske pilarien määrä + Mistä ostat) lupaisi tällä
-     sivulla toiminnon, jota ei ole. Pari on sama kuin sivun omat toiminnot. */
-  SPECSHELL(E,{crumb:C.crumb,active:"JeKi-sokkeli",
-    bar:[C.start.cta2,C.start.cta1]});
+  SPECSHELL(E,{crumb:C.crumb,active:"JeKi-sokkeli"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";
@@ -301,7 +297,12 @@ const C={
     d.addEventListener("toggle",function(){
       if(!d.open)return;
       d.dataset.event="avaus_ukk";
-      d.dataset.kysymys=d.querySelector("summary").textContent.replace("▾","").trim();
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
     });
   });
 })();

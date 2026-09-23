@@ -246,31 +246,57 @@ footer a{color:#c8c5c2;text-decoration:none}
 @media (hover: hover) and (pointer: fine){footer a:hover{color:#fff;text-decoration:underline}}
 footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:#a5a2a0;font-size:13px}
 
-/* mobiili: yksi toiminto aina näkyvissä */
-.bar{display:none;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--rule-2);padding:10px 14px;gap:10px;z-index:50}
-.bar .btn{flex:1;font-size:16px;padding:13px 8px}
 @media(max-width:980px){
   .top,.build,.buy{grid-template-columns:1fr;gap:32px}
   .tool-in{grid-template-columns:1fr 1fr}
   .menu-btn{display:inline-flex;margin-left:auto}
-  .hdr-cta{display:none}
   header.site .w{flex-wrap:wrap}
   header.site nav{order:3;width:100%;margin-left:0;display:none;flex-direction:column;gap:0;border-top:1px solid var(--rule);padding:6px 0 10px}
-  header.site nav a{padding:13px 4px;border-radius:0;font-size:17px}
+  /* Myös .navtop, ei vain linkit: ryhmä ilman omaa sivua (Tuotteet) jäi muuten
+     työpöydän 15 px:iin ja 44 px:n riviin, kun sen naapurit ovat 17 px ja 53 px.
+     Haitarissa päätaso on koko valikko, joten ero näkyy heti. */
+  header.site nav a,header.site nav .navtop{padding:13px 4px;border-radius:0;font-size:17px}
   header.site nav[data-open="true"]{display:flex}
-  .bar{display:flex}
-  body.has-bar{padding-bottom:74px}
   section{padding:44px 0}
+
+  /* Auki oleva valikko on oma vierityspalstansa, ei sivun jatke.
+     -------------------------------------------------------------------------
+     Ylätunniste on `position:sticky`. Mobiilissa valikko avautuu sen sisään ja
+     kaikki alavalikot ovat auki, joten lista on 28 kohtaa ja 1 578 px korkea —
+     lähes kaksi ruudullista. Sticky-elementti ei liiku sivun mukana, joten sen
+     yli menevää osaa ei saa näkyviin millään: mitattuna sivun vierittäminen
+     600 px ei siirtänyt viimeistä kohtaa (Yhteystiedot) lainkaan, se jäi
+     1 423 px:n korkeudelle. Puolet valikosta oli siis tavoittamattomissa.
+
+     Korkeus rajataan ruutuun ja lista vierii itse. 100svh (ei vh) laskee mobiilin
+     osoitepalkin oikein. Vähennettävä 196 px on mitattu pahimmasta tapauksesta eli
+     sivun yläreunasta, jossa apurivi on vielä näkyvissä: apurivi 45 + logorivi 70 +
+     toimintopainike 69, plus muutama piste väljyyttä. Alaspäin vieritettäessä
+     apurivi katoaa ja listan alle jää sen verran tyhjää — se on oikea suunta:
+     valikko ei saa jäädä ruudun alareunan alle millään vieritysasemalla.
+     overscroll-behavior estää vierityksen karkaamisen sivulle listan päättyessä. */
+  header.site nav[data-open="true"]{max-height:calc(100svh - 210px);overflow-y:auto;overscroll-behavior:contain}
+
+  /* 23.9.2026: kiinteä alapalkki poistettiin — se peitti ruudun alareunan koko
+     selauksen ajan. Ensisijainen toiminto ei silti saa kadota mobiilista, joten
+     kuoren painike tulee auki olevan valikon alalaitaan, vierivän listan alle.
+     Tarkennin on .w-tasoa, koska `header.site .tools` myöhempänä tiedostossa
+     voittaisi saman painoisen säännön ja painike näkyisi myös valikko kiinni. */
+  header.site .w .tools{display:none;order:4;width:100%;margin-left:0;padding:0 0 12px}
+  header.site .w nav[data-open="true"]~.tools{display:flex}
+  .hdr-cta{width:100%;font-size:17px;padding:13px 8px}
 }
 
 /* Kaista 981–1023 px on liian kapea kuudelle kohdalle ja painikkeelle yhtaikaa
-   (ylivuoto 29 px välit tiivistettyinäkin). Tässä välissä valikko pysyy vaakarivinä
-   ja ensisijainen toiminto siirtyy alapalkkiin — sama ratkaisu kuin mobiilissa,
-   jolloin konversiolinkki ei katoa miltään leveydeltä. Hampurilainen pysyy 980:ssä. */
+   (ylivuoto 29 px välit tiivistettyinäkin). Ennen alapalkki otti toiminnon tässä
+   välissä; kun palkki poistui 23.9.2026, painike jää ylätunnisteeseen ja tilaa
+   haetaan välejä ja painikkeen sisäreunuksia tiivistämällä — ei fonttikokoa. */
 @media(min-width:981px) and (max-width:1023px){
-  .hdr-cta{display:none}
-  .bar{display:flex}
-  body.has-bar{padding-bottom:74px}
+  header.site .w{gap:12px}
+  header.site nav{gap:0}
+  header.site nav a,header.site nav .navtop{padding:9px 6px}
+  header.site .tools{gap:8px}
+  .hdr-cta{padding:11px 10px}
 }
 
 /* --- sivukohtaiset lohkot, samaa kieltä --- */
@@ -531,6 +557,10 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .find p{font-size:15px;color:var(--ink-2);margin:0 0 16px}
 .find form{display:flex;gap:12px;flex-wrap:wrap}
 .find .field{background:var(--paper)}
+/* Koontisivulla koodihaku on oma lohkonsa perhekorttien yläpuolella eikä
+   lohkon loppuun ripustettu lisäys, joten se ei tarvitse erottavaa viivaa. */
+.find.find-yksin{margin-top:0;padding-top:0;border-top:0}
+.find .tulos{margin:16px 0 0;min-height:24px}
 .tbd-l{font-size:14px;color:var(--ink-3);margin:14px 0 0}
 
 /* Koontisivulla käyttökohdevalitsin on reitti eteenpäin, ei sivun sisältöä.
@@ -707,6 +737,10 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
    ei kuvia eikä promolohkoja. */
 #mainnav .hassub{position:relative;display:inline-flex;align-items:center}
 #mainnav .chev{font-size:11px;margin-left:6px;color:var(--ink-3)}
+/* Mobiilin haitarin avaaja. Työpöydällä avaa osoitin ja fokus, joten painiketta
+   ei tarvita — mutta se on DOM:ssa, jotta leveyden vaihtuessa ei tarvitse
+   renderöidä valikkoa uudelleen. */
+#mainnav .subtog{display:none}
 #mainnav .sub{position:absolute;top:100%;left:-14px;z-index:40;display:none;
   min-width:230px;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
   box-shadow:0 8px 24px rgba(0,0,0,.10);padding:8px 0}
@@ -726,17 +760,71 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 @media (hover: hover) and (pointer: fine){#mainnav .sub a.sh:hover{background:none;text-decoration:underline}}
 #mainnav .sub.grid a{padding:9px 0}
 @media(max-width:980px){
-  /* mobiilissa alavalikko ei roiku päällä vaan on osa listaa */
-  #mainnav .hassub{display:block;position:static}
-  #mainnav .hassub > a,#mainnav .hassub > .navtop{display:block;width:100%;text-align:left}
+  /* Mobiilissa alavalikko ei roiku päällä vaan on osa listaa — ja se on haitari,
+     kiinni oletuksena. Kaikki auki oli 28 kohtaa ja 1 415 px; kiinni lista on
+     kahdeksan kohtaa ja mahtuu ruutuun kerralla ilman vieritystä.
+
+     Rivi on flex, jotta avaaja mahtuu linkin viereen omaksi 44 px:n kohteekseen:
+     nimike vie sivulle, nuoli avaa ryhmän. Sama rivi kahdella eri kohteella on
+     ainoa tapa, jolla sivullinen valikkokohta (Perustuksen teko, Ohjeet) säilyttää
+     molemmat toiminnot; yhtenä kohteena toinen niistä katoaisi aina. */
+  #mainnav .hassub{display:flex;flex-wrap:wrap;align-items:center;position:static}
+  #mainnav .hassub > a,#mainnav .hassub > .navtop{display:flex;align-items:center;
+    flex:1;min-width:0;min-height:var(--tap);text-align:left}
+  #mainnav .hassub > .navtop{justify-content:space-between}
+  #mainnav .subtog{display:inline-flex;align-items:center;justify-content:center;
+    flex:none;width:var(--tap);min-height:var(--tap);padding:0;margin:0;
+    background:none;border:0;border-radius:3px;cursor:pointer;color:var(--ink-3)}
+  #mainnav .subtog:hover{background:var(--paper-2)}
+  /* Linkin oma nuoli on työpöydän vihje; mobiilissa nuoli kuuluu avaajapainikkeelle,
+     jotta niitä ei ole rivillä kahta. Ryhmäpainike on itse avaaja, joten sen nuoli jää. */
   #mainnav .chev{display:none}
-  #mainnav .sub,#mainnav .hassub .sub.grid{display:block;position:static;min-width:0;
+  #mainnav .subtog .chev,#mainnav .navtop .chev{display:inline-flex;align-items:center;
+    justify-content:center;flex:none;font-size:13px;margin:0;
+    transition:transform .18s var(--ease)}
+  /* Ryhmäpainikkeella nuoli on painikkeen sisällä, avaajalla oma painikkeensa.
+     Sama 44 px:n vyöhyke molemmille, jotta nuolet ovat samalla pystyviivalla. */
+  #mainnav .navtop .chev{width:var(--tap)}
+  #mainnav .hassub > .navtop{padding-right:0}
+  #mainnav .hassub[data-open="true"] .chev{transform:rotate(180deg)}
+
+  /* Kiinni on oletus, myös silloin kun kosketus on jättänyt :hoverin päälle —
+     siksi :not(), joka voittaa työpöydän hover-säännön samalla painolla mutta
+     myöhempänä. Auki avataan vain attribuutilla, jota JS vaihtaa. */
+  #mainnav .sub,#mainnav .hassub .sub.grid{position:static;min-width:0;width:100%;
     border:0;box-shadow:none;background:none;padding:0 0 4px 16px;
     border-left:2px solid var(--rule)}
+  #mainnav .hassub:not([data-open="true"]) .sub,
+  #mainnav .hassub:not([data-open="true"]) .sub.grid{display:none}
+  #mainnav .hassub[data-open="true"] .sub,
+  #mainnav .hassub[data-open="true"] .sub.grid{display:block}
   #mainnav .sub a,#mainnav .sub.grid a{padding:11px 4px;font-size:16px;color:var(--ink-2)}
   #mainnav .sgroup{display:block;margin:2px 0 10px}
   /* ryhmäotsikko pysyy otsikon kokoisena, vaikka se on linkki */
   #mainnav .sub .sh,#mainnav .sub a.sh{font-size:13px;padding:9px 4px 2px;border:0;margin:0}
+
+  /* Aktiivinen kohta: merkki rivin alkuun, ei alle.
+     -------------------------------------------------------------------------
+     aria-current piirtyy työpöydällä alaviivana (inset 0 -3px), mikä on
+     vaakanavigaation idiomi: viiva on linkin levyinen ja osoittaa ylös omaan
+     kohtaansa. Pystylistassa sama viiva venyy koko rivin levyiseksi — mitattuna
+     327 px — ja asettuu kahden rivin väliin, jolloin se luetaan erottimeksi eikä
+     merkiksi. Pahin tapaus oli ryhmäotsikko: «Pilarit»-otsikon alla viiva näytti
+     katkaisevan avatun valikon kahtia.
+
+     Pystylistassa merkki kuuluu rivin alkuun. Sama 12 px:n sisennys annetaan
+     kaikille riveille, jotta merkitty ja merkitsemätön rivi ovat samassa
+     linjassa — muuten aktiivinen rivi hyppäisi sivuun juuri siinä kohdassa,
+     jota katsotaan. Väri tulee viivan lisäksi tekstiin, jottei merkki ole
+     pelkkä 3 px:n palkki: --accent-dark on 5,2:1 paperilla. */
+  #mainnav > a,#mainnav .hassub > a,#mainnav .hassub > .navtop{padding-left:12px}
+  #mainnav .sub a,#mainnav .sub.grid a,#mainnav .sub .sh,#mainnav .sub a.sh{padding-left:12px}
+  #mainnav a[aria-current],#mainnav .navtop[aria-current],
+  #mainnav .sub a[aria-current],#mainnav .sub a.sh[aria-current]{
+    box-shadow:inset 3px 0 0 var(--accent);border-radius:0;color:var(--accent-dark)}
+}
+@media(max-width:980px) and (prefers-reduced-motion:reduce){
+  #mainnav .subtog .chev,#mainnav .navtop .chev{transition:none}
 }
 
 /* ===== tuotenäkymä perhesivun yläosassa =====
@@ -829,9 +917,6 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .shop .facts dt{order:2;font-size:17px}
 .shop .facts dd{order:1;margin:0;font-size:15px}
 .sizes{display:grid;grid-template-columns:repeat(3,1fr)}
-/* Alapalkin nimi on sama kuin sivun ensisijaisella toiminnolla, joten se ei saa
-   katketa kahdelle riville 390 px:n leveydellä. */
-.bar .btn{font-size:15px;padding:12px 6px;white-space:nowrap;letter-spacing:0}
 
 /* ===== tarvikesivu /pilarien-kiinnitystarvikkeet/ — build spec 1.0 =====
    Sivu on valintatyökalu, ei luettelo. Siksi kaksi asiaa ohjaa tyylejä: lohkon 2
@@ -1174,12 +1259,13 @@ footer a{display:inline-block;padding:4px 0;margin:-4px 0}
    Pienessä tekstissä oranssi on aina --accent-dark: 5,2:1 paperilla. */
 .flow .st .n,.steps li::before{color:var(--accent-dark)}
 
-/* Alapalkki on kuoressa (16.9.2026), ei sivukohtainen. Alle 19 px:n ensisijainen painike
-   (kuoren .btn-s 16 px, alapalkki 15 px) ei täytä 4,5:1 brändioranssilla (3,6:1), joten
-   pienissä painikkeissa pohja on --accent-dark: valkoinen sen päällä on 5,5:1. Iso
-   painike säilyy brändioranssina. */
-.btn-s.btn-1,.bar .btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
-@media (hover: hover) and (pointer: fine){.btn-s.btn-1:hover,.bar .btn-1:hover{background:#9a3609;border-color:#9a3609}}
+/* Alle 19 px:n ensisijainen painike (kuoren .btn-s 16 px) ei täytä 4,5:1
+   brändioranssilla (3,6:1), joten pienissä painikkeissa pohja on --accent-dark:
+   valkoinen sen päällä on 5,5:1. Iso painike säilyy brändioranssina.
+   `.bar`-viittaukset poistuivat 23.9.2026 kiinteän alapalkin mukana; hover-portti
+   jäi, koska kosketusnäytöllä hover jää päälle napautuksen jälkeen. */
+.btn-s.btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.btn-s.btn-1:hover{background:#9a3609;border-color:#9a3609}}
 
 /* ===== tarvikesivu, yhdistelmä A + B (16.9.2026) =====
    Suodatin korostaa ja merkitsee, ei piilota: osuva rivi saa tekstimerkinnän, muut
@@ -1551,7 +1637,24 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kuva on itse sisältö, sanoo mittansa erikseen (.serie alla).
 
    Mitattu 390 px: ei vaakavieritystä. */
-.ph.piirros,.im.piirros{background:transparent;border:0;border-radius:0;padding:0}
+.ph.piirros,.im.piirros,.hero-img.piirros{background:transparent;border:0;border-radius:0;padding:0}
+/* Hero: kuvasuhde tulee kuvasta, ei paikanpitäjältä. .hero-img on 4:3 ja
+   kapealla 16:10, ja molemmat ovat paikanpitäjän mittoja — piirretty terassi on
+   1,53:1, joten kumpi tahansa niistä jättäisi kuvan ylä- ja alapuolelle kaistan
+   tyhjää ja tekisi lohkosta sivun korkeimman elementin (vrt. .img-band).
+
+   Myös max-width 56ch lähtee, ja se on paikanpitäjän mitta samasta syystä:
+   katkoviivalaatikko on kuvan lupaus eikä kuva, ja se kapenee jottei tyhjä
+   laatikko olisi lohkon massiivisin asia. Aito kuva on sisältöä ja saa
+   sarakkeensa. Mitattuna 1600 px:n ruudulla (sivu leveimmillään, --w 1200):
+   561 × 367 px kun sarake on sen, ja 446 × 291 px 56ch-katolla — jälkimmäinen
+   jätti sarakkeen vasempaan laitaan 115 px tyhjää, joka luki virheenä eikä
+   väljyytenä. Hero itse on samassa kohdassa 514 px korkea, eli kuva ei nouse
+   lohkon suurimmaksi elementiksi kummallakaan arvolla.
+
+   375 px:n ruudulla kuva on 327 × 214 px eikä sivu vierity vaakaan (mitattu). */
+.hero-img.piirros{aspect-ratio:auto;display:block;max-width:none}
+.hero-img.piirros>svg{display:block;width:100%;height:auto}
 /* Suodatinkortissa alaviiva ei ole paikanpitäjän kehys vaan kortin rakenne: se
    erottaa kuva-alueen tekstistä. Modifier veisi sen mukanaan muun kehyksen kanssa,
    joten se palautetaan tässä yhtenäisenä — katkoviiva tarkoittaa yhä puuttuvaa. */
@@ -1577,6 +1680,18 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kertoimellaan, ja yhteinen mittakaava — koko lohkon peruste — hajoaisi juuri
    kapeilla ruuduilla. */
 .serie .im.piirros{aspect-ratio:auto;align-items:flex-end}
+/* Pilarit-hubin tarvikekortit (23.9.2026). Sama ratkaisu kuin .serie:llä: kuvasuhde
+   tulee kuvalta eikä kuvapaikalta, koska paikanpitäjän 4:3 puristaisi pystykuvat
+   samaan korkeuteen ja söisi asennuskuvan mittakaavan. Neljä kuvaa on yhteisellä
+   kankaalla, joten ne ovat jo keskenään samankorkuisia — alareunan tasaus pitää
+   pilarin pään samalla tasolla joka kortissa.
+
+   Kaksi asiaa palautetaan, jotka .im.piirros nollaa yleissääntönä: erotinviiva
+   kuvan ja nimen väliin (kortti on valkoinen, ja ilman viivaa kuva vuotaa tekstiin)
+   ja ylävara, jottei piirros osu kortin yläreunaan. Sama poikkeus ja sama syy kuin
+   .pick-how .ph.piirros:lla. */
+.pick-parts .im.piirros{aspect-ratio:auto;align-items:flex-end;
+  padding:14px 12px 0;border-bottom:1px solid var(--rule)}
 
 /* Tarvikerivi: sama syy kuin perhekortilla. Kuvapaikan 4:3 on paikanpitäjän
    mitta, ja asennuskuva on pystysuuntainen — pilarin pää, tarvike ja puu
@@ -1787,3 +1902,182 @@ header.site nav .sub a[aria-current] .navik{color:inherit}
   .navik{margin-right:8px}
 }
 
+
+/* Vientitila: litteä kaappaus ei voi esittää vieritysmatkaa.
+   `.cfg` on 200 svh **vieritysmatkaa**, jonka sisällä palstat ovat sticky. Se on oikein
+   selaimessa, mutta Miroon vietävässä kuvassa siitä jää kaksi ruudullista tyhjää: etusivulla
+   lohko oli 1 800 px kun sen sisältö on 666 px. Vanha kääre injektoi tähän
+   `.cfg{min-height:860px}`, mutta se ei riitä enää, koska `.cfg>*` on oma 100 svh —
+   lapset pysyivät ruudun korkuisina ja lohko jäi ~900 px:iin.
+
+   Kaappaaja lisää `<html>`-elementille luokan `vienti`, ja tämä sääntö purkaa matkan:
+   palstat staattisiksi ja sisällön mittaan, pystykeskitys kuten matala-variantissa.
+   Sääntö ei koske selainta lainkaan — luokkaa ei aseta mikään muu kuin vienti.
+
+   Tarkoituksella `html.vienti .cfg` (0,1,2) eikä `.cfg.vienti` (0,2,0): näin
+   `.cfg.matala` (0,2,0) voittaa tämän ja pitää oman ladontansa, samasta syystä kuin
+   se voitti vanhan injektion. */
+html.vienti .cfg{min-height:0;scroll-snap-align:none;view-timeline-name:none;
+  align-items:center;
+  padding-top:clamp(34px,4vw,60px);padding-bottom:clamp(34px,4vw,60px)}
+html.vienti .cfg>*{position:static;min-height:0;display:block}
+html.vienti .cfg .shot{display:flex}
+
+/* Perhevertailu Pilarit-hubin lohkossa 3 (23.9.2026). Taulukko on korttien jatke eikä
+   oma lohkonsa, joten se ei saa H2:ta vaan H3:n — mutta ilman erotinta H3 istuu kiinni
+   neljän kortin ruudukossa ja lukee viidennen kortin otsikkona. Sama erotin ja sama
+   mitta kuin .find:llä samassa lohkossa: yksi lohko, kaksi alaosaa, sama rytmi.
+
+   Leveyttä ei rajata tässä — table.data.stack tuo oman 900 px:n mittansa, ja kappale
+   on 68ch. Mitattu 1 200 · 900 · 390 px: ei vaakavieritystä. Alle 560 px .stack
+   pinoaa rivit, jolloin viisi saraketta on viisi riviä eikä vieritystä synny. */
+.vertailu{margin-top:40px;padding-top:28px;border-top:1px solid var(--rule)}
+
+/* Rivi on tuote (23.9.2026, Ollin pyyntö). Kahdeksan saraketta ei mahdu
+   .data.stack:in 900 pikseliin — se mitta oli neljälle lyhyelle sarakkeelle — joten
+   tämä taulukko saa koko sisältöleveyden. Perustustapasivun taulukko pitää 900:n.
+
+   Rivin ensimmäinen solu on nimi ja sen alla tuotekuva. Kuvat ovat jaetussa
+   mittakaavassa mutta **omilla kankaillaan**, joten kuvan korkeus on itsessään
+   vertailu: AP on 46 px ja KP 110 px. Sarake mitoittuu leveimmän kuvan mukaan.
+   Kuva on koriste (koriste:true), koska nimi lukee sen yläpuolella.
+
+   Kapealla .stack pinoaa rivin lohkoksi: otsikkosolu on silloin lohkon otsikko, ja
+   kuva jää sen alle — eli sama järjestys kuin leveällä. Mitattu 1 200 · 900 ·
+   390 px: ei vaakavieritystä. */
+/* .data.stack on (0,2,0), joten pelkkä .vertailutaulu ei kumoaisi sen 900 pikseliä —
+   luokka on kirjoitettava kolmanneksi eikä ensimmäiseksi. Tämä meni kerran ohi, ja
+   oire oli, ettei taulukko levinnyt vaan ensimmäisen solun kuva vuoti nimen päälle. */
+.data.stack.vertailutaulu{max-width:none}
+/* width:1% + nowrap = sarake ottaa täsmälleen sisältönsä leveyden ja jättää lopun
+   muille. Kuvan kangas on kaikilla perheillä sama, joten sarake ei hypi riveittäin. */
+.vertailutaulu tbody th{width:1%;white-space:nowrap}
+/* Nimi ensin, kuva sen alle. Vierekkäin ladottuna nimi jäi 128 pikselisen kankaan
+   alareunaan, eli rivin tunniste oli sata pikseliä alempana kuin rivin arvot, ja
+   silmä joutui hakemaan kumpi nimi kuului mihinkin lukuun. Pystyssä nimi on samalla
+   ylärivillä kuin arvot, ja kuva lukee nimen alaviitteenä. Kankaat ovat keskenään
+   samankorkuisia, joten pilarit seisovat yhä samalla tasolla joka rivillä — AP:n
+   kuvan yläpuolinen tyhjä on se, mitä AP:n lyhyys näyttää. */
+.vertailu .pf{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.vertailu .pf-im{display:block;flex:0 0 auto}
+/* Ei max-width:100% kuten muissa .piirros-kuvapaikoissa. Taulukon sarake mitoitetaan
+   sisällön min-content-leveydestä, ja prosenttiraja tekee siitä nollan: sarake kutistui
+   107 pikseliin ja kuva valui nimen päälle. Kangas on 110 px ja sama joka perheellä,
+   joten kiinteä luonnollinen koko on tässä oikea — kapeimmallakin ruudulla kuva ja nimi
+   vievät yhdessä noin 190 px, eli mahtuvat 390 pikselin palstaan. */
+.vertailu .pf-im>svg{display:block}
+.vertailu .pf b{display:block}
+/* Kapealla .stack tekee otsikkosolusta lohkon otsikon: nimi on silloin H3:n kokoinen
+   ja kuva heti sen alla, eli sama järjestys kuin leveällä. */
+@media(max-width:560px){
+  .vertailu .pf{gap:12px}
+}
+.vertailu h3{margin-bottom:6px}
+/* Vain ingressi, ei lohkon muita kappaleita: .vertailu>p voittaisi myös .fine:n
+   ja taulukon alahuomautus kasvaisi ingressin kokoiseksi. */
+.vertailu h3+p{font-size:15px;color:var(--ink-2);margin:0 0 20px;max-width:68ch}
+
+/* ===== Ankkuririvi .anchors (23.9.2026) ============================
+   Yksi pikalinkki per tuoteryhmä kärjen alle: pieni havainnekuva, ryhmän nimi,
+   nimikkeiden määrä ja ↓. Tarvikesivulla se korvaa sekä kärjen hakemiston
+   (.idx) että suodatinkortit (.pick-how).
+
+   **Miksi tämä ei ole kortti.** Tehtävä on navigaatio saman sivun sisällä —
+   «vie minut sinne», ei «tässä on tuote» — ja kolme asiaa pitää sen erossa
+   kortista: ei valkoista levyä eikä kehystä yksittäisen linkin ympärillä
+   (tausta on sivun oma), ei kuvapaikkaa (.ph) vaan kuva ilman laatikkoa, ja
+   nuoli on ↓ eikä →, koska kohde on samalla sivulla alempana. Neljä linkkiä
+   sitoo yhdeksi nauhaksi yläviiva, ei neljä omaa reunusta.
+
+   Kuvan näyttökorkeus on tässä, ei generaattorissa: kangas piirretään 140
+   pikseliin ja mahtuu 56 px:n ruutuun suhteet säilyttäen (max-width/-height).
+   Generaattorin kiinteä 18 px:n reunus tekisi pienenä piirretystä puolet
+   luvatusta.
+
+   Kosketusalue: rivin korkeus on kuva 56 px + 16 px yläväli = 72 px, eli yli
+   --tap 44 px ilman omaa sääntöä. */
+.anchors{display:grid;grid-template-columns:repeat(4,1fr);gap:0 28px;margin-top:34px}
+.anchors a{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:center;
+  text-decoration:none;color:inherit;border-top:2px solid var(--ink);padding:16px 0 4px}
+.anchors .ic{display:flex;align-items:center;justify-content:center;height:56px}
+.anchors .ic svg{display:block;max-width:100%;max-height:100%;width:auto;height:auto}
+.anchors b{display:block;font-family:var(--ff-d);text-transform:uppercase;font-size:18px;
+  font-weight:600;line-height:1.15}
+.anchors .n{display:block;font-size:14px;color:var(--ink-3);margin-top:3px}
+.anchors a:hover b{color:var(--accent-dark)}
+.anchors a:hover .ar{transform:translateY(2px)}
+.anchors .ar{display:inline-block;transition:transform .15s var(--ease)}
+
+/* Kärki ilman oikean palstan hakemistoa. .lead on kaksipalstainen (1fr + 380px),
+   ja yhdellä lapsella teksti puristuisi vasempaan palstaan oikean jäädessä
+   tyhjäksi — modifier on siksi pakollinen eikä koristeellinen. */
+.lead.solo{grid-template-columns:minmax(0,1fr)}
+.lead.solo .lede{max-width:62ch}
+
+/* 820: neljä saraketta ei mahdu, kun nimi on versaalia Oswaldia. 560: yksi.
+   Sama asteikko kuin muualla (DESIGN-SYSTEM.md luku 1). */
+@media(max-width:820px){.anchors{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){
+  .anchors{grid-template-columns:1fr}
+  .anchors a{padding:13px 0 3px}
+=======
+/* Callout-selite piirroksen päällä — käyttökohdesivun havainnekuva (23.9.2026).
+
+   Callout on merkki kuvassa, johtoviiva ja selite viivan päässä. Ainoa ero
+   tavalliseen on se, mistä merkki, viiva ja teksti tulevat: ne eivät ole
+   kuvassa vaan sen päällä. Syy on mitattu. Kangas skaalautuu 390 px:n ruudulla
+   342 pikseliin, joten kuvaan ladottu 15 px:n selite renderöityy 3,8 pikseliin —
+   ja mobiili on 80,9 % istunnoista. Työpöydälläkin se jää 12,9 pikseliin. Isompi
+   pistekoko kankaalla ei ratkaise sitä, koska sama kuva on työpöydällä yli
+   1 100 px ja puhelimessa 342 px eikä yksi pistekoko ole oikein molemmissa.
+   Päällä olevat callout-osat eivät skaalaudu kuvan mukana: teksti on 17 px joka
+   leveydellä, se on käännettävissä ja ruudunlukija lukee sen.
+
+   Paikat tulevat generaattorista (kuvat/asennus-callout.js, prosentteina
+   kuvasta), joten merkki ja selite eivät voi ajautua erilleen piirroksesta.
+   Merkin pohja on --accent-dark eikä --accent: valkoinen sen päällä on 5,5:1.
+
+   Alle 820 px callout purkautuu numeroiduksi listaksi kuvan alle. Merkit jäävät
+   kuvaan, mutta johtoviivat ja palsta katoavat: 342 pikselin levyisessä kuvassa
+   ei ole tilaa selitepalstalle, ja vaakavieritys on tällä sivulla kielletty. */
+.co-lava{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);
+  gap:var(--s6);align-items:stretch}
+.co-kuva{position:relative;align-self:start}
+.co-kuva img{display:block;width:100%;height:auto}
+/* Kaksi luokkaa, ei yksi: ylempänä on .figwide svg{height:auto} (0,1,1), joka
+   voittaa paljaan .co-viivat-säännön (0,1,0) ja antaa peitolle viewBoxin oman
+   1:1-kuvasuhteen — 672 px leveä kuva sai 672 px korkean peiton, jolloin
+   johtoviivat valuivat 224 px kuvan alapuolelle figcaptionin päälle. Sama ansa
+   kuin .pick-how span vs .ph aikoinaan: tarkista selektorin painoarvo ennen
+   kuin epäilet arvoa. */
+.co-kuva .co-viivat{position:absolute;inset:0;width:100%;height:100%;
+  overflow:visible;pointer-events:none}
+.co-viivat .alus{stroke:var(--paper);stroke-width:3.6}
+.co-viivat .veto{stroke:var(--ink-3);stroke-width:1.3;stroke-dasharray:6 4}
+.co-viivat path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.co-nro{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);
+  width:clamp(24px,2.4vw,32px);height:clamp(24px,2.4vw,32px);border-radius:50%;
+  background:var(--accent-dark);color:#fff;border:2px solid var(--paper);
+  font-family:var(--ff-d);font-size:clamp(13px,1.2vw,17px);font-weight:700;line-height:1;
+  display:flex;align-items:center;justify-content:center}
+.co-teksti{position:relative;list-style:none;margin:0;padding:0;min-height:100%}
+.co-teksti li{position:absolute;top:var(--y);transform:translateY(-50%);left:0;right:0}
+.co-teksti b{display:block;font-size:17px;line-height:1.3}
+.co-teksti span{display:block;font-size:15px;color:var(--ink-2);line-height:1.35}
+.figwide figcaption{margin-top:var(--s4);font-size:14px;color:var(--ink-3)}
+
+@media(max-width:820px){
+  .co-lava{grid-template-columns:1fr;gap:var(--s5)}
+  /* Sama painoarvo kuin perussäännöllä (0,2,0), muuten tämä häviää sille. */
+  .co-kuva .co-viivat{display:none}
+  /* Palsta puretaan listaksi: numero palaa tekstin eteen, koska ilman
+     johtoviivaa side kuvaan on pelkkä numero ja väri. */
+  .co-teksti{counter-reset:ks;min-height:0;display:grid;gap:var(--s4)}
+  .co-teksti li{position:static;transform:none;counter-increment:ks;
+    display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 14px;align-items:start}
+  .co-teksti li::before{content:counter(ks);grid-row:span 2;
+    width:30px;height:30px;border-radius:50%;background:var(--accent-dark);color:#fff;
+    font-family:var(--ff-d);font-size:16px;font-weight:700;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .co-teksti b,.co-teksti span{grid-column:2}
+}

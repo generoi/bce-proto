@@ -10,6 +10,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
 <link rel="stylesheet" href="bce-v4.css">
 <script src="bce-spec-shell.js"></script>
+<!-- Callout-merkkien paikat kuvassa. Koneen kirjoittama, lähde on sama
+     generaattori joka piirtää kuvan: docs/kuvat/asennus.py C <perhe>. -->
+<script src="kuvat/asennus-callout.js"></script>
 <!-- Lohkon 5 tuotekuva: KP-pilari kolmiulotteisena. mittakaavio.js on ensin,
      koska tuotekuva.js lukee mitat sen PERHEET-taulukosta. -->
 <script src="mittakaavio.js"></script>
@@ -67,13 +70,13 @@
       asiakaslainaus, ei tyhjää tilaa. Lainaus on perhesivun aito lainaus, ja se on
       mökkikohteesta — varareitti ei ole kohdetyypitetty.
 
-   KAKSI AVOINTA, JOTKA EIVÄT OLE TÄMÄN SIVUN RATKAISTAVISSA
+   YKSI AVOIN, JOKA EI OLE TÄMÄN SIVUN RATKAISTAVISSA
 
-   · Konfiguraattorin nimi. Speksi: "Mitoita perustus", ei "Konfiguraattori". Tämä
-     sivu noudattaa speksiä. Kuori renderöi 16.9.2026 tehdyn päätöksen mukaan
-     *Laske pilarien määrä* ylätunnisteeseen ja mobiilin alapalkkiin, joten samalla
-     ruudulla on kaksi nimeä samalle toiminnolle. `C.cta.mitoita`, `SPEC.navCta`,
-     `SPEC.bar`: kolme riviä, sama sana, ja yksi niistä on väärä.
+   (Konfiguraattorin nimi ratkesi 23.9.2026: `C.cta.mitoita` ja `SPEC.navCta`
+   sanovat molemmat *Suunnittele perustus*. Sivulla ei ole enää kahta nimeä
+   samalle toiminnolle. Nimi ei ole speksin *Mitoita perustus* vaan sitä arkisempi;
+   avaimen nimi `mitoita` jäi ennalleen eikä näy sivulla.)
+
    · Tarvikkeiden kaksisuuntainen linkitys (speksin sääntö 3) jää yksisuuntaiseksi,
      koska tarvikesivu ei listaa käyttökohteita. Lisäksi nykysivusto sanoo
      autokatoksesta, että katosten puiset kannatintolpat kiinnitetään säädettävällä
@@ -84,8 +87,9 @@ const C={
        kp:"/bce-pilarit/kp-pilari/", tp:"/bce-pilarit/tp-pilari/",
        tarvikkeet:"/pilarien-kiinnitystarvikkeet/", asennus:"/ohjeet/asennus/",
        referenssit:"/referenssit/", tarjous:"/yhteystiedot/tarjouspyynto/"},
-  /* Speksin copy-sääntö: "Mitoita perustus", ei "Konfiguraattori". Ks. avoin kohta. */
-  cta:{mitoita:"Mitoita perustus", ostat:"Mistä ostat"},
+  /* Yksi nimi joka paikassa: "Suunnittele perustus" (päätös 23.9.2026). Speksi sanoi
+     "Mitoita perustus"; avaimen nimi on yhä sen mukainen eikä näy sivulla. */
+  cta:{mitoita:"Suunnittele perustus", ostat:"Mistä ostat"},
 
   /* 1 · Hero. H1 on kohteen nimi hakijan sanoilla, ei mallitunnusta eikä sanaa
      "pilari". Ensisijaisen toiminnon vieressä on lupaus siitä mitä mitoituksesta
@@ -94,7 +98,7 @@ const C={
   hero:{h1:"Autokatoksen perustukset",
     lede:"Autokatos tarvitsee perustuksen, joka kantaa katon, lumen ja tuulen. Valmiilla betonipilareilla teet sen yhtenä päivänä: ei muotteja, ei betonin sekoitusta, ei kuivumisen odottamista.",
     arvo:"Saat listan pilareista ja tarvikkeista kappalemäärineen.",
-    cta2:["Näin se tehdään","#tekeminen","cta_tekeminen_ankkuri"],
+    cta2:["Näin se tehdään","#tekeminen","cta_sivuankkuri"],
     img:"Hero-kuva: valmis autokatos, pilariperustus näkyvissä maanpinnan tasolla"},
 
   /* 2 · Kuvanosto. Kuvat ovat olemassa: nykysivuston autokatossivulla on viiden kuvan
@@ -125,7 +129,7 @@ const C={
   tekeminen:{h2:"Näin autokatoksen perustus tehdään",
     steps:[
       {h:"Merkitse pilarien paikat",
-       p:"Pilarien määrä ja jako riippuvat katoksen koosta ja käytetystä palkista. Mitoitus laskee molemmat puolestasi.",
+       p:"Pilarien määrä ja jako riippuvat katoksen koosta ja käytetystä palkista. Saat molemmat valmiina, kun suunnittelet perustuksen.",
        img:"Kuva: pilarien paikat merkittynä tontille"},
       {h:"Kaiva ja salaojita",
        p:"Kaivanto ulotetaan vähintään metrin katoksen ulkoreunan ulkopuolelle häiriintymättömään moreenipohjaan asti, ja pilarin jalka jää roudattoman syvyyden alapuolelle. Pohja kallistetaan vähintään viisi prosenttia ja salaojitus asennetaan samassa vaiheessa.",
@@ -147,7 +151,7 @@ const C={
   pilari:{h2:"Mikä pilari autokatokseen",
     saanto:"[TÄYTETTÄVÄ]",
     poikkeus:"Useimpiin autokatoksiin valitaan KP-pilari. Pieneen ja matalaan katokseen riittää joissain tapauksissa TP-pilari.",
-    maara:"Sinun ei tarvitse laskea kuormia. Kerro katoksen mitat ja katemateriaali, niin mitoitus valitsee mallin, määrän ja jaon.",
+    maara:"Sinun ei tarvitse laskea kuormia. Kerro katoksen mitat ja katemateriaali, niin saat mallin, määrän ja jaon valmiina.",
     /* Kuvapaikka pyysi asennusvalokuvaa («KP-pilari asennettuna autokatoksen
        nurkkaan»). Tilalla on tuotekuva, ja se on tietoinen vaihto: lohkon
        otsikko on «Mikä pilari autokatokseen» ja sen molemmat linkit vievät
@@ -161,20 +165,47 @@ const C={
     malli:["Katso KP-pilari","/bce-pilarit/kp-pilari/","KP-pilari"],
     vertaa:["Vertaa kaikkia pilariperheitä","/bce-pilarit/","cta_tuotteet"]},
 
-  /* 6 · Maapohja ja olosuhteet. Speksin järjestys: kaivamattomuus, routa, kohteen oma
-     haaste, talviasennus. Kohteen haaste on speksin taulukon mukaan näkyviin jäävä
-     perustus, ja nykysivusto sanoo saman. Kuva on A-601:n mukainen leikkaus KP
-     400–1000:sta: sama perhe jota tälle kohteelle suositellaan, ja kerrokset
-     samassa järjestyksessä kuin askeleissa 2 ja 3. Piirroksen oma alaviite kertoo,
-     että maanpinta, routaeristys ja salaojitus määräytyvät erillisestä
-     suunnitelmasta, joten kuva ei lupaa tee-se-itse-ohjetta. */
-  maapohja:{h2:"Maapohja ja olosuhteet",
+  /* 6 · Mitä maan alle tulee. Speksin järjestys säilyy: kaivamattomuus, routa,
+     kohteen oma haaste, talviasennus. Kohteen haaste on speksin taulukon mukaan
+     näkyviin jäävä perustus, ja nykysivusto sanoo saman.
+
+     KOLME MUUTOSTA 23.9.2026, SYY SAMA: lohko oli sivun ammattimaisin kohta.
+
+     1. Kuva on nyt `asennus-kp-c.png`, sama geometria arkikielellä. Aiempi
+        `asennus-kp-b.png` on A-601:n mukainen leikkaus ja sanoo sen itsekin:
+        otsikkona piirustusnumero ja päiväys, selitteinä «kapillaarikatko» ja
+        «kts. mitoittava pohjapaine», alaviitteenä rakennesuunnittelijan vastuu.
+        Se on oikea kuva — mutta ammattilaiselle. Kuluttajalle se kertoo, että
+        tämä on hänen osaamisensa ulkopuolella, ja se on täsmälleen päinvastainen
+        viesti kuin sivun muu sisältö. Tekninen versio ei katoa: se on linkkinä
+        asennusohjeissa, jossa sen lukija on.
+     2. H2 oli «Maapohja ja olosuhteet» eli aihe, ei kysymys. Oma ohjeemme
+        (CLAUDE.md, periaate 2) sanoo otsikon olevan väite tai kysymys lukijan
+        sanoilla; tämä oli moduulin nimi speksistä.
+     3. Routakappale sanoi «pohjalaatta viedään roudattoman syvyyden alapuolelle».
+        Se on tosi ja se on insinöörin lause: «roudaton syvyys» on termi, ja
+        «alapuolelle» kääntää sen väärinpäin arkilukijan päässä. */
+  maapohja:{h2:"Mitä maan alle tulee",
     nodig:"Pilaria ei tarvitse kaivaa maahan. Leveä pohjalaatta asettuu tiivistetyn sorapatjan päälle ja kantaa rakenteen siltä istumalta.",
-    routa:"Routa nostaa ja laskee maata vuodenaikojen mukaan, joten pohjalaatta viedään roudattoman syvyyden alapuolelle. Syvyys vaihtelee alueittain ja tarkistetaan paikkakunnan mukaan.",
+    routa:"Routa nostaa ja laskee maata vuodenaikojen mukaan. Siksi pilarin jalusta lasketaan niin syvälle, ettei routa yllä siihen. Kuinka syvälle, riippuu paikkakunnasta.",
     kohde:"Autokatoksen perustus jää näkyviin. Katoksen alla ei ole sokkelia eikä maanvaraista lattiaa, joten pilarit näkyvät pihaan sellaisina kuin ne asennetaan. Tehdasvalmisteisen pilarin pinta on sama joka kappaleessa, ja korkeus säädetään tarvikkeiden säätövaralla niin että rivi on suora.",
     talvi:"Talvella maa on roudassa ja kaivuu vie enemmän aikaa, mutta perustus itsessään valmistuu samalla tavalla kuin kesällä.",
-    img:"kuvat/asennus-kp-b.png",   /* kuvat/ on symlink ../kuvat -hakemistoon */
-    alt:"Leikkaus KP-pilarin asennuksesta: kaivanto ja salaojitus, konetiivistetty sora, pilarin 600 × 600 mm pohjalaatta, täyttö kerroksittain, routaeristys ja täyttö maanpintaan."},
+    perhe:"KP",                    /* kumman perheen callout-koordinaatit luetaan */
+    img:"kuvat/asennus-kp-c.png",   /* kuvat/ on symlink ../kuvat -hakemistoon */
+    alt:"Havainnekuva pilarin asennuksesta maan sisällä: kaivettu kuoppa, tiivistetty sorapatja, pilari jalustansa varassa soran päällä, routaeriste, täyttömaa ja maan pinnalle jäävä pilarin pää tarvikkeineen. Kuuden kerroksen numerot selitetään kuvan alla olevassa listassa.",
+    /* Numerot vastaavat kuvan merkkejä 1–6 alhaalta ylös. Järjestys on KP:n ja
+       TP:n järjestys; AP-perheellä routaeriste on pohjalaatan ALLA, jolloin
+       kohdat 3 ja 4 vaihtavat paikkaa (ks. kuvat/README.md). Jos tälle sivulle
+       vaihdetaan AP-kuva, tämä lista on vaihdettava mukana. */
+    vaiheet:[
+      ["Kaivetaan kuoppa","roudattomaan syvyyteen"],
+      ["Sorapatja pohjalle","tiivistetään koneella"],
+      ["Pilari lasketaan soran päälle","leveä jalusta kantaa, ei valua"],
+      ["Routaeriste, jos tontti vaatii","ratkaistaan tonttikohtaisesti"],
+      ["Maat takaisin päälle","pilarin pää jää näkyviin"],
+      ["Runko kiinni pilarin päähän","valmiiseen kierteeseen, ei poraamista"]],
+    varauma:"Periaatekuva, ei asennusohje. Kaivuusyvyys ja routasuojaus katsotaan tontin mukaan.",
+    tekninen:["Katso tekninen leikkauskuva","/ohjeet/asennus/","cta_asennusohjeet"]},
 
   /* 7 · Tarvikkeet. Enintään kolme, jokaisella syy juuri tähän kohteeseen. Kaksi
      ensimmäistä linkittyvät tarvikesivun ankkuriin; kolmannelle ei ole ankkuria,
@@ -185,7 +216,7 @@ const C={
       ["Palkkikenkä PAK","/pilarien-kiinnitystarvikkeet/#palkkikengat","jokaiselle pilarille. Niskapalkki lepää sen varassa."],
       ["Nostokorva","/pilarien-kiinnitystarvikkeet/#nostokorva","tarvitaan, jos pilarit nostetaan koneella. KP-pilarit ovat painavia."],
       [null,null,"Kiinnitystarvikkeet palkin ja kengän liitokseen."]],
-    huom:"Tarvikkeet unohtuvat useimmin, ja se huomataan vasta kun pilarit tulevat pihaan. Mitoitus laskee ne valmiiksi samaan listaan pilarien kanssa.",
+    huom:"Tarvikkeet unohtuvat useimmin, ja se huomataan vasta kun pilarit tulevat pihaan. Ne tulevat samaan listaan pilarien kanssa, kun suunnittelet perustuksen.",
     cta:["Katso kaikki tarvikkeet","/pilarien-kiinnitystarvikkeet/","cta_tarvikkeet"]},
 
   /* 8 · Näin hinta muodostuu. Ei hintoja eikä lukuja: hinnat ovat kauppiailla.
@@ -194,7 +225,7 @@ const C={
   hinta:{h2:"Näin hinta muodostuu",
     ing:"Perustuksen kustannus on pilarit, kiinnitystarvikkeet ja maatyöt. Neljäs erä on aika: kuinka monta päivää työmaa seisoo ennen kuin rungon voi nostaa.",
     vertailu:"Valettuun perustukseen verrattuna pois jäävät muottityö, betonin tilaus ja kuivumisaika. Autokatoksessa ero näkyy selvimmin siinä, että runko voidaan nostaa samana päivänä kun pilarit on suoristettu.",
-    kysy:"Hinnat saat jälleenmyyjältä. Ota mitoituksen tuottama lista mukaan, niin kauppias näkee kerralla mitä tarvitset.",
+    kysy:"Hinnat saat jälleenmyyjältä. Ota saamasi lista mukaan, niin kauppias näkee kerralla mitä tarvitset.",
     cta:["Mistä ostat","/mista-ostat/","cta_mista_ostat"]},
 
   /* 10 · Näin pääset alkuun. Päätepiste on tilaus jälleenmyyjällä, joten lopetus on
@@ -219,7 +250,7 @@ const C={
      talviasennuksen laajemmin; nämä ovat lyhyet vastaukset silmäilijälle. */
   ukk:{h2:"Usein kysyttyä autokatoksen perustuksista",
     items:[
-      ["Montako pilaria autokatokseen tarvitaan?","Määrä riippuu katoksen leveydestä, pituudesta ja käytetystä niskapalkista. Kuusi metriä leveä kaksipaikkainen katos vaatii tyypillisesti kahdeksan pilaria. Mitoitus laskee määrän kohteesi mitoilla."],
+      ["Montako pilaria autokatokseen tarvitaan?","Määrä riippuu katoksen leveydestä, pituudesta ja käytetystä niskapalkista. Kuusi metriä leveä kaksipaikkainen katos vaatii tyypillisesti kahdeksan pilaria. Saat oman määräsi kohteesi mitoilla."],
       ["Pitääkö autokatoksen perustus kaivaa routarajaan?","Kyllä. Pilarin jalka tulee roudattoman syvyyden alapuolelle, muuten rakenne nousee ja laskee vuodenaikojen mukaan. Routaraja vaihtelee alueittain."],
       ["Voiko autokatoksen perustaa talvella?","Voi. Valmis pilari ei tarvitse kuivumislämpötilaa eikä sulaa säätä, toisin kuin paikalla valettu perustus. Maa on kaivettava auki, mutta itse perustus valmistuu normaalisti."],
       ["Käykö sama ratkaisu kalliolle tai rinteeseen?","Käy. Pilarin korkeus valitaan maanpinnan mukaan ja tarvikkeiden säätövara hoitaa loput, joten epätasainen tontti ei vaadi erikoiskalustoa."],
@@ -261,6 +292,49 @@ const C={
     (sij?' data-sijainti="'+E(sij)+'"':"")+">"+arrow(l[0])+"</a>";
   const erotin='<span aria-hidden="true"> · </span>';
 
+  /* Callout-kuva: merkki, johtoviiva ja selite piirroksen päällä.
+     Paikat tulevat generaattorilta (window.asennusCallout), teksti C:stä. Ne
+     liittyvät toisiinsa järjestyksellä: pisteen nro on selitteen indeksi + 1,
+     ja jos ne eivät täsmää, kuva ja teksti puhuisivat eri kohdista. Siksi
+     määrä tarkistetaan ja ristiriita näkyy sivulla eikä hiljene konsoliin.
+     Viiva on kaksi vetoa: paperinvärinen aluslevy ja tumma katkoviiva sen
+     päällä — yksi sävy katoaa joko hiekkaan tai paperiin. */
+  const callout=m=>{
+    const d=(window.asennusCallout||{})[m.perhe];
+    if(!d) return '<figure class="figwide"><p class="tbd">[Callout-koordinaatteja ei '+
+      "löytynyt perheelle "+E(m.perhe)+" — aja python3 docs/kuvat/asennus.py C "+
+      E(m.perhe)+"]</p></figure>";
+    const pist=[...d.pisteet].sort((a,b)=>a.nro-b.nro);
+    if(pist.length!==m.vaiheet.length) return '<figure class="figwide"><p class="tbd">'+
+      "[Callout: kuvassa "+pist.length+" merkkiä mutta selitteitä "+m.vaiheet.length+"]</p></figure>";
+    /* Selitteet tasavälein kuvan korkeudelle, ylimpänä se jonka merkki on
+       ylimpänä. Tasaväli eikä merkin oma korkeus: selite on 42 px korkea eikä
+       skaalaudu kuvan mukana, joten merkin kohdalle asemoituna neljäs ja viides
+       menevät päällekkäin heti kun kuva on alle noin 500 px korkea (mitattu
+       1 280 px:n ruudulla: viisi pikseliä päällekkäin). Tasaväli on sama luku
+       joka leveydellä, eikä se tarvitse mittausta tai resize-kuuntelijaa.
+       Järjestys kuvassa on alhaalta ylös, joten ylin selite on suurin numero;
+       DOM-järjestys on silti 1…6, koska ruudunlukija ja kapea ruutu lukevat
+       listan järjestyksessä. */
+    const PAD=7, n=pist.length;
+    const ly={};
+    [...pist].sort((a,b)=>a.y-b.y).forEach((p,i)=>
+      ly[p.nro]=+(PAD+i*(100-2*PAD)/(n-1)).toFixed(3));
+    const viiva=p=>{const d2="M"+p.x+","+p.y+" L96,"+ly[p.nro]+" L100,"+ly[p.nro];
+      return '<path class="alus" d="'+d2+'"/><path class="veto" d="'+d2+'"/>';};
+    return '<figure class="figwide"><div class="co-lava"><div class="co-kuva">'+
+      '<img src="'+E(m.img)+'" alt="'+E(m.alt)+'" width="'+d.w*2+'" height="'+d.h*2+
+        '" loading="lazy" decoding="async">'+
+      '<svg class="co-viivat" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
+        pist.map(viiva).join("")+"</svg>"+
+      pist.map(p=>'<b class="co-nro" aria-hidden="true" style="--x:'+p.x+'%;--y:'+p.y+'%">'+
+        p.nro+"</b>").join("")+
+      '</div><ol class="co-teksti">'+pist.map((p,i)=>
+        '<li style="--y:'+ly[p.nro]+'%"><b>'+E(m.vaiheet[i][0])+"</b><span>"+
+        E(m.vaiheet[i][1])+"</span></li>").join("")+"</ol></div>"+
+      "<figcaption>"+E(m.varauma)+"</figcaption></figure>";
+  };
+
   document.getElementById("main").innerHTML=
 
   /* 1 · Hero */
@@ -296,12 +370,17 @@ const C={
       erotin+more(C.pilari.vertaa)+"</p></div>"+
     '<div class="ph ph-43 piirros">'+TUOTE(C.pilari.img)+"</div></div>","pilari")+
 
-  /* 6 · Maapohja ja olosuhteet. Leikkauskuva on oma rivinsä eikä mediaparin palsta:
-        piirroksen numeroselite ei lue puolikkaassa palstassa. */
+  /* 6 · Mitä maan alle tulee. Havainnekuva on oma rivinsä eikä mediaparin palsta.
+        Kuvassa on vain numerot; selitteet ovat sen alla oikeana tekstinä, koska
+        kuvaan ladottu teksti skaalautuu kankaan mukana ja renderöityy 390 px:n
+        ruudulla 3,8 pikseliin (ks. bce-v4.css, .kuvaselite). Varauma on
+        figcaption eikä leipätekstiä: se koskee kuvaa, ei kappaletta. Alimpana
+        reitti tekniseen versioon — sitä ei poistettu sivustolta vaan siirrettiin
+        sinne, missä sen lukija on. */
   sect(head(C.maapohja.h2,C.maapohja.nodig)+
     "<p>"+E(C.maapohja.routa)+"</p><p>"+E(C.maapohja.kohde)+"</p><p>"+E(C.maapohja.talvi)+"</p>"+
-    '<figure class="figwide"><img src="'+E(C.maapohja.img)+'" alt="'+E(C.maapohja.alt)+
-      '" width="2680" height="1800" loading="lazy" decoding="async"></figure>',"maapohja")+
+    callout(C.maapohja)+
+    '<p class="next">'+more(C.maapohja.tekninen,"maapohja")+"</p>","maapohja")+
 
   /* 7 · Tarvikkeet */
   sect(head(C.tarvikkeet.h2,C.tarvikkeet.ing)+
@@ -355,7 +434,12 @@ const C={
     d.addEventListener("toggle",function(){
       if(!d.open)return;
       d.dataset.event="avaus_ukk";
-      d.dataset.kysymys=d.querySelector("summary").textContent.replace("▾","").trim();
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
     });
   });
 })();

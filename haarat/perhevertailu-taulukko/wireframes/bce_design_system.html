@@ -378,12 +378,12 @@ sect("data","Taulukot ja tiedot","Taulukko kuuluu alasivulle, ei etusivulle. Kai
   {id:"vertailu",n:"Vertailu lohkon sisällä",c:".vertailu (h3 + ingressi + table.data.stack.vertailutaulu)",on:on("pil"),
    rule:"Lohkon toinen alaosa, ei omaa lohkoa: erotinviiva, H3 ja ingressi, sitten taulukko ja sen alahuomautus. Sama erotin ja sama mitta kuin .find:llä, jotta yhden lohkon kaksi alaosaa lukevat samalla rytmillä. <strong>Rivi on tuote ja sarake on ominaisuus</strong>, ja rivin ensimmäinen solu on nimi ja sen alla tuotekuva — kokoero nähdään ennen kuin yhtäkään lukua on luettu. Nimi on kuvan <em>yläpuolella</em>, koska vierekkäin ladottuna rivin tunniste jäi sata pikseliä alemmas kuin rivin arvot. Kuvat ovat jaetussa mittakaavassa ja <strong>yhteisellä kankaalla</strong> (<code>tuotekuva.rivi</code>, 85 × 96 px), joten neljä riviä ovat yhtä korkeita ja sarake ei hypi riveittäin. Omaa kangasta kullekin kokeiltiin — silloin kuvan korkeus olisi itse vertailu eikä lyhyen tuotteen yläpuolelle jäisi tyhjää — mutta eri korkuiset rivit maksoivat enemmän kuin tyhjä voitti, koska silmä lukee taulukkoa riviväliä pitkin. Pilarit seisovat kankaan alareunassa: tyhjä AP:n yläpuolella <em>on</em> se, mitä AP:n lyhyys näyttää. Kahdeksan saraketta ei mahdu .data.stack:in 900 pikseliin, joten .vertailutaulu ottaa koko sisältöleveyden — luokka on kirjoitettava kolmanneksi (<code>.data.stack.vertailutaulu</code>), muuten se häviää tarkkuudessa. Kuvan svg ei saa max-width:100%:a: taulukon sarake mitoitetaan min-content-leveydestä, ja prosenttiraja tekee siitä nollan. Ingressin sääntö on .vertailu h3+p eikä .vertailu>p, joka voittaisi myös .fine:n.",
    demo:'<div class="vertailu"><h3>Perheet rinnakkain</h3><p>Sama tieto neljästä perheestä samassa muodossa.</p><div class="tw"><table class="data stack vertailutaulu"><thead><tr><th>Pilariperhe</th><th>Korkeudet</th><th>Paino</th><th>Pohjalaatta</th></tr></thead><tbody>'+
-     [["AP","200–400 mm · 3 kokoa","[TÄYTETTÄVÄ]","330 × 330 mm (AP-300: 450 × 450)"],
-      ["TP","200–600 mm · 5 kokoa","43–67 kg","450 × 450 mm"],
-      ["KP","400–1000 mm · 7 kokoa","126–187 kg","600 × 600 mm"],
-      ["PP","600 mm · 1 koko","[TÄYTETTÄVÄ]","450 × 450 mm"]]
-     .map(r=>'<tr><th scope="row"><span class="pf"><b>'+E(r[0])+'-pilari</b><span class="pf-im">'+
-       kuvaDemo.vertailu[r[0]]+'</span></span></th><td data-lbl="Korkeudet">'+T(r[1])+
+     [["AP","200–400 mm","[TÄYTETTÄVÄ]","330 × 330 mm"],
+      ["TP","200–600 mm","43–67 kg","450 × 450 mm"],
+      ["KP","400–1000 mm","126–187 kg","600 × 600 mm"],
+      ["PP","600 mm","[TÄYTETTÄVÄ]","450 × 450 mm"]]
+     .map(r=>'<tr><th scope="row"><span class="pf"><span class="pf-im">'+kuvaDemo.vertailu[r[0]]+
+       '</span><b>'+E(r[0])+'-pilari</b></span></th><td data-lbl="Korkeudet">'+T(r[1])+
        '</td><td data-lbl="Paino">'+T(r[2])+'</td><td data-lbl="Pohjalaatta">'+T(r[3])+
        "</td></tr>").join("")+
      '</tbody></table></div><p class="fine">Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo.</p></div>'},

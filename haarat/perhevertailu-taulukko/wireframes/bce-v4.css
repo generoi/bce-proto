@@ -1834,7 +1834,7 @@ html.vienti .cfg .shot{display:flex}
    .data.stack:in 900 pikseliin — se mitta oli neljälle lyhyelle sarakkeelle — joten
    tämä taulukko saa koko sisältöleveyden. Perustustapasivun taulukko pitää 900:n.
 
-   Rivin ensimmäinen solu on nimi ja sen alla tuotekuva. Kuvat ovat jaetussa
+   Rivin ensimmäinen solu on tuotekuva ja sen oikealla puolella nimi. Kuvat ovat jaetussa
    mittakaavassa ja **yhteisellä kankaalla** (85 × 96 px), joten neljä riviä ovat
    yhtä korkeita ja sarake ei hypi riveittäin. Pilarit seisovat kankaan alareunassa,
    eli AP:n kuvan yläpuolelle jäävä tyhjä on se, mitä AP:n lyhyys näyttää.
@@ -1850,13 +1850,14 @@ html.vienti .cfg .shot{display:flex}
 /* width:1% + nowrap = sarake ottaa täsmälleen sisältönsä leveyden ja jättää lopun
    muille. Kuvan kangas on kaikilla perheillä sama, joten sarake ei hypi riveittäin. */
 .vertailutaulu tbody th{width:1%;white-space:nowrap}
-/* Nimi ensin, kuva sen alle. Vierekkäin ladottuna nimi jäi 128 pikselisen kankaan
-   alareunaan, eli rivin tunniste oli sata pikseliä alempana kuin rivin arvot, ja
-   silmä joutui hakemaan kumpi nimi kuului mihinkin lukuun. Pystyssä nimi on samalla
-   ylärivillä kuin arvot, ja kuva lukee nimen alaviitteenä. Kankaat ovat keskenään
-   samankorkuisia, joten pilarit seisovat yhä samalla tasolla joka rivillä — AP:n
-   kuvan yläpuolinen tyhjä on se, mitä AP:n lyhyys näyttää. */
-.vertailu .pf{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+/* Kuva vasemmalle, nimi oikealle, **yläreunasta tasattuina**. Kolmas asemointi
+   kahden hylätyn jälkeen, ja molemmat hylätyt olivat saman virheen kaksi muotoa:
+   nimi ei saa olla eri korkeudella kuin rivin arvot. Vierekkäin alareunasta
+   tasattuna nimi jäi kankaan pohjalle, sata pikseliä arvojen alapuolelle;
+   allekkain ladottuna nimi oli oikealla korkeudella mutta rivi kasvoi nimen
+   verran ja kuva työnsi arvot omaan kerrokseensa. Yläreunasta tasattuna nimi ja
+   arvot alkavat samalta viivalta, ja rivin korkeus on kankaan korkeus. */
+.vertailu .pf{display:flex;align-items:flex-start;gap:12px}
 .vertailu .pf-im{display:block;flex:0 0 auto}
 /* Ei max-width:100% kuten muissa .piirros-kuvapaikoissa. Taulukon sarake mitoitetaan
    sisällön min-content-leveydestä, ja prosenttiraja tekee siitä nollan: sarake kutistui
@@ -1864,11 +1865,29 @@ html.vienti .cfg .shot{display:flex}
    joten kiinteä luonnollinen koko on tässä oikea — kapeimmallakin ruudulla kuva ja nimi
    vievät yhdessä noin 190 px, eli mahtuvat 390 pikselin palstaan. */
 .vertailu .pf-im>svg{display:block}
-.vertailu .pf b{display:block}
+.vertailu .pf b{display:block;padding-top:1px}
+
+/* Arvot eivät rivity leveällä. Tämä on se yksittäinen sääntö, joka tekee
+   kahdeksan sarakkeen taulukosta luettavan: kun jokainen arvo on yksi rivi,
+   taulukolla on yksi rytmi eikä kahdeksaa. Automaattinen sarakejako antaa
+   rivittymättömille sarakkeille tasan niiden sisällön leveyden ja loput
+   ainoalle rivittyvälle — «Mihin», sarakkeen ainoa lause — joten sekin mahtuu
+   yhdelle riville. Sisältö on lyhennettävä sen mukaan: jos arvo ei mahdu, se on
+   liian pitkä soluun eikä sarake liian kapea, ja oikea paikka on alaviite.
+
+   Kapealla sääntö ei ole voimassa: .stack pinoaa solut lohkoksi, jossa rivin
+   leveys on ruudun leveys ja nowrap työntäisi tekstin ulos. */
+@media(min-width:561px){
+  .vertailutaulu td{white-space:nowrap}
+  .vertailutaulu td.sanat{white-space:normal}
+}
+/* Tasalevyiset numerot: sarake on lukusarake, ja vaihtelevalevyiset numerot
+   tekevät 126–187 ja 43–67 eri mittaisiksi samalla merkkimäärällä. */
+.vertailutaulu td{font-variant-numeric:tabular-nums}
 /* Kapealla .stack tekee otsikkosolusta lohkon otsikon: nimi on silloin H3:n kokoinen
-   ja kuva heti sen alla, eli sama järjestys kuin leveällä. */
+   ja kuva sen vasemmalla puolella, eli sama pari kuin leveällä. */
 @media(max-width:560px){
-  .vertailu .pf{gap:12px}
+  .vertailu .pf{gap:14px}
 }
 .vertailu h3{margin-bottom:6px}
 /* Vain ingressi, ei lohkon muita kappaleita: .vertailu>p voittaisi myös .fine:n

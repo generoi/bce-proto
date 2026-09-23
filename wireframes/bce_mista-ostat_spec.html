@@ -114,7 +114,7 @@ const C={
       ["Kuinka iso","Mitä isompi rakennus, sitä suurempi kantavuus."],
       ["Kuinka korkealle maasta","Korkeus valitaan asennussyvyyden ja halutun lattiakorkeuden mukaan."]],
     alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
-    cta:"Laske pilarien määrä",
+    cta:"Suunnittele perustus",
     sub:"Kestää muutaman minuutin."},
 
   /* 6 · Ostokohtaiset kysymykset. Kysymykset näytetään, vastaukset jätetään näkyvästi
@@ -142,7 +142,7 @@ const C={
   /* Kuoren alapalkki jätetään pois: sen toinen painike on "Mistä ostat", ja tällä
      sivulla se osoittaisi sivulle itselleen. Sivun ensisijainen toiminto on toisessa
      lohkossa, eli mobiilissa näkyvissä heti kärjen jälkeen. */
-  SPECSHELL(E,{crumb:C.crumb,active:"Mistä ostat",bar:false});
+  SPECSHELL(E,{crumb:C.crumb,active:"Mistä ostat"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";
@@ -217,7 +217,12 @@ const C={
     d.addEventListener("toggle",function(){
       if(!d.open)return;
       d.dataset.event="avaus_ukk";
-      d.dataset.kysymys=d.querySelector("summary").textContent.replace("▾","").trim();
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
     });
   });
 })();

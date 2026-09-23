@@ -43,7 +43,7 @@
    (päätös 15.9.2026): pilarikenkä on 81 % koko tarvikekysynnästä (3 930 näyttöä),
    nostokorvalla on 3 näyttöä 12 kuukaudessa. Siksi kärjessä on hakemisto.
 
-   CTA-hierarkia kortin 4 mukaan: 1) Mistä ostat, 2) Mitoita perustus. Jälleenmyyjät
+   CTA-hierarkia kortin 4 mukaan: 1) Mistä ostat, 2) Suunnittele perustus. Jälleenmyyjät
    ovat siksi sivutasolla eivätkä jokaisessa lohkossa — kahdeksan kertaa neljä
    painiketta olisi 32 painiketta.
 
@@ -58,7 +58,7 @@ const C={
   hero:{h1:"Pilarien kiinnitystarvikkeet",
     lede:"Tarvike ratkaisee, miten rakenne kiinnittyy perustukseen. Kaikki tarvikkeet ruuvataan pilarin valmiiseen M20-kierteeseen, joten työmaalla ei porata, ja säätövara korjaa pienet heitot korkeus- ja sivusuunnassa.",
     cta:["Mistä ostat","/mista-ostat/","cta_mista_ostat","hero"],
-    cta2:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
+    cta2:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori"],
     idx:"Kahdeksan tarviketta"},
 
   /* Valintalogiikka ennen tuotteita. Jako on liitostyypin mukaan, koska kävijä
@@ -134,7 +134,7 @@ const C={
     ing:"Konfiguraattori laskee pilarien lisäksi tarvikkeet kappalemäärineen. Tarvike määräytyy siitä, missä kohtaa ruudukkoa pilari on — kulmassa, reunalla vai keskellä.",
     img:"kuvat/konfiguraattori-isometric-c.png",
     alt:"Isometrinen havainnekuva: terassi kohotettuna pilarien yläpuolelle, kulmapilarit korostettuina.",
-    cta:"Laske pilarien määrä",
+    cta:"Suunnittele perustus",
     sub:"Kestää muutaman minuutin."},
 
   buy:{h2:"Osta lähimmältä jälleenmyyjältä",
@@ -151,7 +151,7 @@ const C={
   const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
   const L=u=>E(SPECLINK(u));
-  SPECSHELL(E,{crumb:C.crumb,active:"Tarvikkeet",bar:"ostat"});
+  SPECSHELL(E,{crumb:C.crumb,active:"Tarvikkeet"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";
@@ -170,7 +170,7 @@ const C={
         '<a class="more" href="'+L(C.hero.cta2[1])+'" data-event="'+E(C.hero.cta2[2])+
         '" data-sijainti="hero">'+arrow(C.hero.cta2[0])+"</a></div></div>"+
     '<nav class="idx" aria-label="'+E(C.hero.idx)+'"><p class="lbl">'+E(C.hero.idx)+"</p>"+
-      kaikki.map(k=>'<a href="#'+E(k[1])+'" data-event="cta_tarvike_ankkuri" data-tarvike="'+
+      kaikki.map(k=>'<a href="#'+E(k[1])+'" data-event="cta_sivuankkuri" data-tarvike="'+
         E(k[0])+'">'+down(k[0])+"</a>").join("")+"</nav></section></div>"+
 
   /* 2 · Valinta liitostyypin mukaan */
@@ -221,7 +221,7 @@ const C={
   /* 7 · Mistä ostat — kortin 4 ensisijainen toiminto */
   sect(head(C.buy.h2,C.buy.ing)+
     '<div class="dealers dealers-4">'+C.chains.map(c=>'<a href="#" data-event="klikkaus_jalleenmyyja" '+
-      'data-dealer="'+E(c)+'" data-sijainti="lopetus">'+E(c)+"</a>").join("")+"</div>"+
+      'data-jalleenmyyja="'+E(c)+'" data-sijainti="lopetus">'+E(c)+"</a>").join("")+"</div>"+
     '<p class="next"><a class="more" href="'+L("/mista-ostat/")+
       '" data-event="cta_mista_ostat" data-sijainti="lopetus">'+arrow(C.buy.all)+"</a></p>","ostat")+
 

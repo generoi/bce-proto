@@ -107,7 +107,7 @@ const MAP={
   const crumb=[["Etusivu",SPEC.home]];
   if(it.up){const u=MAP[it.up]; if(u.up)crumb.push([MAP[u.up].h,href(u.up)]); crumb.push([u.h,href(it.up)]);}
   crumb.push([it.h,null]);
-  SPECSHELL(E,{crumb:crumb,active:it.nav,bar:false});
+  SPECSHELL(E,{crumb:crumb,active:it.nav});
   document.title=it.h+" — BCE Pilarimaailma (prototyyppi)";
 
   const kids=(it.kids||[]).map(k=>'<li><a href="'+href(k)+'">'+E(MAP[k].h)+

@@ -6,6 +6,9 @@ window.SPEC={
   logo:"BCE-logo",
   home:"bce_etusivu_spec.html",
   menu:"Valikko",
+  /* Mobiilin haitarin avaaja. Nimike täydentyy kohdan nimellä ("Näytä alavalikko:
+     Ohjeet"), koska ruudunlukija lukee samalla sivulla neljä samanlaista painiketta. */
+  subtog:"Näytä alavalikko",
   crumbLabel:"Murupolku",
   /* Navigaatio sivukartan luvun 0.1 mukaan.
 
@@ -106,16 +109,17 @@ window.SPEC={
   /* Apurivillä on nyt haku ja kieli. Yhteystiedot siirtyi päävalikkoon 21.9.2026;
      null pitää rivin rakenteen ennallaan, jos linkki halutaan takaisin. */
   util:null,
-  /* 16.9.2026: konfiguraattorilla on yksi nimi joka paikassa (hero-oppi 3). Spec 1.0:n
-     "Löydä sopiva pilari" vaihdettiin lopputuloksen nimeävään muotoon, sama kuin sivuilla.
-     Poikkeama specistä, kerrotaan asiakkaalle. Mobiilissa kuoren painike piilotetaan
-     (.hdr-cta), koska sivun oma toiminto on alapalkissa. */
-  navCta:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
-  /* Mobiilin kiinteä alapalkki, sama joka sivulla jolla on ensisijainen toiminto:
-     ensisijainen toiminto ja ostopaikka. SPECSHELL(E,{bar:false}) jättää pois,
-     {bar:"ostat"} kääntää järjestyksen sivulla jonka ensisijainen on ostopaikka. */
-  bar:[["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
-       ["Mistä ostat","/mista-ostat/","cta_mista_ostat"]],
+  /* 23.9.2026: nimi on «Suunnittele perustus» joka paikassa — kuori, sivut, alapalkki ja
+     footer. Aiemmat kolme nimeä samalle toiminnolle: spec 1.0:n «Löydä sopiva pilari»,
+     16.9. päätetty «Laske pilarien määrä» ja footerin «Konfiguraattori». Syy vaihtoon on
+     navigaatio: painikkeena oikeassa kohdassa «Laske pilarien määrä» toimii, mutta
+     valikossa se olettaa, että kävijä jo tietää tarvitsevansa pilareita. «Suunnittele
+     perustus» nimeää työn eikä tuotetta ja mahtuu navin riville. Se ei ole speksin sana
+     («Mitoita perustus») vaan sitä arkisempi: verbi valittiin sen mukaan, miltä askel
+     tuntuu lukijalle joka ei ole rakentaja. Poikkeama specistä siis jää, mutta nimiä on
+     enää yksi. Kiinteä alapalkki poistettiin samana päivänä, joten mobiilissa tämä
+     painike on ensisijainen toiminto — se näkyy valikon avattuaan. */
+  navCta:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori"],
   search:"Hae tuotteella, koodilla tai käyttökohteella",
   langs:[["FI",true],["SV",false],["EN",false]],
   foot:{
@@ -126,7 +130,7 @@ window.SPEC={
         ["Referenssit","/referenssit/"],["Mistä ostat","/mista-ostat/"],
         ["Yhteystiedot","/yhteystiedot/"],["Tietosuojaseloste","/tietosuojaseloste/"]]],
       ["Tuotteet",[["Pilarit","/bce-pilarit/"],["Tarvikkeet","/pilarien-kiinnitystarvikkeet/"],
-        ["JeKi-sokkeli","/jeki-sokkeli/"],["Konfiguraattori","/konfiguraattori/"],
+        ["JeKi-sokkeli","/jeki-sokkeli/"],["Suunnittele perustus","/konfiguraattori/"],
         ["Usein kysytyt","/ohjeet/usein-kysytyt/"]]],
       ["Käyttökohteet",[["Terassi","/kayttokohde/terassin-pilariperustus/"],
         ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
@@ -144,7 +148,7 @@ window.SPEC={
 window.SPEC.map={
   "/":"bce_etusivu_spec.html",
   /* Konfiguraattori osoittaa oikeaan laskuriin eikä luurankoon (20.9.2026).
-     Laskuri on prototyyppinä olemassa, joten jokainen «Laske pilarien määrä»
+     Laskuri on prototyyppinä olemassa, joten jokainen «Suunnittele perustus» -painike
      päätyi «[SUUNNITTELEMATTA]»-sivulle vaikka toimiva versio oli naapuri-
      hakemistossa. Korjaus on tässä eikä sivuilla: kaikki kaksikymmentäviisi
      linkkiä yhdellätoista sivulla kulkevat SPECLINKin kautta.
@@ -207,7 +211,7 @@ window.SPECDEALERS=function(E,o){
   o=o||{};
   return '<div class="dealers'+(o.cls?" "+o.cls:"")+'">'+SPEC.dealers.map(function(d){
     const u=(o.size&&d.tp&&d.tp[o.size])||d.url;
-    return '<a href="'+E(u)+'" target="_blank" rel="noopener" data-event="klikkaus_jalleenmyyja" data-dealer="'+E(d.n)+'"'+
+    return '<a href="'+E(u)+'" target="_blank" rel="noopener" data-event="klikkaus_jalleenmyyja" data-jalleenmyyja="'+E(d.n)+'"'+
       (o.sijainti?' data-sijainti="'+E(o.sijainti)+'"':"")+(o.size&&d.tp&&d.tp[o.size]?' data-koko="'+E(o.size)+'"':"")+'>'+
       '<span class="dlogo">'+E(SPEC.dealerLogo)+": "+E(d.n)+"</span>"+
       '<span class="dgo">'+E(SPEC.dealerGo)+'<span aria-hidden="true">↗</span><span class="sr">, '+E(SPEC.dealerNew)+"</span></span></a>";
@@ -260,9 +264,11 @@ window.SPECNAV=function(E,active){
     return '<a'+(cls?' class="'+cls+'"':"")+' href="'+E(SPECLINK(n[1]))+'"'+
       (n[0]===active?' aria-current="page"':"")+">"+ikoni(n[1])+E(n[0])+(kärki?chev:"")+"</a>";
   };
-  return SPEC.nav.map(function(n){
+  return SPEC.nav.map(function(n,i){
+    const id="sub-"+i;
     const top = n[1] ? link(n,null,!!n[2])
       : '<button class="navtop" type="button" aria-expanded="false"'+
+        (n[2]?' aria-controls="'+id+'"':"")+
         (on(n)?' aria-current="true"':"")+">"+E(n[0])+(n[2]?chev:"")+"</button>";
     if(!n[2]) return top;
     const ryhmat=n[2].some(function(x){ return !!x[2]; });
@@ -272,8 +278,17 @@ window.SPECNAV=function(E,active){
             (g[2]||[]).map(function(x){ return link(x); }).join("")+"</span>";
         }).join("")
       : n[2].map(function(x){ return link(x); }).join("");
-    return '<span class="hassub'+(on(n)?" on":"")+'">'+top+
-      '<span class="sub'+(ryhmat?" grid":"")+'">'+sisalto+"</span></span>";
+    /* Mobiilin haitarille tarvitaan avaaja, ja päätasolla on kahdenlaisia kohtia.
+       Ryhmä ilman omaa sivua (Tuotteet, Sokkelit) on jo painike ja avaa itse.
+       Linkki, jolla on lapsia (Perustuksen teko, Ohjeet), ei voi olla avaaja: sen
+       pitää yhä viedä omalle sivulleen. Siksi sen viereen tulee oma painike, joka
+       on työpöydällä piilossa — siellä avaa osoitin tai fokus. */
+    const tog = n[1]
+      ? '<button class="subtog" type="button" aria-expanded="false" aria-controls="'+id+'"'+
+        ' aria-label="'+E(SPEC.subtog+": "+n[0])+'">'+chev+"</button>"
+      : "";
+    return '<span class="hassub'+(on(n)?" on":"")+'">'+top+tog+
+      '<span class="sub'+(ryhmat?" grid":"")+'" id="'+id+'">'+sisalto+"</span></span>";
   }).join("");
 };
 
@@ -339,32 +354,56 @@ window.SPECSHELL=function(E,o){
   const b=q("#menub"),n=q("#mainnav");
   b.addEventListener("click",()=>{const o2=n.getAttribute("data-open")==="true";
     n.setAttribute("data-open",String(!o2));b.setAttribute("aria-expanded",String(!o2));});
-  /* Ryhmä ilman sivua ("Tuotteet") on painike, ei linkki. Työpöydällä osoitin ja
-     näppäimistöfokus avaavat pudotuksen, klikkaus jättää sen auki ja klikkaus muualle
-     sulkee. Mobiilissa lista on jo auki, joten painike ei kerro sulkevansa mitään. */
+  /* Alavalikon avaaminen, sama `data-open` molemmilla leveyksillä.
+     -------------------------------------------------------------------------
+     Työpöydällä osoitin ja näppäimistöfokus avaavat pudotuksen (CSS), klikkaus
+     jättää sen auki ja klikkaus muualle sulkee.
+
+     Mobiilissa lista oli ennen kokonaan auki: 28 kohtaa, 1 415 px, eli alaosa
+     (Referenssit, Mistä ostat, Yhteystiedot) oli kahden ruudullisen päässä. Nyt
+     se on haitari — kiinni oletuksena, kahdeksan kohtaa, mahtuu ruutuun kerralla.
+     Auki jää se ryhmä, jossa nykyinen sivu on (.hassub.on), jotta lukija näkee
+     mistä kohtaa valikkoa hän tuli. Klikkaus muualle ei sulje mobiilissa: valikko
+     on oma paneelinsa, eikä sen sisällä liikkuminen saa romauttaa avattua ryhmää.
+
+     Leveyden vaihtuessa tila nollataan, koska sama attribuutti tarkoittaa eri
+     asiaa: mobiilissa "tämä ryhmä on auki listassa", työpöydällä "tämä pudotus
+     roikkuu näkyvissä". Ilman nollausta mobiilissa avattu ryhmä jäisi työpöydällä
+     leijumaan ruudulle ilman että mikään osoitin on sen päällä. */
   const kapea=window.matchMedia("(max-width:980px)");
-  [...document.querySelectorAll("#mainnav .navtop")].forEach(function(bt){
-    const w=bt.parentNode;
+  const nollaa=[];
+  [...document.querySelectorAll("#mainnav .hassub")].forEach(function(w){
+    /* Kaksi avaajaa, ks. SPECNAV: ryhmä ilman sivua on itse painike, ja sivullisen
+       linkin vieressä on erillinen painike. Kummallakin sama tila. */
+    const napit=[...w.querySelectorAll(":scope > .navtop, :scope > .subtog")];
+    if(!napit.length) return;
     const sync=function(){
-      bt.setAttribute("aria-expanded", kapea.matches||w.getAttribute("data-open")==="true" ? "true":"false");
+      const auki = w.getAttribute("data-open")==="true";
+      napit.forEach(function(bt){ bt.setAttribute("aria-expanded", auki?"true":"false"); });
     };
-    bt.addEventListener("click",function(e){
-      if(kapea.matches) return;
-      e.stopPropagation();
-      w.setAttribute("data-open", w.getAttribute("data-open")==="true" ? "false":"true");
-      sync();
+    napit.forEach(function(bt){
+      bt.addEventListener("click",function(e){
+        e.stopPropagation();
+        w.setAttribute("data-open", w.getAttribute("data-open")==="true" ? "false":"true");
+        sync();
+      });
     });
-    kapea.addEventListener("change",sync);
-    sync();
     document.addEventListener("click",function(e){
       if(kapea.matches||w.contains(e.target)) return;
       w.setAttribute("data-open","false"); sync();
     });
     w.addEventListener("keydown",function(e){
       if(e.key!=="Escape") return;
-      w.setAttribute("data-open","false"); sync(); bt.focus();
+      w.setAttribute("data-open","false"); sync(); napit[0].focus();
+    });
+    nollaa.push(function(){
+      w.setAttribute("data-open", kapea.matches && w.classList.contains("on") ? "true":"false");
+      sync();
     });
   });
+  const haitari=function(){ nollaa.forEach(function(f){ f(); }); };
+  kapea.addEventListener("change",haitari);
+  haitari();
   if(o.crumb){
     const c=q(".crumb");
     c.setAttribute("aria-label",SPEC.crumbLabel);
@@ -373,21 +412,6 @@ window.SPECSHELL=function(E,o){
       return sep+(x[1]?'<a href="'+E(SPECLINK(x[1]))+'">'+E(x[0])+"</a>":'<span aria-current="page">'+E(x[0])+"</span>");
     }).join("");
   } else { q(".crumb").remove(); }
-  if(o.bar!==false){
-    /* Palkin ensisijainen on sama kuin sivun ensisijainen. Tarvikesivulla se on
-       ostopaikka (kortti 4), joten sivu kutsuu {bar:"ostat"} ja järjestys kääntyy.
-
-       17.9.2026: sivu voi antaa myös oman parin, {bar:[[teksti,osoite,tapahtuma],...]}.
-       Se on tarkoitettu sivulle, jonka toimintoa kuoren oletuspari ei tunne — JeKi-
-       sokkelisivulla konfiguraattori laskee pilarien määrän, ei sokkelielementtejä,
-       joten oletuspari lupaisi toiminnon jota ei ole. Pari kirjoitetaan silloin
-       sivun omista toiminnoista, ei uutena copyna: palkki ja sivu sanovat saman. */
-    const bar=Array.isArray(o.bar)?o.bar:(o.bar==="ostat"?[SPEC.bar[1],SPEC.bar[0]]:SPEC.bar);
-    document.body.classList.add("has-bar");
-    document.body.insertAdjacentHTML("beforeend",'<div class="bar">'+
-      '<a class="btn btn-1" href="'+E(SPECLINK(bar[0][1]))+'" data-event="'+E(bar[0][2])+'" data-sijainti="alapalkki">'+E(bar[0][0])+"</a>"+
-      '<a class="btn btn-2" href="'+E(SPECLINK(bar[1][1]))+'" data-event="'+E(bar[1][2])+'" data-sijainti="alapalkki">'+E(bar[1][0])+"</a></div>");
-  }
   q("footer .w").innerHTML=
     '<div class="cols"><div><h3>Yhteystiedot</h3><p class="addr">'+E(SPEC.foot.addr)+"</p>"+
       '<p class="addr"><span class="tbd">'+E(SPEC.foot.contact)+"</span></p>"+

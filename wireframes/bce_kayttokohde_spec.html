@@ -97,11 +97,11 @@
       (200, 300, 400, 500, 600 mm) Rakentajan oppaasta. Luku tulee tuotedatasta, joten
       virhe monistuu kuudelle sivulle kerralla.
 
-   NIMEÄMISRISTIRIITA. Speksi: "Mitoita perustus", ei "Konfiguraattori". Tämä sivu
-   noudattaa speksiä. Kuori renderöi 16.9.2026 tehdyn päätöksen mukaan *Laske pilarien
-   määrä* ylätunnisteeseen ja mobiilin alapalkkiin, eli samalla ruudulla on kaksi nimeä
-   samalle toiminnolle. `JAETTU.cta_mitoita`, `SPEC.navCta`, `SPEC.bar`: kolme riviä,
-   sama sana, ja yksi niistä on väärä.
+   NIMEÄMISRISTIRIITA RATKESI 23.9.2026. `JAETTU.cta_mitoita` ja `SPEC.navCta` sanovat molemmat *Suunnittele perustus*, eli samalla ruudulla ei ole enää
+   kahta nimeä samalle toiminnolle. Aiemmin sivu noudatti speksiä («Mitoita perustus»)
+   ja kuori 16.9. päätettyä nimeä («Laske pilarien määrä»). Uusi nimi ei ole kummankaan:
+   verbi valittiin sen mukaan, miltä askel tuntuu lukijalle joka ei ole rakentaja.
+   Avaimen nimi `cta_mitoita` jäi ennalleen eikä näy sivulla.
    =========================================================================== */
 
 const TB="[TÄYTETTÄVÄ]";
@@ -128,9 +128,9 @@ const OHJE={
    =========================================================================== */
 const JAETTU={
 
-  /* Speksin copy-sääntö: "Mitoita perustus", ei "Konfiguraattori". "Mistä ostat",
-     ei "Jälleenmyyjät". Ks. nimeämisristiriita tiedoston alussa. */
-  cta_mitoita:"Mitoita perustus",
+  /* Yksi nimi joka paikassa (23.9.2026): "Suunnittele perustus", ei "Konfiguraattori"
+     eikä speksin "Mitoita perustus". "Mistä ostat", ei "Jälleenmyyjät". */
+  cta_mitoita:"Suunnittele perustus",
   cta_ostat:"Mistä ostat",
 
   url:{mitoita:"/konfiguraattori/", ostat:"/mista-ostat/", pilarit:"/bce-pilarit/",
@@ -140,7 +140,7 @@ const JAETTU={
 
   /* Heron toissijainen CTA on ankkuri moduuliin 4: vastaväite tässä kohtaa on
      "voinko tehdä tämän itse", ei "mistä ostan". Teksti ei ole speksissä. */
-  hero_cta2:["Näin se tehdään","#tekeminen","cta_tekeminen_ankkuri"],
+  hero_cta2:["Näin se tehdään","#tekeminen","cta_sivuankkuri"],
 
   /* Heron kuvabrief on rakennetta, kuvateksti on sisältöä. Siksi tämä on jaettu ja
      moduulin 2 kuvatekstit ovat sivukohtaisia. */
@@ -183,7 +183,7 @@ const JAETTU={
   shared_frost_text:TB,
   shared_winter_text:TB,
 
-  shared_accessory_note:"Tarvikkeet unohtuvat useimmin, ja se huomataan vasta kun pilarit tulevat pihaan. Mitoitus laskee ne valmiiksi samaan listaan pilarien kanssa.",
+  shared_accessory_note:"Tarvikkeet unohtuvat useimmin, ja se huomataan vasta kun pilarit tulevat pihaan. Ne tulevat samaan listaan pilarien kanssa, kun suunnittelet perustuksen.",
   tarvikkeet_linkki:["Katso kaikki tarvikkeet","/pilarien-kiinnitystarvikkeet/","cta_tarvikkeet"],
 
   /* Moduuli 8. Ei hintoja eikä lukuja. Kolmas osa ei ole speksin kenttälistassa. */
@@ -266,7 +266,7 @@ const KOHTEET={
     focus:{aihe:"tuulikuorma", heading:TB,
       body:"Autokatos on kantava rakenne: sen päällä on katto, ja talvella katolla on lunta. Lisäksi autokatos on avoin rakenne, joten tuuli tarttuu siihen enemmän kuin umpinaiseen rakennukseen. Molemmat kuormat kohdistuvat perustukseen."},
 
-    step_first:{h:"Merkitse pilarien paikat", p:"Pilarien määrä ja jako riippuvat katoksen koosta ja käytetystä palkista. Mitoitus laskee molemmat puolestasi.",
+    step_first:{h:"Merkitse pilarien paikat", p:"Pilarien määrä ja jako riippuvat katoksen koosta ja käytetystä palkista. Saat molemmat valmiina, kun suunnittelet perustuksen.",
       img:"Kuva: pilarien paikat merkittynä tontille"},
     step_last:{h:"Jatka runkoon samana päivänä", p:"Perustus on valmis heti. Betonin kuivumista ei odoteta, eikä sää siirrä työtä.",
       img:"Kuva: autokatoksen runko nousee valmiin perustuksen päälle"},
@@ -277,7 +277,7 @@ const KOHTEET={
     primary_model:["KP-pilari","/bce-pilarit/kp-pilari/"],
     exception_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
     exception_condition:"Pieneen ja matalaan katokseen riittää joissain tapauksissa TP-pilari.",
-    quantity_drivers:"Sinun ei tarvitse laskea kuormia. Kerro katoksen mitat ja katemateriaali, niin mitoitus valitsee mallin, määrän ja jaon.",
+    quantity_drivers:"Sinun ei tarvitse laskea kuormia. Kerro katoksen mitat ja katemateriaali, niin saat mallin, määrän ja jaon valmiina.",
     /* docs/kuvat/asennus-kp-b.png on ehdolla: A-601:n mukainen leikkaus KP-pilarista
        maassa. Ei käytetä ennen kuin kuvat/README.md:n avoin kohta on kysytty. */
     model_image:"Kuva: KP-pilari asennettuna autokatoksen nurkkaan, niskapalkki kengän varassa",
@@ -305,7 +305,7 @@ const KOHTEET={
     requires_permit:false, permit_body:null,
 
     faq_local:[
-      ["Montako pilaria autokatokseen tarvitaan?","Määrä riippuu katoksen leveydestä, pituudesta ja käytetystä niskapalkista. Kuusi metriä leveä kaksipaikkainen katos vaatii tyypillisesti kahdeksan pilaria. Mitoitus laskee määrän kohteesi mitoilla."]],
+      ["Montako pilaria autokatokseen tarvitaan?","Määrä riippuu katoksen leveydestä, pituudesta ja käytetystä niskapalkista. Kuusi metriä leveä kaksipaikkainen katos vaatii tyypillisesti kahdeksan pilaria. Saat oman määräsi kohteesi mitoilla."]],
 
     references:[]},
 
@@ -642,7 +642,12 @@ const KOHTEET={
       if(!d.open)return;
       d.dataset.event="avaus_ukk";
       d.dataset.kohde=K.nimi;
-      d.dataset.kysymys=d.querySelector("summary").textContent.replace("▾","").trim();
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
     });
   });
 })();

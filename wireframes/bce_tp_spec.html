@@ -61,10 +61,10 @@
    8 "läpinäkyvä tausta myös tähän" → konfiguraattorikuvan valkoinen pohja pois
      (korjaus tuli jaettuun bce-v4.css:ään)
 
-   Poikkeama speksistä, tietoinen: konfiguraattorin painike on kaikkialla
-   "Laske pilarien määrä" eikä speksin "Selvitä montako tarvitset" / "Aloita",
-   koska etusivu ja koontisivu käyttävät jo tuota nimeä ja Hero-opin kohta 3
-   vaatii yhden nimen joka paikkaan. */
+   Konfiguraattorin painike on kaikkialla "Suunnittele perustus" (päätös 23.9.2026),
+   ei speksin "Selvitä montako tarvitset" / "Aloita" / "Mitoita perustus" eikä 16.9.
+   päätettyä "Laske pilarien määrä". Hero-opin kohta 3 vaatii yhden nimen joka
+   paikkaan, ja tämä on se nimi myös navigaatiossa ja footerissa. */
 const C={
   crumb:[["Etusivu","/"],["Pilarit","/bce-pilarit/"],["TP-pilari",null]],
 
@@ -81,9 +81,9 @@ const C={
   hero:{h1:"TP-pilari",
     sub:"Terassit, pienmökit ja saunat",
     lede:"TP-pilari on BCE:n yleisin perustuspilari. Se kantaa terassin, pienmökin tai saunan ja nostetaan paikalleen kahden ihmisen voimin ilman konetta.",
-    cta:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori","hero"],
+    cta:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori","hero"],
     /* Ankkuri on ammattilaisen reitti. Ilman sitä hän vierittää turhaan. */
-    anchor:["Hyppää mittoihin","#mitat","cta_mitat_ankkuri"],
+    anchor:["Hyppää mittoihin","#mitat","cta_sivuankkuri"],
     /* Pääkuva on valokuva käyttöyhteydestä eikä piirros. Hero myy kohteen, ei
        tuotetta; tuotetta varten pikkukuvia on neljä (TUOTEKUVAT.md luku 3). */
     img:"Tuotekuva: TP-pilari asennettuna terassin perustuksena",
@@ -317,7 +317,7 @@ const C={
        merkitty tyyppiriville, ei tilamerkintänä, koska kieli on osa sitä mitä lataa.
        AP:lle DWG:tä ei ole lainkaan; neljästä perheestä kolmella on. DoP jää auki.
        Aineisto: ../aineisto-taustamatskut-2026-09-18.md luku 4. */
-    docs:[["Mittapiirustukset","DWG · 2D ja 3D","lataus_dwg",null],
+    docs:[["Mittapiirustukset","DWG · 2D ja 3D","lataus_dokumentti",null],
       ["Asennusperiaate A-601","PDF · FI, SV, EN","lataus_dokumentti",null],
       ["Suoritustasoilmoitus (DoP)","PDF","lataus_dokumentti","[TÄYTETTÄVÄ]"],
       ["Tuote-esite","PDF · FI","lataus_dokumentti",null]]},
@@ -345,11 +345,11 @@ const C={
   cfg:{h2:"Montako TP-pilaria tarvitset?",
     ing:"Kerro mitä rakennat ja mitkä ovat mitat. Saat listan pilareista ja tarvikkeista, jonka voit ottaa mukaan rautakauppaan.",
     alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
-    cta:"Laske pilarien määrä",
+    cta:"Suunnittele perustus",
     sub:"Kestää muutaman minuutin. Et tarvitse kuormalaskelmia."},
 
   /* 9 · Mistä saat. Sama lista joka sivulla, tasapuolisesti: sama järjestys, sama
-     koko, ei korostuksia. data-dealer on pakollinen, muuten tasapuolisuutta ei voi
+     koko, ei korostuksia. data-jalleenmyyja on pakollinen, muuten tasapuolisuutta ei voi
      todentaa. */
   /* Jälleenmyyjät ovat ostolaatikossa painikkeina. Sivun lopussa ei toisteta samaa
      neljää nimeä, vaan ohjataan jälleenmyyjähakuun, jossa on aluevalinta ja kartta. */
@@ -521,7 +521,7 @@ const C={
           'data-koodi="'+E(r[0])+'" data-ean="'+E(r[9])+'">'+E(C.dims.copyEan)+"</button></td></tr>").join("")+
         "</tbody></table></div>"+
       '<p class="fine">'+E(C.dims.note)+"</p>"+
-      '<p class="dims-act"><a class="more" href="'+L("/ohjeet/suunnittelijalle/")+'" data-event="lataus_dwg">'+
+      '<p class="dims-act"><a class="more" href="'+L("/ohjeet/suunnittelijalle/")+'" data-event="cta_suunnittelijalle">'+
         arrow(C.dims.dwg)+"</a></p></div>"+
       '<div class="mkcol">'+
         '<figure class="mk" role="img" aria-label="'+E(C.dims.figAlt)+'" id="kaavio">'+
@@ -606,8 +606,6 @@ const C={
     '<div><a class="btn btn-1" href="'+L("/yhteystiedot/tarjouspyynto/")+'" data-event="cta_yhteydenotto">'+
     E(C.big.cta)+"</a>"+
     '<p class="sub">'+T(C.big.sub)+"</p></div></div>","yhteys");
-
-  /* Alapalkki tulee kuoresta (SPEC.bar) 16.9.2026 lähtien, sama joka sivulla. */
 
   /* Kuittaus näkyy tekstissä, ei pelkkänä reunavärinä: kopiointi on jälleenmyyjän
      myyjän oma mittari, ja hiljainen onnistuminen näyttää epäonnistumiselta.

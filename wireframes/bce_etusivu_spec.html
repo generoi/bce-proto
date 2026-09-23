@@ -34,7 +34,7 @@ const C={
      mainoskävijän; se on ohitettu erikseen annetulla päätöksellä. */
   hero:{h1:"Valmiit perustuspilarit",
     lede:"Pilarit tulevat tehtaalta valmiiksi valettuina, joten omaa valua ei tarvita. Ne lasketaan sorapatjan päälle, ja terassin tai autokatoksen perustus on valmis saman päivän aikana. Toimii myös rinteessä.",
-    cta1:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
+    cta1:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori"],
     cta2:["Katso käyttökohteet","#valitse","cta_kayttokohteet"],
     /* Jälleenmyyjät tulevat kuoresta (SPEC.dealers): sama lohko kuin ostolohkossa,
        ja jokainen on aito linkki ketjun verkkokauppaan. */
@@ -82,12 +82,14 @@ const C={
       ["PP-pilari — pylvään ja tolpan jalusta","Ei rakennuksen perustus. Jalusta yksittäiselle pylväälle tai tolpalle: lipputanko, pihavalaisin, aitatolppa.","PP","Katso PP","/bce-pilarit/pp-pilari/"]],
     },
 
-  /* Konfiguraattorin oma lohko. Toiminnolla on yksi nimi: "Laske pilarien määrä",
-     sama kuin herossa. Kuvassa näkyy lopputulos, ei työkalu. */
+  /* Konfiguraattorin oma lohko. Toiminnolla on yksi nimi: "Suunnittele perustus",
+     sama kuin herossa, navigaatiossa ja alapalkissa (päätös 23.9.2026; aiempi
+     "Laske pilarien määrä" toimi painikkeena muttei valikkokohtana). Kuvassa
+     näkyy lopputulos, ei työkalu. */
   cfg:{h2:"Näet heti montako pilaria ja mitkä tarvikkeet",
     ing:"Kerro mitä rakennat ja kohteen mitat. Saat sijoittelukaavion, pilarimäärän ja tarvikelistan kappalemäärineen.",
     alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
-    cta:"Laske pilarien määrä",
+    cta:"Suunnittele perustus",
     sub:"Vastaat muutamaan kysymykseen kohteestasi."},
 
   /* Kommentti 5: pilarit + tarvikkeet prosessina, ei kahtena rinnakkaisena osana.
@@ -266,7 +268,7 @@ const C={
   sect(head(C.cases.h2)+'<div class="cases">'+
     C.cases.items.map(c=>'<div class="case"><div class="im">'+E(c[2])+"</div><h3>"+E(c[0])+"</h3><p>"+E(c[1])+"</p>"+
       '<a class="more" href="'+E(SPECLINK(c[3]))+'" data-event="klikkaus_referenssi">'+arrow(C.cases.link)+"</a></div>").join("")+
-    '</div><p class="next"><a class="more" href="'+E(SPECLINK("/referenssit/"))+'" data-event="klikkaus_referenssit_kaikki">'+arrow(C.cases.all)+"</a></p>")+
+    '</div><p class="next"><a class="more" href="'+E(SPECLINK("/referenssit/"))+'" data-event="cta_referenssit">'+arrow(C.cases.all)+"</a></p>")+
 
   /* 6 · Mistä saat pilarit — yksi jälleenmyyjälista, ei kahta */
   sect(head(C.buy.h2,C.buy.ing)+
@@ -280,7 +282,7 @@ const C={
   /* 8 · Rakentajan opas */
   sect('<div class="guide"><div>'+head(C.guide.h2,C.guide.p)+
       '<form onsubmit="return false"><input class="field" type="email" aria-label="'+E(C.guide.field)+'" placeholder="'+E(C.guide.field)+'">'+
-      '<button class="btn btn-1" type="submit" data-event="lataus_opas">'+E(C.guide.cta)+"</button></form>"+
+      '<button class="btn btn-1" type="submit" data-event="lataus_dokumentti">'+E(C.guide.cta)+"</button></form>"+
       '<p class="fsub">'+E(C.guide.sub)+"</p></div>"+
     '<div class="ph">'+E(C.guide.img)+"</div></div>")+
 

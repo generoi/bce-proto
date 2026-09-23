@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Laske pilarien määrä — BCE Pilarimaailma</title>
+<title>Suunnittele perustus — BCE Pilarimaailma</title>
 <meta name="robots" content="noindex, nofollow">
 <!-- Sivuston tyylit ENNEN laskurin omia: laskurin <style> on saman design systemin
      osajoukko samoilla luokkanimillä (.btn, .lbl, .lede, .fine), joten se saa jäädä
@@ -173,7 +173,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
    korkuinen. */
 [data-tila="tuotanto"] .panel{min-height:0}
 [data-tila="tuotanto"] .stage{padding:var(--s5) var(--s5) var(--s7)}
-/* Kuoren «Laske pilarien määrä» osoittaisi tällä sivulla sivulle itselleen.
+/* Kuoren «Suunnittele perustus» osoittaisi tällä sivulla sivulle itselleen.
    Umpikuja on pahempi kuin puuttuva painike: sivun toiminto on paneelissa. */
 [data-tila="tuotanto"] .hdr-cta{display:none}
 /* Konfiguraattorissa edetessä sivuston valikkoa ei tarvita, ja tarttuvana se
@@ -635,7 +635,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 
        tuotanto (oletus)   Sivuston sivu /konfiguraattori/. Sivuston kuori,
                            murupolku ja alatunniste; työpajan yläpalkki piilossa.
-                           Tämä on se, minkä «Laske pilarien määrä» avaa.
+                           Tämä on se, minkä «Suunnittele perustus» avaa.
        tyopaja (?tyopaja=1) Työpajaprototyypin oma näkymä: säätöpaneelin kytkin,
                            kielivalinta ja versiotunnus. Sivuston kuori piilossa.
 
@@ -665,7 +665,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 <nav class="crumb"><div class="w"></div></nav>
 <main id="main">
   <div class="w kf-yla">
-    <h1>Laske pilarien määrä<span class="kf-beta">beta</span></h1>
+    <h1>Suunnittele perustus<span class="kf-beta">beta</span></h1>
     <p class="lede">Kerro mitä rakennat ja kohteen mitat.</p>
   </div>
   <div class="stage" id="stage">
@@ -677,7 +677,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 
 <script>
 /* Sivuston kuori vain tuotantotilassa. Kuoren alapalkkia ei pyydetä (bar:false):
-   sen ensisijainen toiminto on «Laske pilarien määrä», ja tällä sivulla se osoittaisi
+   sen ensisijainen toiminto on «Suunnittele perustus», ja tällä sivulla se osoittaisi
    sivulle itselleen. Mobiilissa palkki veisi myös sen pystytilan, jossa laskuri
    tekee työnsä. */
 (function(){
@@ -687,7 +687,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
     return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   };
-  SPECSHELL(E, { crumb:[['Etusivu','/'], ['Laske pilarien määrä']], bar:false });
+  SPECSHELL(E, { crumb:[['Etusivu','/'], ['Suunnittele perustus']], bar:false });
 })();
 </script>
 
@@ -1579,6 +1579,10 @@ function next(){
 }
 function back(){
   if (!HIST.length) return;
+  /* Paluu on epäröinnin ainoa suora mittari. Ilman tätä tapahtumaa palatun askeleen
+     erottaa datassa vain siitä, että laskuri_step toistuu samalla askeleella — ja se
+     tulkinta menee rikki heti kun askeljärjestys muuttuu rakennustyypin mukaan. */
+  push('laskuri_back', { askel:SCREEN, paluu:HIST[HIST.length - 1] });
   SCREEN = HIST.pop();
   SUUNTA = 'taakse';
   naytaRuutu();
@@ -1586,11 +1590,11 @@ function back(){
 function toResult(){
   RESULT = compute(state, RULES, LANG);
   if (RESULT.handoff){
-    push('laskuri_handoff', { code:RESULT.handoff.code, building:state.building, area:RESULT.area });
+    push('laskuri_handoff', { syy:RESULT.handoff.code, rakennus:state.building, pinta_ala:RESULT.area });
     go('handoff');
   } else {
-    push('laskuri_result', { family:RESULT.family, n:totalPillars(RESULT), area:RESULT.area,
-                             building:state.building, handoff:false });
+    push('laskuri_result', { perhe:RESULT.family, maara:totalPillars(RESULT), pinta_ala:RESULT.area,
+                             rakennus:state.building });
     go('result');
   }
 }
@@ -2800,7 +2804,7 @@ phone.addEventListener('click', function(e){
       state.mass = null; state.massValue = 0;
       state.poles = (v === 'katos') ? 4 : 2;
     }
-    push('laskuri_step', { step:SCREEN, value:v });
+    push('laskuri_step', { askel:SCREEN, arvo:v });
     render();
     /* Jokaisella klikkiruudulla on tasan yksi kysymys, joten valinta vie eteenpäin
        eikä erillistä Jatkaa tarvita. Viive jättää valinnan näkyviin hetkeksi.
@@ -2825,9 +2829,9 @@ phone.addEventListener('click', function(e){
   }
   /* Linkki saa navigoida itse: tässä vain mitataan. Sama tapahtumanimi kuin sivuston
      muilla Mistä ostat -linkeillä, jotta ne laskeutuvat samaan mittariin. */
-  if (a === 'mistaostat'){ push('cta_mista_ostat', { from:'laskuri_tulos' }); return; }
+  if (a === 'mistaostat'){ push('cta_mista_ostat', { sijainti:'laskuri_tulos' }); return; }
   if (a === 'expert'){
-    push('laskuri_handoff', { code:'epavarma', building:state.building, area:RESULT ? RESULT.area : null });
+    push('laskuri_handoff', { syy:'epavarma', rakennus:state.building, pinta_ala:RESULT ? RESULT.area : null });
     if (RESULT) RESULT.handoff = null;
     go('handoff');
     return;
@@ -2835,7 +2839,7 @@ phone.addEventListener('click', function(e){
   if (a === 'sendlead'){
     var payload = { email:state.email, postcode:state.postcode, tips:!!state.tips, state:state, result:RESULT };
     console.log('[bce-pilarilaskuri] liidi, ei oikeaa lähetystä:', payload);
-    push('laskuri_lead', { has_postcode:!!state.postcode, tips:!!state.tips });
+    push('laskuri_lead', { postinumero_annettu:!!state.postcode, vinkit:!!state.tips });
     SNOWDELTA = null;
     if (state.building === 'katos' && state.postcode){
       var before = RESULT, after = compute(state, RULES, LANG);
@@ -2850,7 +2854,7 @@ phone.addEventListener('click', function(e){
   if (a === 'sendhandoff'){
     console.log('[bce-pilarilaskuri] yhteydenotto, ei oikeaa lähetystä:',
       { contact:state.contact, message:state.message || handoffPlaceholder(), state:state, result:RESULT });
-    push('laskuri_lead', { has_postcode:false, tips:false });
+    push('laskuri_lead', { postinumero_annettu:false, vinkit:false });
     SENT = 'handoff'; render();
     return;
   }
