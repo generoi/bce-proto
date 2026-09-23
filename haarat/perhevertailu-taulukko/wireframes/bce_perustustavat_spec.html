@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perustustavat vertailussa: valu, harkko, paalu vai valmispilari | BCE</title>
+<meta name="description" content="Kevyen rakennuksen perustuksen voi tehdä neljällä tavalla. Vertaa aikaa, kalustoa ja osaamista, ja katso milloin kukin on oikea valinta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+/* Vertailusivu /pilariperustus/perustustavat/. Copy asiakkaalta 18.9.2026.
+
+   Sivutyyppikortti 11 (Harkko vai valmispilari). Tehtävä: voittaa kategoriavalinta
+   ennen kuin valmistajavalinta on edes esillä. Kortin todiste: harkko 309 + paalu 147
+   = 456 näyttöä ja nolla klikkiä, eli vahvin argumentti ilman sisältöä.
+   Valmistajavertailuhakuja on koko vuonna yksi (Benders 4 kyselyä, 0 klikkiä), joten
+   kilpailija on menetelmä eikä toinen pilarivalmistaja.
+
+   Kortin reunaehto "älä lupaa kotimaisuutta" on noudatettu: sivulla ei ole sanaa
+   kotimainen. Pilari valmistetaan Suomessa, mutta raudat ja osa tarvikkeista eivät.
+
+   Sivun paikka rakenteessa. Sivukartan luku 0.1 tuntee /pilariperustus/-sivun mutta ei
+   tätä lasta, joten osoite on ehdotus ja se on vahvistettava asiakkaalta. Prototyypissä
+   sivulle kävellään luurankosivun /pilariperustus/ lapsilistalta (bce_sivu_spec.html,
+   avain "perustustavat"); päävalikkoon sitä ei ole lisätty, koska Perustuksen teko
+   -pudotus on kuusi käyttökohdetta ja seitsemäs, toisenlainen kohta on navigaatiopäätös
+   eikä sivun tekijän päätös.
+
+   Neljä ratkaisua, jotka poikkeavat tavanomaisesta tai on tehty speksin päälle:
+
+   1) EI ORANSSIA PAINIKETTA KÄRJESSÄ. Speksi antaa ensisijaisen toiminnon vasta
+      moduulissa 8, ja se on oikein: lukija ei ole vielä valinnut kategoriaa, joten
+      mitoituspainike kärjessä kysyisi päätöstä ennen perusteluja. Sama ratkaisu ja sama
+      perustelu kuin /mista-ostat/-sivulla. Ensisijainen toiminto on näkyvissä
+      mobiilissa kuoren alapalkissa (80,9 % istunnoista) ja työpöydällä ylätunnisteessa.
+
+   2) KÄRJEN HAKEMISTO. Yksittäiset menetelmät haetaan omilla nimillään, joten sivulle
+      laskeudutaan keskeltä: kävijä etsii harkkoa eikä vertailua. .idx-hakemisto vie
+      suoraan oikeaan lohkoon. Sama komponentti kuin /mista-ostat/-sivulla.
+
+   3) OTSIKOT OVAT MENETELMIEN NIMIÄ, EIVÄT VÄITTEITÄ. Etusivun oppi sanoo, että otsikko
+      on väite eikä aihe. Tässä speksi ohittaa sen tietoisesti: H2 on hakusana, ja juuri
+      se nappaa kyselyt pilariharkko ja paaluperustus. Sivun H1 ei niitä nappaa.
+
+   4) NELJÄ MENETELMÄÄ ESITETÄÄN SAMALLA TAVALLA. Yhdellekään ei ole kuvaa, ei nostoa
+      eikä omaa leiskaa. Valmispilarin lohkoon olisi ollut tarjolla aito tuotekuva, mutta
+      se olisi tehnyt yhdestä neljästä mainoksen ja vienyt sivulta sen, minkä varassa se
+      seisoo. Sivun uskottavuus on moduulissa 7, ja se kestää vain jos vertailu on
+      symmetrinen.
+
+   Lohko 7 on sivun tärkein ja samalla se, jota ei ole vahvistettu. Neljä rajausta ovat
+   loogista päättelyä tuotetiedoista, eivät BCE:n kirjaamaa kantaa. Kuormaluku 5 000 kg
+   on samaa lajia kuin TP-perhesivun 1 600 kg eli nykysivuston oma "suositeltu
+   enimmäiskuormitus", ei A-601:n rakenteellinen 70 kN. Kahta yksikköä ei esitetä samalla
+   sivulla, ja kuluttajalle luku on kiloina: 1 526 hakukyselystä nolla sisältää kN-lukemaa.
+
+   Kolme muuta vahvistamatonta väitettä, kaikki kilpailevista menetelmistä. Näitä ei ole
+   merkitty sivulle, koska teksti ei puutu — se on kirjoitettu mutta tarkistamatta, ja
+   merkintä [TÄYTETTÄVÄ] tarkoittaa tällä sivustolla puuttuvaa tietoa:
+     · ruuvipaalun kalustovaatimus ja soveltumattomuus kalliolle
+     · pilariharkon kaksi päivää — luku tulee BCE:n omasta mainonnasta, jossa se on
+       koeajettu yhdeksässä mainoksessa keväällä 2026; se ei ole mitattu
+     · valubetonin kuivumisaika ennen kuormitusta — lukua ei ole kirjoitettu lainkaan,
+       koska sitä ei voi vahvistaa
+
+   Jaettu sisältö. Moduuli 6 käyttää kahta jaettua tekstiä (shared_no_digging,
+   shared_winter_text) sanasta sanaan siinä muodossa, jossa ../jaettu-sisalto.md ne
+   kirjoittaa. Se muoto eroaa käyttökohdesivun omasta: speksi mainitsee routaeristeen ja
+   vastaa samalla kysymykseen miksi tässä sitten kaivetaan. Ero ratkaisee juuri tällä
+   sivulla, koska "ei tarvitse kaivaa" on tässä kilpailuväite eikä tuotetieto — ilman
+   routaeristettä lukija päättelee, ettei kaivuuta tarvita lainkaan. Kun jaettu sisältö
+   saa oman lähteensä, nämä kaksi riviä poistuvat C-objektista.
+
+   Speksin kolmas jaettu pala, shared_method_comparison, on tämän sivun argumentti
+   kompaktina lohkona etusivulle ja käyttökohdesivuille. Sitä ei ole tehty tässä: se on
+   uusi lohko hyväksytylle etusivulle ja kuuluu esitettäväksi omanaan. Teksti on
+   valmiina ../jaettu-sisalto.md:ssä, ja tämä sivu on sen lähde.
+
+   Jälleenmyyjälohkoa ja konfiguraattoripaneelia ei ole. Sivu ei myy tuotetta vaan
+   ratkaisee menetelmän; ostopaikka ja mitoitus ovat seuraavan sivun asioita, ja
+   molempiin pääsee kuoren alapalkista. */
+const C={
+  crumb:[["Etusivu","/"],["Perustuksen teko","/pilariperustus/"],["Perustustavat vertailussa",null]],
+  /* Speksin copy-sääntö: konfiguraattori on "Mitoita perustus" (C.loppu.cta1).
+     Kuori sanoo "Laske pilarien määrä" (päätös 16.9.2026), joten samalla ruudulla on
+     kaksi nimeä. Sama avoin kohta kuin käyttökohdesivulla. */
+
+  /* 1 · Kärki. Ei oranssia painiketta (ks. ratkaisu 1 yllä). Hakemisto vie viiteen
+     lohkoon: neljä menetelmää ja rajauslohko, joka on kärjen lupaus. */
+  hero:{h1:"Perustustavat vertailussa",
+    lede:"Terassin, autokatoksen tai mökin perustuksen voi tehdä neljällä tavalla. Ne eroavat toisistaan ennen kaikkea siinä, kuinka kauan työ kestää, mitä kalustoa se vaatii ja voiko sen tehdä itse. Alla jokainen menetelmä, ja lopussa rehellinen vastaus siihen milloin valmispilari ei ole oikea valinta.",
+    idx:"Tällä sivulla"},
+  jump:[["Paikallavalu","#valu"],["Pilariharkko","#harkko"],["Ruuvipaalu","#paalu"],
+        ["Valmispilari","#valmispilari"],["Milloin valmispilari ei ole oikea valinta","#rajat"]],
+
+  /* 2 · Taulukko. Ensimmäinen sarakeotsikko "Perustustapa" on lisätty speksin tyhjään
+     kulmaan: rivin nimi on th[scope=row], ja ilman otsikkoa sarake jää ruudunlukijalle
+     nimeämättä. Kolme saraketta, ei neljää — hintasaraketta ei ole, ja syy sanotaan
+     taulukon jälkeen ääneen, koska sen puuttuminen on kysymys jonka lukija esittää. */
+  taulukko:{h2:"Neljä tapaa, lyhyesti",
+    cols:["Perustustapa","Kesto","Kalusto","Sää"],
+    rows:[
+      ["Paikallavalu","Useita päiviä","Muotit, sekoitus tai valmisbetoni","Rajoittaa"],
+      ["Pilariharkko","Noin 2 päivää","Harkot, raudoitus, betoni","Rajoittaa"],
+      ["Ruuvipaalu","Yksi päivä","Asennuskone, yleensä urakoitsija","Ei juuri rajoita"],
+      ["Valmispilari","Yksi päivä","Ei erikoiskalustoa","Ei rajoita"]],
+    note:"Taulukossa ei ole hintasaraketta. Hinnat ovat kauppiailla, ja kustannusero syntyy joka tapauksessa kokonaisuudesta eikä kappalehinnasta."},
+
+  /* 3–6 · Neljä menetelmää samassa muodossa: H2 on hakusana, sitten kappaleet.
+     Ei kuvia, ei nostoja, ei linkkejä kolmessa ensimmäisessä — vertailu on symmetrinen
+     tai se ei ole vertailu (ks. ratkaisu 4 yllä). */
+  tavat:[
+    {id:"valu", h2:"Paikallavalu",
+     ps:["Perustus muotitetaan ja valetaan paikan päällä. Menetelmä on tuttu ja se taipuu mihin tahansa muotoon, mutta se on myös hitain ja sääriippuvaisin.",
+         "Työhön tarvitaan muotit, raudoitus ja betoni joko sekoitettuna tai valmiina toimitettuna. Betoni tarvitsee kuivumisaikaa ennen kuin rakennetta voi kuormittaa, eli runkotyö odottaa. Pakkanen ja sade siirtävät työtä.",
+         "Kustannus ei ole vain materiaali. Valukalusto maksaa satoja euroja, ja tee-se-itse-rakentaja käyttää sitä kerran kymmenessä vuodessa."]},
+    {id:"harkko", h2:"Pilariharkko",
+     ps:["Harkot ladotaan, raudoitetaan ja täytetään betonilla. Menetelmä on kevyempi kuin täysi valu ja harkot saa kannettua itse, mutta työ on silti märkää ja monivaiheista.",
+         "Käytännössä harkkoperustus valmistuu noin kahdessa päivässä, kun valmispilariperustus valmistuu yhdessä. Ero syntyy siitä, että harkkoa ei voi kuormittaa heti."]},
+    {id:"paalu", h2:"Ruuvipaalu",
+     ps:["Teräspaalu kierretään maahan koneella. Nopea ja toimii pehmeällä maalla, jossa muut menetelmät vaativat massanvaihtoa.",
+         "Käytännön este tee-se-itse-rakentajalle on kalusto: asennus vaatii yleensä urakoitsijan, jolloin aikataulu riippuu jonkun toisen kalenterista. Kallioisella tontilla menetelmä ei toimi."]}],
+
+  /* 6 · Valmispilari. Kaksi keskimmäistä kappaletta ovat jaettua sisältöä ja sanasta
+     sanaan samat kuin käyttökohdesivun maapohjalohkossa. Ainoa menetelmä, jolla on
+     linkki eteenpäin — ja se on pakko olla, koska tuoteperhesivu on seuraava askel. */
+  valmis:{id:"valmispilari", h2:"Valmispilari",
+    p1:"Betonipilari valetaan tehtaalla mittaan ja toimitetaan valmiina. Työmaalla pilari nostetaan sorapatjan päälle ja rakenne kiinnitetään pilarin valmiiseen kierteeseen.",
+    nodig:"Pilaria ei tarvitse kaivaa maahan. Leveä pohja asettuu tukevasti routaeristeen ja sorapatjan päälle. Kaivuutyötä tarvitaan routaeristystä varten, ei pilaria varten.",
+    p2:"Perustus on valmis samana päivänä. Ei muotteja, ei sekoitusta, ei kuivumisen odottamista. Korkeutta säädetään tarvikkeiden säätövaralla, joten rinne, kallio tai epätasainen piha ei vaadi erikoiskalustoa.",
+    talvi:"Perustuksen voi tehdä myös talvella. Valmis pilari ei tarvitse kuivumislämpötilaa eikä sulaa säätä, toisin kuin paikalla valettu perustus. Maa on kaivettava auki, mutta itse perustus valmistuu normaalisti.",
+    cta:["Katso pilariperheet","/bce-pilarit/","cta_tuotteet"]},
+
+  /* 7 · Rajaukset. Sivun tärkein lohko: se on ainoa syy, miksi lukija uskoo muun.
+     Ensimmäinen rajaus luovuttaa JeKille, koska umpinainen alareuna on sen tuote.
+     Muodoksi valittiin pistelista eikä väiteruudukko: ikoni tekisi rajauksesta
+     myyntiargumentin, ja neljä keksittyä ikonia ei lue 34 pikselissä. */
+  rajat:{h2:"Milloin valmispilari ei ole oikea valinta",
+    items:[
+      {b:"Lämmitetty rakennus, jossa lattia tulee maata vasten.",
+       p:"Pilariperustus jättää rakennuksen alle avointa tilaa. Jos halutaan umpinainen alareuna, ratkaisu on sokkeli.",
+       /* Sama linkkiteksti kuin etusivun JeKi-lohkossa: yksi kohde, yksi nimi. */
+       link:["Katso JeKi-sokkeli","/jeki-sokkeli/","klikkaus_jeki"]},
+      {b:"Kuorma ylittää valikoiman.",
+       p:"KP-pilarin suositeltu enimmäiskuormitus on 5 000 kg. Sitä suuremmat rakenteet vaativat muun perustustavan."},
+      {b:"Erittäin pehmeä maapohja.",
+       p:"Jos kantava kerros on syvällä, ruuvipaalu tai paalutus on oikeampi."},
+      {b:"Rakennesuunnittelija tai rakennusvalvonta edellyttää muuta.",
+       p:"Luvanvaraisessa kohteessa suunnitelma ratkaisee."}]},
+
+  /* 8 · Lopetus. Yksi oranssi painike, toissijainen tekstilinkkinä. Toissijainen vie
+     Perustuksen teko -haaraan, joka vastaa kysymykseen miten; tämä sivu vastasi
+     kysymykseen mikä ja miksi. */
+  loppu:{h2:"Näin pääset eteenpäin",
+    p:"Jos valmispilari on oikea valinta kohteeseesi, mitoitus kertoo montako pilaria tarvitset, mikä malli ja millä jaolla.",
+    cta1:["Mitoita perustus","/konfiguraattori/","cta_konfiguraattori"],
+    cta2:["Katso miten perustus tehdään","/pilariperustus/","cta_kayttokohteet"]}
+};
+
+(function(){
+  "use strict";
+  const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+  const L=u=>E(SPECLINK(u));
+  /* Kuoren oletuspari kelpaa: sivun ensisijainen toiminto on mitoitus ja toissijainen
+     ostopaikka, samassa järjestyksessä kuin palkissa. */
+  SPECSHELL(E,{crumb:C.crumb,active:"Perustuksen teko"});
+  const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
+  const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
+  const arrow=t=>E(t)+" →";
+  const down=t=>E(t)+' <span aria-hidden="true">↓</span>';
+  const more=(l,sij)=>'<a class="more" href="'+L(l[1])+'" data-event="'+E(l[2])+'"'+
+    (sij?' data-sijainti="'+E(sij)+'"':"")+">"+arrow(l[0])+"</a>";
+
+  document.getElementById("main").innerHTML=
+
+  /* 1 · Kärki ja hakemisto */
+  '<div class="w"><section class="lead">'+
+    "<div><h1>"+E(C.hero.h1)+'</h1><p class="lede">'+E(C.hero.lede)+"</p></div>"+
+    '<nav class="idx" aria-label="'+E(C.hero.idx)+'"><p class="lbl">'+E(C.hero.idx)+"</p>"+
+      C.jump.map(j=>'<a href="'+E(j[1])+'" data-event="cta_sivuankkuri" data-kohde="'+E(j[0])+'">'+
+        down(j[0])+"</a>").join("")+"</nav></section></div>"+
+
+  /* 2 · Neljä tapaa, lyhyesti. Rivin nimi on th[scope=row]; data-lbl kantaa
+     sarakeotsikon kapealle näytölle, jossa thead on piilotettu. */
+  sect(head(C.taulukko.h2)+
+    '<div class="tw"><table class="data stack"><thead><tr>'+
+      C.taulukko.cols.map(c=>"<th>"+E(c)+"</th>").join("")+"</tr></thead><tbody>"+
+      C.taulukko.rows.map(r=>"<tr><th scope=\"row\">"+E(r[0])+"</th>"+
+        r.slice(1).map((v,i)=>'<td data-lbl="'+E(C.taulukko.cols[i+1])+'">'+E(v)+"</td>").join("")+
+        "</tr>").join("")+"</tbody></table></div>"+
+    '<p class="next">'+E(C.taulukko.note)+"</p>","taulukko")+
+
+  /* 3–5 · Paikallavalu, pilariharkko, ruuvipaalu */
+  C.tavat.map(t=>sect(head(t.h2)+t.ps.map(p=>"<p>"+E(p)+"</p>").join(""),t.id)).join("")+
+
+  /* 6 · Valmispilari. Kappaleet 2 ja 4 ovat jaettua sisältöä. */
+  sect(head(C.valmis.h2)+
+    "<p>"+E(C.valmis.p1)+"</p><p>"+E(C.valmis.nodig)+"</p>"+
+    "<p>"+E(C.valmis.p2)+"</p><p>"+E(C.valmis.talvi)+"</p>"+
+    '<p class="next">'+more(C.valmis.cta)+"</p>",C.valmis.id)+
+
+  /* 7 · Milloin valmispilari ei ole oikea valinta */
+  sect(head(C.rajat.h2)+'<ul class="uses">'+C.rajat.items.map(x=>"<li><b>"+E(x.b)+"</b> "+
+    T(x.p)+(x.link?' <a href="'+L(x.link[1])+'" data-event="'+E(x.link[2])+'">'+arrow(x.link[0])+"</a>":"")+
+    "</li>").join("")+"</ul>","rajat")+
+
+  /* 8 · Näin pääset eteenpäin */
+  sect(head(C.loppu.h2)+"<p>"+E(C.loppu.p)+"</p>"+
+    '<div class="cta-block"><a class="btn btn-1" href="'+L(C.loppu.cta1[1])+
+      '" data-event="'+E(C.loppu.cta1[2])+'" data-sijainti="lopetus">'+E(C.loppu.cta1[0])+"</a>"+
+      '<p class="next">'+more(C.loppu.cta2,"lopetus")+"</p></div>","eteenpain");
+})();
+</script>
+</body>
+</html>
