@@ -10,6 +10,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
 <link rel="stylesheet" href="bce-v4.css">
 <script src="bce-spec-shell.js"></script>
+<!-- Callout-merkkien paikat kuvassa. Koneen kirjoittama, lähde on sama
+     generaattori joka piirtää kuvan: docs/kuvat/asennus.py C <perhe>. -->
+<script src="asennus-callout.js"></script>
 <!-- Lohkon 5 tuotekuva: KP-pilari kolmiulotteisena. mittakaavio.js on ensin,
      koska tuotekuva.js lukee mitat sen PERHEET-taulukosta. -->
 <script src="mittakaavio.js"></script>
@@ -187,6 +190,7 @@ const C={
     routa:"Routa nostaa ja laskee maata vuodenaikojen mukaan. Siksi pilarin jalusta lasketaan niin syvälle, ettei routa yllä siihen. Kuinka syvälle, riippuu paikkakunnasta.",
     kohde:"Autokatoksen perustus jää näkyviin. Katoksen alla ei ole sokkelia eikä maanvaraista lattiaa, joten pilarit näkyvät pihaan sellaisina kuin ne asennetaan. Tehdasvalmisteisen pilarin pinta on sama joka kappaleessa, ja korkeus säädetään tarvikkeiden säätövaralla niin että rivi on suora.",
     talvi:"Talvella maa on roudassa ja kaivuu vie enemmän aikaa, mutta perustus itsessään valmistuu samalla tavalla kuin kesällä.",
+    perhe:"KP",                    /* kumman perheen callout-koordinaatit luetaan */
     img:"kuvat/asennus-kp-c.png",   /* kuvat/ on symlink ../kuvat -hakemistoon */
     alt:"Havainnekuva pilarin asennuksesta maan sisällä: kaivettu kuoppa, tiivistetty sorapatja, pilari jalustansa varassa soran päällä, routaeriste, täyttömaa ja maan pinnalle jäävä pilarin pää tarvikkeineen. Kuuden kerroksen numerot selitetään kuvan alla olevassa listassa.",
     /* Numerot vastaavat kuvan merkkejä 1–6 alhaalta ylös. Järjestys on KP:n ja
@@ -288,6 +292,49 @@ const C={
     (sij?' data-sijainti="'+E(sij)+'"':"")+">"+arrow(l[0])+"</a>";
   const erotin='<span aria-hidden="true"> · </span>';
 
+  /* Callout-kuva: merkki, johtoviiva ja selite piirroksen päällä.
+     Paikat tulevat generaattorilta (window.asennusCallout), teksti C:stä. Ne
+     liittyvät toisiinsa järjestyksellä: pisteen nro on selitteen indeksi + 1,
+     ja jos ne eivät täsmää, kuva ja teksti puhuisivat eri kohdista. Siksi
+     määrä tarkistetaan ja ristiriita näkyy sivulla eikä hiljene konsoliin.
+     Viiva on kaksi vetoa: paperinvärinen aluslevy ja tumma katkoviiva sen
+     päällä — yksi sävy katoaa joko hiekkaan tai paperiin. */
+  const callout=m=>{
+    const d=(window.asennusCallout||{})[m.perhe];
+    if(!d) return '<figure class="figwide"><p class="tbd">[Callout-koordinaatteja ei '+
+      "löytynyt perheelle "+E(m.perhe)+" — aja python3 docs/kuvat/asennus.py C "+
+      E(m.perhe)+"]</p></figure>";
+    const pist=[...d.pisteet].sort((a,b)=>a.nro-b.nro);
+    if(pist.length!==m.vaiheet.length) return '<figure class="figwide"><p class="tbd">'+
+      "[Callout: kuvassa "+pist.length+" merkkiä mutta selitteitä "+m.vaiheet.length+"]</p></figure>";
+    /* Selitteet tasavälein kuvan korkeudelle, ylimpänä se jonka merkki on
+       ylimpänä. Tasaväli eikä merkin oma korkeus: selite on 42 px korkea eikä
+       skaalaudu kuvan mukana, joten merkin kohdalle asemoituna neljäs ja viides
+       menevät päällekkäin heti kun kuva on alle noin 500 px korkea (mitattu
+       1 280 px:n ruudulla: viisi pikseliä päällekkäin). Tasaväli on sama luku
+       joka leveydellä, eikä se tarvitse mittausta tai resize-kuuntelijaa.
+       Järjestys kuvassa on alhaalta ylös, joten ylin selite on suurin numero;
+       DOM-järjestys on silti 1…6, koska ruudunlukija ja kapea ruutu lukevat
+       listan järjestyksessä. */
+    const PAD=7, n=pist.length;
+    const ly={};
+    [...pist].sort((a,b)=>a.y-b.y).forEach((p,i)=>
+      ly[p.nro]=+(PAD+i*(100-2*PAD)/(n-1)).toFixed(3));
+    const viiva=p=>{const d2="M"+p.x+","+p.y+" L96,"+ly[p.nro]+" L100,"+ly[p.nro];
+      return '<path class="alus" d="'+d2+'"/><path class="veto" d="'+d2+'"/>';};
+    return '<figure class="figwide"><div class="co-lava"><div class="co-kuva">'+
+      '<img src="'+E(m.img)+'" alt="'+E(m.alt)+'" width="'+d.w*2+'" height="'+d.h*2+
+        '" loading="lazy" decoding="async">'+
+      '<svg class="co-viivat" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
+        pist.map(viiva).join("")+"</svg>"+
+      pist.map(p=>'<b class="co-nro" aria-hidden="true" style="--x:'+p.x+'%;--y:'+p.y+'%">'+
+        p.nro+"</b>").join("")+
+      '</div><ol class="co-teksti">'+pist.map((p,i)=>
+        '<li style="--y:'+ly[p.nro]+'%"><b>'+E(m.vaiheet[i][0])+"</b><span>"+
+        E(m.vaiheet[i][1])+"</span></li>").join("")+"</ol></div>"+
+      "<figcaption>"+E(m.varauma)+"</figcaption></figure>";
+  };
+
   document.getElementById("main").innerHTML=
 
   /* 1 · Hero */
@@ -332,11 +379,7 @@ const C={
         sinne, missä sen lukija on. */
   sect(head(C.maapohja.h2,C.maapohja.nodig)+
     "<p>"+E(C.maapohja.routa)+"</p><p>"+E(C.maapohja.kohde)+"</p><p>"+E(C.maapohja.talvi)+"</p>"+
-    '<figure class="figwide"><img src="'+E(C.maapohja.img)+'" alt="'+E(C.maapohja.alt)+
-      '" width="1920" height="1280" loading="lazy" decoding="async">'+
-      '<ol class="kuvaselite">'+C.maapohja.vaiheet.map(v=>
-        "<li><b>"+E(v[0])+"</b><span>"+E(v[1])+"</span></li>").join("")+"</ol>"+
-      "<figcaption>"+E(C.maapohja.varauma)+"</figcaption></figure>"+
+    callout(C.maapohja)+
     '<p class="next">'+more(C.maapohja.tekninen,"maapohja")+"</p>","maapohja")+
 
   /* 7 · Tarvikkeet */
