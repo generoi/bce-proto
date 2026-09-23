@@ -1829,6 +1829,46 @@ html.vienti .cfg .shot{display:flex}
    on 68ch. Mitattu 1 200 · 900 · 390 px: ei vaakavieritystä. Alle 560 px .stack
    pinoaa rivit, jolloin viisi saraketta on viisi riviä eikä vieritystä synny. */
 .vertailu{margin-top:40px;padding-top:28px;border-top:1px solid var(--rule)}
+
+/* Rivi on tuote (23.9.2026, Ollin pyyntö). Kahdeksan saraketta ei mahdu
+   .data.stack:in 900 pikseliin — se mitta oli neljälle lyhyelle sarakkeelle — joten
+   tämä taulukko saa koko sisältöleveyden. Perustustapasivun taulukko pitää 900:n.
+
+   Rivin ensimmäinen solu on nimi ja sen alla tuotekuva. Kuvat ovat jaetussa
+   mittakaavassa mutta **omilla kankaillaan**, joten kuvan korkeus on itsessään
+   vertailu: AP on 46 px ja KP 110 px. Sarake mitoittuu leveimmän kuvan mukaan.
+   Kuva on koriste (koriste:true), koska nimi lukee sen yläpuolella.
+
+   Kapealla .stack pinoaa rivin lohkoksi: otsikkosolu on silloin lohkon otsikko, ja
+   kuva jää sen alle — eli sama järjestys kuin leveällä. Mitattu 1 200 · 900 ·
+   390 px: ei vaakavieritystä. */
+/* .data.stack on (0,2,0), joten pelkkä .vertailutaulu ei kumoaisi sen 900 pikseliä —
+   luokka on kirjoitettava kolmanneksi eikä ensimmäiseksi. Tämä meni kerran ohi, ja
+   oire oli, ettei taulukko levinnyt vaan ensimmäisen solun kuva vuoti nimen päälle. */
+.data.stack.vertailutaulu{max-width:none}
+/* width:1% + nowrap = sarake ottaa täsmälleen sisältönsä leveyden ja jättää lopun
+   muille. Kuvan kangas on kaikilla perheillä sama, joten sarake ei hypi riveittäin. */
+.vertailutaulu tbody th{width:1%;white-space:nowrap}
+/* Nimi ensin, kuva sen alle. Vierekkäin ladottuna nimi jäi 128 pikselisen kankaan
+   alareunaan, eli rivin tunniste oli sata pikseliä alempana kuin rivin arvot, ja
+   silmä joutui hakemaan kumpi nimi kuului mihinkin lukuun. Pystyssä nimi on samalla
+   ylärivillä kuin arvot, ja kuva lukee nimen alaviitteenä. Kankaat ovat keskenään
+   samankorkuisia, joten pilarit seisovat yhä samalla tasolla joka rivillä — AP:n
+   kuvan yläpuolinen tyhjä on se, mitä AP:n lyhyys näyttää. */
+.vertailu .pf{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.vertailu .pf-im{display:block;flex:0 0 auto}
+/* Ei max-width:100% kuten muissa .piirros-kuvapaikoissa. Taulukon sarake mitoitetaan
+   sisällön min-content-leveydestä, ja prosenttiraja tekee siitä nollan: sarake kutistui
+   107 pikseliin ja kuva valui nimen päälle. Kangas on 110 px ja sama joka perheellä,
+   joten kiinteä luonnollinen koko on tässä oikea — kapeimmallakin ruudulla kuva ja nimi
+   vievät yhdessä noin 190 px, eli mahtuvat 390 pikselin palstaan. */
+.vertailu .pf-im>svg{display:block}
+.vertailu .pf b{display:block}
+/* Kapealla .stack tekee otsikkosolusta lohkon otsikon: nimi on silloin H3:n kokoinen
+   ja kuva heti sen alla, eli sama järjestys kuin leveällä. */
+@media(max-width:560px){
+  .vertailu .pf{gap:12px}
+}
 .vertailu h3{margin-bottom:6px}
 /* Vain ingressi, ei lohkon muita kappaleita: .vertailu>p voittaisi myös .fine:n
    ja taulukon alahuomautus kasvaisi ingressin kokoiseksi. */

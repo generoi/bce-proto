@@ -111,28 +111,50 @@ const C={
      että taulukko on vertailuformaatti ihmiselle joka jo vertailee monella akselilla,
      ja se kuuluu alasivulle. Pilarit-klikkaus on juuri se hetki, jossa vertailu alkaa.
 
-     Rivit ovat sitä, mikä päättää perheen — ei sitä, mitä tuotteesta voi kertoa.
+     **Akseli käännettiin 23.9.2026 Ollin pyynnöstä** (*tuotteet riveinä, ja jokaiselle
+     tuotteelle pieni kuva*). Ensimmäinen versio oli ominaisuus rivinä ja perhe
+     sarakkeena; nyt rivi on tuote, kuten perustustapasivun taulukossa ja kuten
+     tuoteluettelossa yleensä. Kolme asiaa muuttui sen mukana:
+
+       kuva       rivi alkaa perheen tuotekuvalla, samassa jaetussa mittakaavassa kuin
+                  korttien kuvat. Se on koko rivin ensimmäinen argumentti: kokoero
+                  nähdään ennen kuin yhtäkään lukua on luettu, eikä AP saa näyttää
+                  KP:n kokoiselta rivin tasaamiseksi
+       leveys     kahdeksan saraketta ei mahdu .data.stack:in 900 pikseliin, joten
+                  taulukko saa tässä koko sisältöleveyden
+       kapea      pinottuna jokainen rivi on nyt perhe otsikkonaan ja ominaisuudet sen
+                  alla — eli sama järjestys kuin korteissa. Edellinen versio pinoutui
+                  ominaisuus kerrallaan, mikä luki hyvin muttei vastannut korttien
+                  järjestystä
+
+     Sarakkeet ovat sitä, mikä päättää perheen — ei sitä, mitä tuotteesta voi kertoa.
      Pois jätetyt: pilarin pään poikkileikkaus, rasitusluokka, CE ja EAN (perhesivun
      tekniset tiedot), sekä kuormakestävyydet epäkeskisyyksineen (suunnittelijan sivu,
      linkki taulukon alla).
 
-     Kaksi riviä lasketaan mittataulukosta eikä kirjoiteta tähän: korkeusalue ja
+     Kaksi saraketta lasketaan mittataulukosta eikä kirjoiteta tähän: korkeusalue ja
      pohjalaatta tulevat tuotekuva.koot()/tuotekuva.mitat():n kautta mittakaavio.js:n
      PERHEET-taulukosta, joten taulukko, tuotekuva ja mittakaavio eivät voi ajautua
      erilleen. Loput ovat copya, koska ne eivät ole geometriaa.
 
-     Kuusi solua on [TÄYTETTÄVÄ], ja kaikki kuusi ovat AP:n ja PP:n sarakkeissa. Se ei
+     `rows` on yhä ominaisuus kerrallaan, vaikka taulukko piirtyy tuote kerrallaan:
+     ominaisuuden neljä arvoa on kirjoitettava peräkkäin tai niitä ei ole kirjoitettu
+     toisiaan vasten — ja juuri se on taulukon koko tehtävä. Käännös tehdään
+     renderöinnissä yhdellä rivillä.
+
+     Kuusi solua on [TÄYTETTÄVÄ], ja kaikki kuusi ovat AP:n ja PP:n riveillä. Se ei
      ole taulukon vika vaan sen löydös: AP ja PP puuttuvat molemmista asiakkaan omista
      kuluttajajulkaisuista (esite 2023, opas 2025), eikä PP:lle ole julkaistu kantavuutta
      missään lähteessä (pilarilaskuri/LASKENTA.md, vaihe 0). Neljän perheen taulukko on
      ensimmäinen paikka, jossa aukko näkyy rinnakkain — ei arvattu. */
   cmp:{h3:"Perheet rinnakkain",
     p:"Sama tieto neljästä perheestä samassa muodossa. Kortin kuvaus kertoo mihin perhe on tarkoitettu, taulukko kertoo kuinka paljon ne eroavat toisistaan.",
-    kulma:"Ominaisuus",
+    kulma:"Pilariperhe",
     perheet:["AP","TP","KP","PP"],
     otsikot:["AP-pilari","TP-pilari","KP-pilari","PP-pilari"],
-    /* Rivi on [nimi, arvot] tai [nimi, "laskurin nimi"]. Merkkijono viittaa LASKE-olion
-       funktioon, joka lukee arvon mittataulukosta perheittäin. */
+    /* Ominaisuus on [nimi, arvot] tai [nimi, "laskurin nimi"]; arvot ovat perheiden
+       järjestyksessä. Merkkijono viittaa LASKE-olion funktioon, joka lukee arvon
+       mittataulukosta perheittäin. Taulukossa näistä tulee sarakkeita. */
     rows:[
       /* Sama sanamuoto kuin korttien otsikoissa: yksi käsite ei saa kahta nimeä
          samalla ruudulla. */
@@ -154,7 +176,10 @@ const C={
       /* PP:n pää on istukka eikä kierre, ja se on koko perheen ero muihin: siihen ei
          kiinnitetä BCE:n tarvikkeita vaan siihen pujotetaan pylväs. Halkaisija on
          tuotekoodista PP-60-600 ja kiristysrenkaan mitasta (tuotekuva.js). */
-      ["Kiinnitys pilarin päässä",["M20-sisäkierre","M20-sisäkierre","M20-sisäkierre",
+      /* Sarakeotsikko on «Kiinnitys» eikä «Kiinnitys pilarin päässä»: kahdeksan
+         saraketta ei kestä kolmiriviaista otsikkoa, ja arvot sanovat itse missä
+         kiinnitys on. Kapealla pinottuna sama sana on rivin selitteenä. */
+      ["Kiinnitys",["M20-sisäkierre","M20-sisäkierre","M20-sisäkierre",
         "Istukka 60 mm:n putkelle"]]],
     note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa.",
     link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_dwg"]},
@@ -292,6 +317,39 @@ const C={
     C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
       {skaala:DET_SKAALA, koriste:true, id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
 
+  /* Vertailutaulukon rivikuvat: jaettu mittakaava, **oma kangas kullekin**.
+
+     Tämä on tarkoituksella eri kuin korttien `tuotekuva.rivi`, joka vie kuvat myös
+     yhteiselle kankaalle. Yhteinen kangas on siellä pakko: kortit ovat vierekkäin,
+     ja CSS skaalaisi eri kokoiset kankaat eri kertoimilla heti kun laatikko on kuvaa
+     kapeampi. Taulukossa kuvat ovat allekkain eikä niitä kutisteta, joten yhteisestä
+     kankaasta jäisi vain sen haitta: AP-400 seisoisi KP-1000:n korkuisen laatikon
+     pohjalla, ja kapealla ruudulla nimen ja pilarin väliin jäisi sata pikseliä
+     tyhjää. Omilla kankailla kuvan korkeus **on** vertailu — 46 px ja 110 px
+     nähdään suoraan, eikä lukijan tarvitse etsiä mistä hahmo alkaa.
+
+     Mittakaava on silti jaettu, ja se on koko kuvan peruste: perhekohtaisesti
+     normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa. Laskenta on sama
+     kuin `tuotekuva.rivi`:n sisällä (korkeus × oma laajuus / suurin laajuus),
+     ilman viimeistä kangasvaihetta.
+
+     110 px on suurimman kuva; se tulee KP-1000:lle. Pienempi tekisi AP:stä
+     tunnistamattoman, isompi kasvattaisi rivin korkeutta ilman että kuva kertoo
+     enempää. */
+  const RIVIKUVA={};
+  (function(){
+    const osat=C.cmp.perheet.map(function(perhe){
+      const koot=window.tuotekuva.koot(perhe), koko=koot[koot.length-1];
+      return {perhe:perhe, koko:koko, kor:window.tuotekuva.laajuus(perhe,koko).kor};
+    });
+    const suurin=Math.max.apply(null,osat.map(s=>s.kor));
+    osat.forEach(function(s){
+      RIVIKUVA[s.perhe]=window.tuotekuva({perhe:s.perhe, koko:s.koko, kiintea:false,
+        korkeus:110*s.kor/suurin, koriste:true, merkinta:false,
+        id:"rivi-"+s.perhe.toLowerCase()});
+    });
+  })();
+
   /* Vertailutaulukon lasketut rivit. Molemmat lukevat saman mittataulukon kuin
      kortin tuotekuva, joten taulukko ei voi kertoa muuta kuin mitä kuva piirtää. */
   const LASKE={
@@ -316,9 +374,11 @@ const C={
       const nelio=d=>d+" × "+d+" mm";
       const arvot=Object.keys(ryhmat).sort((a,b)=>ryhmat[b].length-ryhmat[a].length);
       if(arvot.length===1) return nelio(arvot[0]);
+      /* Poikkeus ilman yksikköä: «(AP-300: 450 × 450)» eikä «450 × 450 mm».
+         Millimetrit on jo sanottu solun alussa, ja sarake on 140 pikseliä. */
       return nelio(arvot[0])+" ("+arvot.slice(1).map(function(d){
         return ryhmat[d].map(koko=>window.tuotekuva.koodi(perhe,koko)).join(", ")+
-          ": "+nelio(d);
+          ": "+d+" × "+d;
       }).join("; ")+")";
     }};
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
@@ -348,14 +408,21 @@ const C={
        th[scope=row] on ominaisuuden nimi ja data-lbl kantaa perheen nimen kapealle
        ruudulle, jossa .stack piilottaa otsikkorivin ja pinoaa rivit lohkoiksi. */
     '<div class="vertailu"><h3>'+E(C.cmp.h3)+"</h3><p>"+E(C.cmp.p)+"</p>"+
-      '<div class="tw"><table class="data stack"><thead><tr><th>'+E(C.cmp.kulma)+"</th>"+
-        C.cmp.otsikot.map(c=>"<th>"+E(c)+"</th>").join("")+"</tr></thead><tbody>"+
-        C.cmp.rows.map(function(r){
-          const arvot=typeof r[1]==="string" ? C.cmp.perheet.map(p=>LASKE[r[1]](p)) : r[1];
-          return '<tr><th scope="row">'+E(r[0])+"</th>"+
-            arvot.map((v,i)=>'<td data-lbl="'+E(C.cmp.otsikot[i])+'">'+T(v)+"</td>").join("")+
-            "</tr>";
-        }).join("")+"</tbody></table></div>"+
+      /* Käännös: `rows` on ominaisuus kerrallaan, taulukko piirtyy perhe kerrallaan.
+         Arvot lasketaan kerran ominaisuutta kohti, ja rivi poimii niistä oman
+         indeksinsä — laskurit ajetaan siis neljä kertaa eikä 28. */
+      (function(){
+        const arvot=C.cmp.rows.map(r=>
+          typeof r[1]==="string" ? C.cmp.perheet.map(p=>LASKE[r[1]](p)) : r[1]);
+        return '<div class="tw"><table class="data stack vertailutaulu"><thead><tr><th>'+
+          E(C.cmp.kulma)+"</th>"+
+          C.cmp.rows.map(r=>"<th>"+E(r[0])+"</th>").join("")+"</tr></thead><tbody>"+
+          C.cmp.perheet.map((perhe,i)=>'<tr><th scope="row">'+
+            '<span class="pf"><b>'+E(C.cmp.otsikot[i])+"</b>"+
+            '<span class="pf-im">'+RIVIKUVA[perhe]+"</span></span></th>"+
+            arvot.map((a,j)=>'<td data-lbl="'+E(C.cmp.rows[j][0])+'">'+T(a[i])+"</td>").join("")+
+            "</tr>").join("")+"</tbody></table></div>";
+      })()+
       '<p class="fine">'+E(C.cmp.note)+"</p>"+
       '<p class="next"><a class="more" href="'+E(SPECLINK(C.cmp.link[1]))+'" data-event="'+
         E(C.cmp.link[2])+'">'+arrow(C.cmp.link[0])+"</a></p></div>"+
