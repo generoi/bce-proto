@@ -61,22 +61,16 @@ const C={
     /* 16.9.2026: painike lataa konfiguraattorin kuten muilla sivuilla. Aiemmin se oli
        ankkuri #loyda, eli oranssi nappi vieritti toiseen oranssiin nappiin. */
     cta1:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori","hero"],
-    cta2:["Vertaile pilariperheitä","#perheet","cta_vertailu_ankkuri"],
-    cta3:["Etsi tuotekoodilla","#koodi","cta_koodihaku_ankkuri"],
+    /* 23.9.2026: molemmat toissijaiset ankkurit poistettiin, ja hero-oppi
+       (PRODUCT.md kohta 2) sallii yhden. Kumpikin lupasi matkan sinne, minne sivu
+       jo vie: perhelohko on järjestyksen vaihdon jälkeen heti heron alla, ja
+       koodihaku nousi Ollin pyynnöstä sen yläpuolelle, eli molemmat kohteet ovat
+       ensimmäisen vierityksen sisällä. Heroon jää yksi painike.
+       Tapahtumat `cta_vertailu_ankkuri` ja `cta_koodihaku_ankkuri` katoavat;
+       kumpaakaan ei ollut mittausdokumenteissa. */
     img:"Hero-kuva: pilari asennettuna käyttöyhteydessä"},
 
-  /* 2 · Käyttökohteet ennen tuoteperheitä: enemmistö tietää projektinsa, ei tuotettaan.
-     Etusivun käyttökohdevalitsin sellaisenaan. */
-  use:{h2:"Mihin pilariperustusta käytetään",
-    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
-    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
-      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
-      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
-      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
-      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
-      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
-
-  /* 3 · Neljä perhettä. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
+  /* 2 · Neljä perhettä heti heron alla. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
      PP:llä. Kantavuusarvot ovat perhesivuilla — niitä ei ole tällä tasolla.
 
      Rivin kolmas kenttä oli kuvapaikan teksti ("Kuva: AP-pilari"); 18.9.2026 se on
@@ -98,27 +92,63 @@ const C={
        sekä KP kiloina samalla sivulla; yksikkö on päätettävä ennen toteutusta. */
     },
 
-  /* 3b · Tuotekoodihaku: heron kolmas reitti, tunnistajalle ja jälleenmyyjän tiskille */
+  /* 4 · Käyttökohteet perheiden jälkeen. 22.9.2026: perheet nostettiin heron alle,
+     joten tämä on toinen reitti samaan valintaan — sille joka tietää mitä rakentaa
+     mutta ei mikä pilari siihen kuuluu. Etusivun käyttökohdevalitsin sellaisenaan. */
+  use:{h2:"Mihin pilariperustusta käytetään",
+    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
+    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
+      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
+      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
+      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
+      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
+      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
+
+  /* 2 · Tuotekoodihaku. Nostettu 23.9.2026 Ollin pyynnöstä perhekorttien yläpuolelle
+     ja omaksi lohkokseen: se on oikotie sille, joka tietää jo mitä hakee, eikä
+     oikotie kuulu sen jälkeen, mitä se ohittaa.
+
+     Haku toimii nyt oikeasti. Auditin 16.9.2026 havainto oli «kaksi hakukenttää,
+     kumpikaan ei toimi»: urakoitsija kirjoitti KP-900 ja sai tyhjän. `[TÄYTETTÄVÄ]`
+     kentän alta poistettiin samalla — se lupasi koodilistan, ja koodilista on nyt
+     haussa eikä tekstinä. EAN-koodit ovat tarvikesivulla; ne tulevat tähän vasta
+     jos jälleenmyyjäosio toteutetaan. */
   find:{h3:"Etsi tuotekoodilla",
-    p:"Tunnistatko tuotteen pakkauksesta tai jälleenmyyjän tiskiltä? Syötä koodi, niin näytämme oikean perhesivun.",
+    p:"Tunnistatko tuotteen pakkauksesta tai jälleenmyyjän tiskiltä? Syötä koodi, niin näytämme oikean sivun.",
     ph:"Syötä tuotekoodi, esim. KP-900", cta:"Etsi",
-    /* tuotekoodilista kierrätetään nykysivustolta, koodien on oltava kopioitavassa
-       muodossa. Tähän tulevat myös EAN-koodit jos jälleenmyyjäosio toteutetaan. */
-    note:"[TÄYTETTÄVÄ]"},
+    vihje:"Haku tuntee 16 pilarikoodia ja 9 tarvikekoodia.",
+    tyhja:"Syötä tuotekoodi, esimerkiksi KP-900 tai PIK 50-70.",
+    eiloydy:"ei ole tuntemamme koodi. Tarkista kirjoitusasu tai valitse perhe alta.",
+    perhe:"pilariperheen sivu", tarvike:"kiinnitystarvikkeet"},
 
   /* 5 · Tarvikkeet. Jokaisesta on kerrottava mitä se tekee ja missä yhteydessä —
      nimilista ei kerro kumpaakaan, ja tarvikkeiden jääminen tilaamatta on yleisin
-     virhe. Tehtävätekstit puuttuvat kaikista lähteistä: pilari–tarvike-matriisi on
-     speksin avoin kohta 3. Ei arvattu. */
+     virhe.
+
+     23.9.2026: neljä tyhjää kenttää täytetty. Auditin havainto oli, että 3/4
+     kontekstiriviä on tyhjä ja teräslaatan tehtävä `[TÄYTETTÄVÄ]`, vaikka lohkon
+     koko peruste on kertoa mitä tarvike tekee. Tekstejä ei kirjoitettu tähän
+     uusiksi eikä arvattu: **jokainen on lyhennys tarvikesivun omasta tekstistä**,
+     joka taas on peräisin asiakkaan esitteestä 2023 (`../aineisto-taustamatskut-2026-09-18.md`
+     luku 3). Hubi on tarvikesivun kärki, ei toinen lähde — jos tarvikesivun teksti
+     muuttuu, tämä muuttuu sen mukana (`../jaettu-sisalto.md`).
+
+     PAK:n tehtäväteksti on tarkoituksella yleinen («liittää vaakapalkin pilariin»).
+     Kolme lähdettä on eri mieltä siitä, ripustetaanko palkki kylkeen vai lasketaanko
+     se päälle — pilari–tarvike-matriisin avoin kysymys A — eikä hubi ota siihen
+     kantaa ennen kuin se on ratkaistu. */
   parts:{h2:"Perustus on pilarit ja tarvikkeet",
     ing:"Yleisin virhe on tilata pelkät pilarit. Kiinnitystarvikkeet ratkaisevat sen, miten rakenne kiinnittyy perustukseen, ja ne mitoitetaan yhdessä pilarin kanssa. Kaikki tarvikkeet ovat BCE:n omaa valmistusta ja yhteensopivia keskenään. Tarvike ruuvataan pilarin valmiiseen kierteeseen, joten poraamista ei tarvita, ja säätövara korkeus- ja sivusuunnassa korjaa pienet heitot.",
     items:[
       ["Pilarikenkä","Detaljikuva: pilarikenkä pilarin päässä ja pystyrakenne kiinni siinä",
-       "Liittää pystyrakenteen pilarin päähän.","[TÄYTETTÄVÄ]"],
+       "Liittää pystyrakenteen pilarin päähän.",
+       "Terassin runkolankut (50–70 mm) ja katoksen kannatintolpat (90–140 mm). Korkeutta säädetään kiertämällä."],
       ["Palkkikenkä PAK","Detaljikuva: palkkikenkä ja vaakapalkki kiinnitettynä",
-       "Liittää vaakapalkin pilariin.","[TÄYTETTÄVÄ]"],
+       "Liittää vaakapalkin pilariin.",
+       "Välipohjan ja rungon kannatinpalkit. Kaksi kokoa: 100 × 150 ja 100 × 200 mm."],
       ["Teräslaatta","Detaljikuva: teräslaatta pilarin päällä",
-       "[TÄYTETTÄVÄ]",null],
+       "Antaa tasaisen tukipinnan pilarin päähän.",
+       "Kun valmis rakenne asennetaan suoraan pilarin päälle. Kolme kokoa, ero on kiinnityspisteissä."],
       ["Nostokorva","Detaljikuva: nostokorva kiinnitettynä, pilari nostossa",
        "Pilarin nostamiseen paikalleen.","KP-perheen pilarit painavat 126–187 kg ja nostetaan koneella."]],
     /* Perhekohtaiset tarvikesuositukset ovat perhesivuilla. */
@@ -192,16 +222,14 @@ const C={
     "<div><h1>"+E(C.hero.h1)+'</h1><p class="lede">'+E(C.hero.lede)+"</p>"+
       '<div class="cta"><a class="btn btn-1" href="'+E(SPECLINK(C.hero.cta1[1]))+'" data-event="'+E(C.hero.cta1[2])+
         '" data-sijainti="'+E(C.hero.cta1[3])+'">'+E(C.hero.cta1[0])+"</a></div>"+
-      '<div class="cta cta-2">'+
-        '<a class="more" href="'+E(C.hero.cta2[1])+'" data-event="'+E(C.hero.cta2[2])+'">'+down(C.hero.cta2[0])+"</a>"+
-        '<a class="more" href="'+E(C.hero.cta3[1])+'" data-event="'+E(C.hero.cta3[2])+'">'+down(C.hero.cta3[0])+"</a>"+
-      "</div></div>"+
+      "</div>"+
     '<div class="hero-img">'+E(C.hero.img)+"</div></section></div>"+
 
-  /* 2 · Käyttökohteet — etusivun .pick */
-  sect(head(C.use.h2,C.use.ing)+
-    '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
-      '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
+  /* 2 · Tuotekoodihaku omana lohkonaan, perhekorttien yläpuolella */
+  sect('<div class="find find-yksin"><h3>'+E(C.find.h3)+"</h3><p>"+E(C.find.p)+"</p>"+
+    '<form id="koodilomake"><input id="koodikentta" class="field" type="search" aria-label="'+E(C.find.ph)+'" placeholder="'+E(C.find.ph)+'">'+
+    '<button class="btn btn-2" type="submit" data-event="haku_tuotekoodi">'+E(C.find.cta)+"</button></form>"+
+    '<p class="tulos" id="kooditulos" role="status" aria-live="polite">'+E(C.find.vihje)+"</p></div>","koodi")+
 
   /* 3 · Neljä perhettä — etusivun .series kuvineen, neljä korttia kolmen sijaan */
   sect(head(C.fam.h2,C.fam.ing)+
@@ -209,11 +237,12 @@ const C={
       "</div><h3>"+E(s[0])+"</h3><p>"+E(s[1])+"</p>"+
       '<a class="more lk" href="'+E(SPECLINK(s[4]))+'" data-event="cta_pilariperhe" data-perhe="'+E(s[0])+'">'+arrow(s[3])+"</a></div>").join("")+"</div>"+
     '<div class="cta-block"><a class="btn btn-1" href="'+E(SPECLINK(C.url.konf))+'" data-event="cta_konfiguraattori" data-sijainti="perheet">'+
-      E(C.fam.cta)+'</a><p class="sub">'+E(C.fam.sub)+"</p></div>"+
-    '<div class="find" id="koodi"><h3>'+E(C.find.h3)+"</h3><p>"+E(C.find.p)+"</p>"+
-      '<form onsubmit="return false"><input class="field" type="search" aria-label="'+E(C.find.ph)+'" placeholder="'+E(C.find.ph)+'">'+
-      '<button class="btn btn-2" type="submit" data-event="haku_tuotekoodi">'+E(C.find.cta)+"</button></form>"+
-      '<p class="tbd-l">'+T(C.find.note)+"</p></div>","perheet")+
+      E(C.fam.cta)+'</a><p class="sub">'+E(C.fam.sub)+"</p></div>","perheet")+
+
+  /* 4 · Käyttökohteet — etusivun .pick */
+  sect(head(C.use.h2,C.use.ing)+
+    '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
+      '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
 
   /* 5 · Tarvikkeet — etusivun .pick-kortti kahdella tietorivillä: tehtävä ja käyttöyhteys */
   sect(head(C.parts.h2,C.parts.ing)+
@@ -246,6 +275,39 @@ const C={
   sect('<div class="band"><div><h2>'+E(C.big.h2)+"</h2><p>"+E(C.big.p)+"</p></div>"+
     '<div><a class="btn btn-1" href="'+E(SPECLINK(C.url.tarjous))+'" data-event="cta_yhteydenotto">'+E(C.big.cta)+"</a>"+
     '<p class="sub">'+T(C.big.sub)+"</p></div></div>","yhteys");
+
+  /* Koodihaku toimii. Auditin 16.9.2026 havainto oli «kaksi hakukenttää, kumpikaan
+     ei toimi»; tämä korjaa niistä sivun oman. Koodilistaa ei kirjoiteta tähän käsin:
+     pilarikoodit luetaan mittakaavio.js:n PERHEET-taulukosta ja perhesivun osoite
+     C.fam.series-riviltä, joten uusi koko tulee hakuun samalla kun se tulee kuviin.
+     PP-600 on erikseen, koska se ei ole mittakaaviossa — sen pää on istukka eikä
+     M20-kierre. Tarvikekoodit ovat pilari–tarvike-matriisin luvusta 2 ja osoittavat
+     tarvikesivulle, koska tarvikekohtaisia slugeja ei ole.
+
+     Normalisointi poistaa kaiken paitsi kirjaimet ja numerot, joten «KP-900»,
+     «kp 900» ja «KP900» ovat sama koodi. Se on koko syy siihen, että haku toimii
+     jälleenmyyjän tiskillä: koodi luetaan pakkauksesta eikä kirjoitusasusta. */
+  const norm=v=>String(v==null?"":v).toUpperCase().replace(/×/g,"X").replace(/[^A-Z0-9]/g,"");
+  const KOODIT={}, PURL={};
+  C.fam.series.forEach(s=>{PURL[s[2]]=s[4];});
+  const PH=window.mittakaavio.perheet;
+  Object.keys(PH).forEach(k=>PH[k].kt.forEach(mm=>{
+    KOODIT[norm(k+mm)]={nimi:k+"-"+mm, url:PURL[k], mihin:C.find.perhe};
+  }));
+  KOODIT[norm("PP-600")]={nimi:"PP-600", url:PURL.PP, mihin:C.find.perhe};
+  ["PIK 50-70","PIK 90-140","P-PIK 50×70","PAK-100×150","PAK-100×200",
+   "TL 100×100×6","TL 150×150×8","TL 100×175×6","Nostokorva M20"]
+    .forEach(k=>{KOODIT[norm(k)]={nimi:k, url:C.url.tarvikkeet, mihin:C.find.tarvike};});
+
+  const kentta=document.getElementById("koodikentta"),
+        tulos=document.getElementById("kooditulos");
+  document.getElementById("koodilomake").addEventListener("submit",function(ev){
+    ev.preventDefault();
+    const syote=kentta.value.trim(), o=KOODIT[norm(syote)];
+    tulos.innerHTML = !syote ? E(C.find.tyhja)
+      : o ? '<a class="more" href="'+E(SPECLINK(o.url))+'" data-event="haku_tuotekoodi_osuma" data-koodi="'+E(o.nimi)+'">'+arrow(o.nimi+" — "+o.mihin)+"</a>"
+          : "<b>"+E(syote)+"</b> "+E(C.find.eiloydy);
+  });
 })();
 </script>
 </body>

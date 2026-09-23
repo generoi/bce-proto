@@ -200,11 +200,7 @@ const C={
   const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
   const L=u=>E(SPECLINK(u));
-  /* Alapalkin pari on sivukohtainen: konfiguraattori ei laske sokkelielementtejä,
-     joten kuoren oletuspari (Laske pilarien määrä + Mistä ostat) lupaisi tällä
-     sivulla toiminnon, jota ei ole. Pari on sama kuin sivun omat toiminnot. */
-  SPECSHELL(E,{crumb:C.crumb,active:"JeKi-sokkeli",
-    bar:[C.start.cta2,C.start.cta1]});
+  SPECSHELL(E,{crumb:C.crumb,active:"JeKi-sokkeli"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";

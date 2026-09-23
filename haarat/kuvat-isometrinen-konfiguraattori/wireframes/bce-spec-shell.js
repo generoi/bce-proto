@@ -108,14 +108,9 @@ window.SPEC={
   util:null,
   /* 16.9.2026: konfiguraattorilla on yksi nimi joka paikassa (hero-oppi 3). Spec 1.0:n
      "Löydä sopiva pilari" vaihdettiin lopputuloksen nimeävään muotoon, sama kuin sivuilla.
-     Poikkeama specistä, kerrotaan asiakkaalle. Mobiilissa kuoren painike piilotetaan
-     (.hdr-cta), koska sivun oma toiminto on alapalkissa. */
+     Poikkeama specistä, kerrotaan asiakkaalle. 23.9.2026: kiinteä alapalkki poistettiin,
+     joten mobiilissa tämä painike on ensisijainen toiminto — se näkyy valikon avattuaan. */
   navCta:["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
-  /* Mobiilin kiinteä alapalkki, sama joka sivulla jolla on ensisijainen toiminto:
-     ensisijainen toiminto ja ostopaikka. SPECSHELL(E,{bar:false}) jättää pois,
-     {bar:"ostat"} kääntää järjestyksen sivulla jonka ensisijainen on ostopaikka. */
-  bar:[["Laske pilarien määrä","/konfiguraattori/","cta_konfiguraattori"],
-       ["Mistä ostat","/mista-ostat/","cta_mista_ostat"]],
   search:"Hae tuotteella, koodilla tai käyttökohteella",
   langs:[["FI",true],["SV",false],["EN",false]],
   foot:{
@@ -373,21 +368,6 @@ window.SPECSHELL=function(E,o){
       return sep+(x[1]?'<a href="'+E(SPECLINK(x[1]))+'">'+E(x[0])+"</a>":'<span aria-current="page">'+E(x[0])+"</span>");
     }).join("");
   } else { q(".crumb").remove(); }
-  if(o.bar!==false){
-    /* Palkin ensisijainen on sama kuin sivun ensisijainen. Tarvikesivulla se on
-       ostopaikka (kortti 4), joten sivu kutsuu {bar:"ostat"} ja järjestys kääntyy.
-
-       17.9.2026: sivu voi antaa myös oman parin, {bar:[[teksti,osoite,tapahtuma],...]}.
-       Se on tarkoitettu sivulle, jonka toimintoa kuoren oletuspari ei tunne — JeKi-
-       sokkelisivulla konfiguraattori laskee pilarien määrän, ei sokkelielementtejä,
-       joten oletuspari lupaisi toiminnon jota ei ole. Pari kirjoitetaan silloin
-       sivun omista toiminnoista, ei uutena copyna: palkki ja sivu sanovat saman. */
-    const bar=Array.isArray(o.bar)?o.bar:(o.bar==="ostat"?[SPEC.bar[1],SPEC.bar[0]]:SPEC.bar);
-    document.body.classList.add("has-bar");
-    document.body.insertAdjacentHTML("beforeend",'<div class="bar">'+
-      '<a class="btn btn-1" href="'+E(SPECLINK(bar[0][1]))+'" data-event="'+E(bar[0][2])+'" data-sijainti="alapalkki">'+E(bar[0][0])+"</a>"+
-      '<a class="btn btn-2" href="'+E(SPECLINK(bar[1][1]))+'" data-event="'+E(bar[1][2])+'" data-sijainti="alapalkki">'+E(bar[1][0])+"</a></div>");
-  }
   q("footer .w").innerHTML=
     '<div class="cols"><div><h3>Yhteystiedot</h3><p class="addr">'+E(SPEC.foot.addr)+"</p>"+
       '<p class="addr"><span class="tbd">'+E(SPEC.foot.contact)+"</span></p>"+

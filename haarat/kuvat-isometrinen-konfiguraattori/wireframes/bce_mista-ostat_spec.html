@@ -142,7 +142,7 @@ const C={
   /* Kuoren alapalkki jätetään pois: sen toinen painike on "Mistä ostat", ja tällä
      sivulla se osoittaisi sivulle itselleen. Sivun ensisijainen toiminto on toisessa
      lohkossa, eli mobiilissa näkyvissä heti kärjen jälkeen. */
-  SPECSHELL(E,{crumb:C.crumb,active:"Mistä ostat",bar:false});
+  SPECSHELL(E,{crumb:C.crumb,active:"Mistä ostat"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";

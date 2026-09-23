@@ -151,7 +151,7 @@ const C={
   const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
   const L=u=>E(SPECLINK(u));
-  SPECSHELL(E,{crumb:C.crumb,active:"Tarvikkeet",bar:"ostat"});
+  SPECSHELL(E,{crumb:C.crumb,active:"Tarvikkeet"});
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";

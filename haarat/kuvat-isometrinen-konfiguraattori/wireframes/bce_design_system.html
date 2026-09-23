@@ -41,7 +41,6 @@
 .ds-demo.paper{background:var(--paper)}
 .ds-demo>*+*{margin-top:0}
 .ds-row{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
-.ds-static .bar{position:static;display:flex;max-width:420px;border:1px solid var(--rule-2);border-radius:4px}
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
 .sw div{border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:#fff;font-size:13px}
 .sw i{display:block;height:64px}
@@ -98,7 +97,7 @@
 "use strict";
 const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
-SPECSHELL(E,{crumb:[["Etusivu","/"],["Design system",null]],bar:false});
+SPECSHELL(E,{crumb:[["Etusivu","/"],["Design system",null]]});
 
 /* Sivut, joilla komponentti on käytössä. Lyhenteet toistuvat katalogissa. */
 const P={etu:"Etusivu",pil:"Pilarit-hubi",tp:"TP-perhesivu",ak:"Autokatos",jeki:"JeKi-sokkeli",tavat:"Perustustavat",ref:"Referenssi",a:"Tarvikkeet A",b:"Tarvikkeet B",sivu:"Luurankosivu",kuori:"Kuori"};
@@ -453,17 +452,13 @@ sect("toiminnot","Valitsimet ja toiminnot","Toiminto kuittaa itsensä sanoin. Mi
    demo:SPECDEALERS(E,{cls:"dealers-4",sijainti:"katalogi"})+'<div style="max-width:420px;margin-top:22px">'+SPECDEALERS(E,{sijainti:"katalogi",size:"TP-400"})+'</div><p class="fine" style="margin-top:12px">Ylhäällä brändisivut, alhaalla TP-400:n tuotesivut siellä missä ne ovat.</p>'},
   {id:"thumbs",wp:wp("core","<code>core/gallery</code>. Ostolaatikon yhteydessä osa <code>bce/ostolaatikkoa</code>."),n:"Pikkukuvat",c:".thumbs button[aria-pressed]",on:on("tp"),
    rule:"Painikkeita, ei span-elementtejä: klikattavan näköinen on klikattava. Kapealla vaakavieritettävä nauha, 100 px ruudut.",
-   demo:'<div class="thumbs" style="max-width:560px"><button type="button" aria-pressed="true">Kuva: pilari yksin</button><button type="button" aria-pressed="false">Kuva: halkaistuna</button><button type="button" aria-pressed="false">Kuva: kenkä kiinni</button><button type="button" aria-pressed="false">Kuva: kohde valmiina</button></div>'},
-  {id:"bar",wp:wp("teema","Sivupohja, ei lohko. Pari tulee sivun kentästä; <code>bar:false</code> vastaa tyhjää kenttää."),n:"Mobiilin alapalkki",c:".bar (.btn-1 + .btn-2), näkyy alle 980 px",on:on("etu","pil","tp","a","b","ak"),status:["ok","kuoressa 16.9."],
-   rule:"Kuori renderöi palkin joka sivulle (SPEC.bar), paitsi kun sivu sanoo bar:false (luuranko, tämä sivu). Ensisijainen toiminto ja ostopaikka, samat nimet joka sivulla. Pohja --accent-dark, koska 15 px valkoista brändioranssilla on 3,6:1.",
-   merge:"Päätös 16.9.: palkki kaikille sivuille joilla on ensisijainen toiminto. Ennen vain perhesivulla, ja body-paddingin 74 px oli voimassa myös sivuilla joilla palkkia ei ollut.",
-   demo:'<div class="bar"><a class="btn btn-1" href="#">Laske pilarien määrä</a><a class="btn btn-2" href="#">Mistä ostat</a></div>',stat:true}
+   demo:'<div class="thumbs" style="max-width:560px"><button type="button" aria-pressed="true">Kuva: pilari yksin</button><button type="button" aria-pressed="false">Kuva: halkaistuna</button><button type="button" aria-pressed="false">Kuva: kenkä kiinni</button><button type="button" aria-pressed="false">Kuva: kohde valmiina</button></div>'}
 ])+
 
 sect("kuori","Kuori","Ylä- ja alatunniste tämän sivun ympärillä ovat itse komponentti: <code>SPECSHELL(E,{crumb,active})</code> renderöi ne <code>bce-spec-shell.js</code>:n copysta.",[
   {id:"header",wp:wp("teema","Blade-sivupohja. Valikko WP-valikosta. Alasvetojen neljä sääntöä ja neljän kaistan leveysmitoitus ovat teeman koodia, eivät toimittajan valintoja."),n:"Apurivi, ylätunniste, navigaatio",c:".urow (.search .ulink .lang) · header.site (.logo .menu-btn nav .hassub .sub .tools .btn-s.hdr-cta)",on:on("kuori","ak"),status:["ok","korjattu 16.9."],
-   rule:"Logo vasemmalla, valikko keskellä, yksi toiminto oikealla. Alavalikko avautuu osoittimella ja fokuksella, vanhempi on itsekin linkki — paitsi ryhmä ilman omaa sivua (Tuotteet, Sokkelit), joka on painike ja ryhmäotsikko. Tuotteet-pudotus on kolme ryhmää, muut yksi sarake. Mobiilissa lapset ovat auki sisennettynä. aria-current merkitsee aktiivisen kohdan, myös jälkeläisen perusteella.",
-   merge:"Päätös 16.9.: kuoren painike piilotetaan mobiilissa (.hdr-cta), jolloin ylätunniste putoaa 123 → 76 px, ja sivun toiminto on alapalkissa. Ennen: kuoren Löydä sopiva pilari kietoutui omalle rivilleen ja näkyi yhtä aikaa sivun Laske pilarien määrä -painikkeen kanssa.",
+   rule:"Logo vasemmalla, valikko keskellä, yksi toiminto oikealla. Alavalikko avautuu osoittimella ja fokuksella, vanhempi on itsekin linkki — paitsi ryhmä ilman omaa sivua (Tuotteet, Sokkelit), joka on painike ja ryhmäotsikko. Tuotteet-pudotus on kolme ryhmää, muut yksi sarake. Mobiilissa lapset ovat auki sisennettynä ja ensisijainen toiminto (.hdr-cta) on valikon viimeisenä kohtana täysleveänä — kiinteä alapalkki poistettiin 23.9.2026. aria-current merkitsee aktiivisen kohdan, myös jälkeläisen perusteella.",
+   merge:"Päätös 16.9.: kuoren painike piilotettiin mobiilissa, jolloin ylätunniste putosi 123 → 76 px, ja toiminto oli alapalkissa. Päätös 23.9.2026: kiinteä alapalkki poistettiin (se peitti ruudun alareunan koko selauksen ajan), ja painike palasi — nyt valikon sisään, jolloin ylätunniste pysyy 76 px:ssä suljettuna.",
    demo:'<p class="fine" style="margin:0">Katso sivun yläreuna. Mittaa 390 px:llä: apurivi 44 px, ylätunniste 76 px, murupolku 45 px.</p>'},
   {id:"crumb",wp:wp("teema","Teema."),n:"Murupolku",c:"nav.crumb (a .sep span[aria-current])",on:on("pil","tp","a","b","sivu","ak"),
    rule:"Alasivuilla aina, etusivulla ei. Viimeinen kohta on nykyinen sivu ilman linkkiä. Linkkien osuma-alue 33 px paddingilla, rivi ei kasva.",

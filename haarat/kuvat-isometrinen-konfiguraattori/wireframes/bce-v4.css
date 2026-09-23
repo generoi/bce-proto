@@ -212,31 +212,54 @@ footer a{color:#c8c5c2;text-decoration:none}
 footer a:hover{color:#fff;text-decoration:underline}
 footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:#a5a2a0;font-size:13px}
 
-/* mobiili: yksi toiminto aina näkyvissä */
-.bar{display:none;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--rule-2);padding:10px 14px;gap:10px;z-index:50}
-.bar .btn{flex:1;font-size:16px;padding:13px 8px}
 @media(max-width:980px){
   .top,.build,.buy{grid-template-columns:1fr;gap:32px}
   .tool-in{grid-template-columns:1fr 1fr}
   .menu-btn{display:inline-flex;margin-left:auto}
-  .hdr-cta{display:none}
   header.site .w{flex-wrap:wrap}
   header.site nav{order:3;width:100%;margin-left:0;display:none;flex-direction:column;gap:0;border-top:1px solid var(--rule);padding:6px 0 10px}
   header.site nav a{padding:13px 4px;border-radius:0;font-size:17px}
   header.site nav[data-open="true"]{display:flex}
-  .bar{display:flex}
-  body.has-bar{padding-bottom:74px}
   section{padding:44px 0}
+
+  /* Auki oleva valikko on oma vierityspalstansa, ei sivun jatke.
+     -------------------------------------------------------------------------
+     Ylätunniste on `position:sticky`. Mobiilissa valikko avautuu sen sisään ja
+     kaikki alavalikot ovat auki, joten lista on 28 kohtaa ja 1 578 px korkea —
+     lähes kaksi ruudullista. Sticky-elementti ei liiku sivun mukana, joten sen
+     yli menevää osaa ei saa näkyviin millään: mitattuna sivun vierittäminen
+     600 px ei siirtänyt viimeistä kohtaa (Yhteystiedot) lainkaan, se jäi
+     1 423 px:n korkeudelle. Puolet valikosta oli siis tavoittamattomissa.
+
+     Korkeus rajataan ruutuun ja lista vierii itse. 100svh (ei vh) laskee mobiilin
+     osoitepalkin oikein. Vähennettävä 196 px on mitattu pahimmasta tapauksesta eli
+     sivun yläreunasta, jossa apurivi on vielä näkyvissä: apurivi 45 + logorivi 70 +
+     toimintopainike 69, plus muutama piste väljyyttä. Alaspäin vieritettäessä
+     apurivi katoaa ja listan alle jää sen verran tyhjää — se on oikea suunta:
+     valikko ei saa jäädä ruudun alareunan alle millään vieritysasemalla.
+     overscroll-behavior estää vierityksen karkaamisen sivulle listan päättyessä. */
+  header.site nav[data-open="true"]{max-height:calc(100svh - 210px);overflow-y:auto;overscroll-behavior:contain}
+
+  /* 23.9.2026: kiinteä alapalkki poistettiin — se peitti ruudun alareunan koko
+     selauksen ajan. Ensisijainen toiminto ei silti saa kadota mobiilista, joten
+     kuoren painike tulee auki olevan valikon alalaitaan, vierivän listan alle.
+     Tarkennin on .w-tasoa, koska `header.site .tools` myöhempänä tiedostossa
+     voittaisi saman painoisen säännön ja painike näkyisi myös valikko kiinni. */
+  header.site .w .tools{display:none;order:4;width:100%;margin-left:0;padding:0 0 12px}
+  header.site .w nav[data-open="true"]~.tools{display:flex}
+  .hdr-cta{width:100%;font-size:17px;padding:13px 8px}
 }
 
 /* Kaista 981–1023 px on liian kapea kuudelle kohdalle ja painikkeelle yhtaikaa
-   (ylivuoto 29 px välit tiivistettyinäkin). Tässä välissä valikko pysyy vaakarivinä
-   ja ensisijainen toiminto siirtyy alapalkkiin — sama ratkaisu kuin mobiilissa,
-   jolloin konversiolinkki ei katoa miltään leveydeltä. Hampurilainen pysyy 980:ssä. */
+   (ylivuoto 29 px välit tiivistettyinäkin). Ennen alapalkki otti toiminnon tässä
+   välissä; kun palkki poistui 23.9.2026, painike jää ylätunnisteeseen ja tilaa
+   haetaan välejä ja painikkeen sisäreunuksia tiivistämällä — ei fonttikokoa. */
 @media(min-width:981px) and (max-width:1023px){
-  .hdr-cta{display:none}
-  .bar{display:flex}
-  body.has-bar{padding-bottom:74px}
+  header.site .w{gap:12px}
+  header.site nav{gap:0}
+  header.site nav a,header.site nav .navtop{padding:9px 6px}
+  header.site .tools{gap:8px}
+  .hdr-cta{padding:11px 10px}
 }
 
 /* --- sivukohtaiset lohkot, samaa kieltä --- */
@@ -497,6 +520,10 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .find p{font-size:15px;color:var(--ink-2);margin:0 0 16px}
 .find form{display:flex;gap:12px;flex-wrap:wrap}
 .find .field{background:var(--paper)}
+/* Koontisivulla koodihaku on oma lohkonsa perhekorttien yläpuolella eikä
+   lohkon loppuun ripustettu lisäys, joten se ei tarvitse erottavaa viivaa. */
+.find.find-yksin{margin-top:0;padding-top:0;border-top:0}
+.find .tulos{margin:16px 0 0;min-height:24px}
 .tbd-l{font-size:14px;color:var(--ink-3);margin:14px 0 0}
 
 /* Koontisivulla käyttökohdevalitsin on reitti eteenpäin, ei sivun sisältöä.
@@ -795,9 +822,6 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .shop .facts dt{order:2;font-size:17px}
 .shop .facts dd{order:1;margin:0;font-size:15px}
 .sizes{display:grid;grid-template-columns:repeat(3,1fr)}
-/* Alapalkin nimi on sama kuin sivun ensisijaisella toiminnolla, joten se ei saa
-   katketa kahdelle riville 390 px:n leveydellä. */
-.bar .btn{font-size:15px;padding:12px 6px;white-space:nowrap;letter-spacing:0}
 
 /* ===== tarvikesivu /pilarien-kiinnitystarvikkeet/ — build spec 1.0 =====
    Sivu on valintatyökalu, ei luettelo. Siksi kaksi asiaa ohjaa tyylejä: lohkon 2
@@ -1140,12 +1164,11 @@ footer a{display:inline-block;padding:4px 0;margin:-4px 0}
    Pienessä tekstissä oranssi on aina --accent-dark: 5,2:1 paperilla. */
 .flow .st .n,.steps li::before{color:var(--accent-dark)}
 
-/* Alapalkki on kuoressa (16.9.2026), ei sivukohtainen. Alle 19 px:n ensisijainen painike
-   (kuoren .btn-s 16 px, alapalkki 15 px) ei täytä 4,5:1 brändioranssilla (3,6:1), joten
-   pienissä painikkeissa pohja on --accent-dark: valkoinen sen päällä on 5,5:1. Iso
-   painike säilyy brändioranssina. */
-.btn-s.btn-1,.bar .btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
-.btn-s.btn-1:hover,.bar .btn-1:hover{background:#9a3609;border-color:#9a3609}
+/* Alle 19 px:n ensisijainen painike (kuoren .btn-s 16 px) ei täytä 4,5:1
+   brändioranssilla (3,6:1), joten pienissä painikkeissa pohja on --accent-dark:
+   valkoinen sen päällä on 5,5:1. Iso painike säilyy brändioranssina. */
+.btn-s.btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
+.btn-s.btn-1:hover{background:#9a3609;border-color:#9a3609}
 
 /* ===== tarvikesivu, yhdistelmä A + B (16.9.2026) =====
    Suodatin korostaa ja merkitsee, ei piilota: osuva rivi saa tekstimerkinnän, muut
