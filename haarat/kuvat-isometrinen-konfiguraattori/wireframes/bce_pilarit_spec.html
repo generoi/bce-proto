@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BCE-pilarit — koontisivu (prototyyppi, spec 1.0)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+<!-- Perhekorttien tuotekuvat ja heron terassikuva piirretään DOMiin, ei
+     <img>-elementtiin: silloin betoni- ja puupinnat tulevat sivun --bet-*- ja
+     --puu-*-tokeneista eivätkä viedyn tiedoston fallback-arvoista, ja kuva
+     korjaantuu itsestään kun mitta muuttuu (TUOTEKUVAT.md luku 2).
+
+     Järjestys on riippuvuusjärjestys eikä aakkosjärjestys, ja se on sitova:
+     mittakaavio.js ensin, koska tuotekuva.js lukee mitat sen PERHEET-taulukosta
+     — ja tuotekuva.js ennen kolmea muuta, koska palkkikuva, tarvikekuva ja
+     terassikuva lukevat kameran `tuotekuva.projektio`-oliosta *latautuessaan*,
+     eivät piirtäessään. Väärässä järjestyksessä ne eivät kaadu vaan putoavat
+     omaan fallback-kameraansa, eikä sitä huomaa kuvasta niin kauan kuin luvut
+     sattuvat olemaan samat. 23.9.2026 tämä sivu oli väärässä järjestyksessä.
+     Oikea järjestys on sama kuin bce_mista-ostat_spec.html:ssä. -->
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
+<script src="palkkikuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="terassikuva.js"></script>
+<!-- Tarvikelohkon kuvat ovat asennuskuvia: pilarin pää, siihen kierretty tarvike ja
+     siihen tuleva puu samassa kuvassa (TUOTEKUVAT.md luku 15). asennuskuva.js ei piirrä
+     itse mitään vaan asettaa muiden generaattorien kappaleet samaan kankaaseen, joten
+     yhdistelmakuva.js on oltava ladattuna ennen sitä. Molemmat lukevat kameran
+     tuotekuva.js:stä, joten ne tulevat sen jälkeen kuten muutkin. -->
+<script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="abar"></div>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+/* Koontisivu /bce-pilarit/, speksi 1.0. Sivun tehtävä: muuttaa kategoriahaku
+   valinnaksi. Ei tuoteluettelo, eikä etusivun toisinto.
+
+   16.9.2026, auditin P1: sivu toisti etusivun neljä lohkoa sanasta sanaan (.claims,
+   .cases, JeKi-.side, .img-band) ja oli 657 sanaa etusivun 665:tä vastaan. Kävijä, joka
+   klikkasi Pilarit, luki saman sivun eri otsikolla. Ne poistettiin. Jäljelle jäi se, mitä
+   vain tällä sivulla on: neljä perhettä, tuotekoodihaku, käyttökohteet, tarvikkeet,
+   konfiguraattori, jälleenmyyjät, isompi kohde. JeKi tavoitetaan navigaatiosta ja
+   alatunnisteesta; miksi pilari eikä valu on etusivun ja käyttökohdesivun asia. */
+const C={
+  /* Sivukartta 17.9.2026: /bce-pilarit/ on kanoninen Pilarit-sivu. Se on
+     Tuotteet-pudotuksen ensimmäinen ryhmä yhdessä tarvikkeiden ja sokkelien
+     kanssa — /tuotteet/-välisivua ei ole, ryhmällä ei ole omaa URLia. JeKi
+     tavoitetaan nyt myös valikosta, ja tämän sivun JeKi-lohko jää rinnalle.
+     Linkeissä on tuotanto-URL, kuten etusivulla. Tarvike- ja referenssikohtaisia
+     slugeja ei ole (/tarvikkeet/{tuote}/, /referenssit/{kohde}/), joten ne osoittavat
+     toistaiseksi hubiin. */
+  crumb:[["Etusivu","bce_etusivu_spec.html"],["Pilarit",null]],
+  url:{konf:"/konfiguraattori/", kayttokohteet:"/pilariperustus/",
+       tarvikkeet:"/pilarien-kiinnitystarvikkeet/", jeki:"/jeki-sokkeli/",
+       referenssit:"/referenssit/", ostat:"/mista-ostat/",
+       tarjous:"/yhteystiedot/tarjouspyynto/"},
+
+  /* Jälleenmyyjät tulevat kuoresta (SPEC.dealers, SPECDEALERS). */
+
+  /* 1 · Hero. Ensimmäinen lause määrittelee tuotteen, koska kategoriahakija
+     ei välttämättä tiedä mikä perustuspilari on. Kaksi reittiä: laskuri ja tuotekoodi.
+
+     22.9.2026: kolmas reitti «Vertaile pilariperheitä ↓» poistettu Ollin pyynnöstä.
+     Kun perheet nousivat heti heron alle, ankkuri vieritti seuraavaan lohkoon, joka
+     oli jo puoliksi ruudussa — se lupasi siirtymän eikä tehnyt mitään. Lohko itse
+     on se reitti. Jäljelle jäävä `.cta-2` on nyt yksi linkki, kuten muillakin
+     sivuilla. Tapahtuma `cta_vertailu_ankkuri` katosi samalla; se ei ollut
+     mittarilistalla eikä muualla koodissa. */
+  hero:{h1:"BCE-pilarit — valmis betoniperustus ilman valua",
+    lede:"Perustuspilari on valmiiksi valettu betonielementti. Se lasketaan sorapatjan päälle ja kantaa terassin, saunan, autokatoksen tai mökin ilman että työmaalla valetaan mitään. Neljä perhettä, 16 kokoa.",
+    /* 16.9.2026: painike lataa konfiguraattorin kuten muilla sivuilla. Aiemmin se oli
+       ankkuri #loyda, eli oranssi nappi vieritti toiseen oranssiin nappiin. */
+    cta1:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori","hero"],
+    /* 23.9.2026: molemmat toissijaiset ankkurit poistettiin, ja hero-oppi
+       (PRODUCT.md kohta 2) sallii yhden. Kumpikin lupasi matkan sinne, minne sivu
+       jo vie: perhelohko on järjestyksen vaihdon jälkeen heti heron alla, ja
+       koodihaku nousi Ollin pyynnöstä sen yläpuolelle, eli molemmat kohteet ovat
+       ensimmäisen vierityksen sisällä. Heroon jää yksi painike.
+       Tapahtumat `cta_vertailu_ankkuri` ja `cta_koodihaku_ankkuri` katoavat;
+       kumpaakaan ei ollut mittausdokumenteissa. */
+    /* Heron kuva on 23.9.2026 alkaen piirretty (terassikuva.hero), ja tämä kenttä
+       on sen tekstivastine — ei enää kuvapaikan teksti. Hero ei ole koriste: se on
+       sivun ainoa kuva, joka kertoo mihin tuotetta käytetään, eikä sen vieressä
+       lue mitään mikä toistaisi saman (TUOTEKUVAT.md luku 6). Teksti kertoo mitä
+       kuvasta pitäisi nähdä, ei mitä osia siinä on — osaluettelo on generaattorin
+       oletusnimike, ja se vastaisi väärään kysymykseen.
+
+       PIIRROS ON VÄLIAIKAINEN. Se korvataan valokuvalla kun sellainen on; ks.
+       terassikuva.js, terassikuva.hero. */
+    img:"Valmis terassi seisoo betonisten perustuspilarien päällä: laudoitus lepää palkkien varassa, palkit pilarikengissä ja pilarit suoraan sorapatjan päällä. Valettua perustusta ei ole."},
+
+  /* 3 · Neljä perhettä. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
+     PP:llä. Kortti kertoo mihin perhe on tarkoitettu; luvut ovat sen alla
+     vertailutaulukossa (3b). Kantavuusarvot ovat perhesivuilla.
+
+     Rivin kolmas kenttä oli kuvapaikan teksti ("Kuva: AP-pilari"); 18.9.2026 se on
+     perheen tunnus, jolla tuotekuva.js piirtää kortin kuvan. Etusivun sama lohko on
+     yhä paikanpitäjillä: kortit ovat tarkoituksella merkki merkiltä samat, ja
+     etusivu on hyväksytty 7.9.2026, joten muutos esitetään asiakkaalle eikä tehdä
+     itsestään (TUOTEKUVAT.md luku 3, kohta 2). Näkyvä copy ei muuttunut. */
+  fam:{h2:"Neljä pilariperhettä",
+    ing:"Perhe valitaan sen mukaan mitä rakennat ja kuinka iso siitä tulee.",
+    series:[
+      /* AP:lle ohjataan /uusi-pienempi-pilari/ 301:llä */
+      ["AP-pilari — kevyet piharakenteet","Matalat terassit, huussit ja pienet piharakennukset. Kevyin mallisto: yhden ihmisen työ alusta loppuun.","AP","Katso AP","/bce-pilarit/ap-pilari/"],
+      ["TP-pilari — terassit ja pienet rakennukset","Terassit, pienmökit ja pihasaunat. Yleisin valinta tee-se-itse-kohteisiin.","TP","Katso TP","/bce-pilarit/tp-pilari/"],
+      ["KP-pilari — kantavat rakennukset","Autokatokset, kesämökit ja isommat piharakennukset. Kun rakennuksen päällä on katto, lunta ja tuulta.","KP","Katso KP","/bce-pilarit/kp-pilari/"],
+      ["PP-pilari — pylvään ja tolpan jalusta","Ei rakennuksen perustus. Jalusta yksittäiselle pylväälle tai tolpalle: lipputanko, pihavalaisin, aitatolppa.","PP","Katso PP","/bce-pilarit/pp-pilari/"]],
+    cta:"Suunnittele perustus",
+    sub:"Vastaat muutamaan kysymykseen kohteestasi. Saat listan pilareista ja tarvikkeista.",
+    /* Yksikkö ratkaistiin 18.9.2026 (aineisto-taustamatskut luku 3.1): kuluttajasivu
+       käyttää kiloja asiakkaan omassa muodossa, ja kilonewtonit epäkeskisyyksineen
+       ovat suunnittelijan sivulla. Nykysivustolla AP on newtoneina ja TP sekä KP
+       kiloina samalla sivulla — se on se ristiriita, jota tämä ei toista. */
+    },
+
+  /* 3b · Perheet rinnakkain. Kortit yläpuolella kertovat mihin perhe on tarkoitettu;
+     ne eivät kerro kuinka kaukana perheet ovat toisistaan. Kävijä, joka epäröi TP:n ja
+     KP:n välillä, epäröi juuri sitä — ja kortin kaksi lausetta eivät ratkaise sitä,
+     koska ne on kirjoitettu erikseen eikä toisiaan vasten.
+
+     Taulukko on tällä sivulla eikä etusivulla: PRODUCT.md:n etusivuperiaate 4 sanoo,
+     että taulukko on vertailuformaatti ihmiselle joka jo vertailee monella akselilla,
+     ja se kuuluu alasivulle. Pilarit-klikkaus on juuri se hetki, jossa vertailu alkaa.
+
+     **Akseli käännettiin 23.9.2026 Ollin pyynnöstä** (*tuotteet riveinä, ja jokaiselle
+     tuotteelle pieni kuva*). Ensimmäinen versio oli ominaisuus rivinä ja perhe
+     sarakkeena; nyt rivi on tuote, kuten perustustapasivun taulukossa ja kuten
+     tuoteluettelossa yleensä. Kolme asiaa muuttui sen mukana:
+
+       kuva       rivi alkaa perheen tuotekuvalla, samassa jaetussa mittakaavassa kuin
+                  korttien kuvat. Se on koko rivin ensimmäinen argumentti: kokoero
+                  nähdään ennen kuin yhtäkään lukua on luettu, eikä AP saa näyttää
+                  KP:n kokoiselta rivin tasaamiseksi
+       leveys     kahdeksan saraketta ei mahdu .data.stack:in 900 pikseliin, joten
+                  taulukko saa tässä koko sisältöleveyden
+       kapea      pinottuna jokainen rivi on nyt perhe otsikkonaan ja ominaisuudet sen
+                  alla — eli sama järjestys kuin korteissa. Edellinen versio pinoutui
+                  ominaisuus kerrallaan, mikä luki hyvin muttei vastannut korttien
+                  järjestystä
+
+     Sarakkeet ovat sitä, mikä päättää perheen — ei sitä, mitä tuotteesta voi kertoa.
+     Pois jätetyt: pilarin pään poikkileikkaus, rasitusluokka, CE ja EAN (perhesivun
+     tekniset tiedot), sekä kuormakestävyydet epäkeskisyyksineen (suunnittelijan sivu,
+     linkki taulukon alla).
+
+     Kaksi saraketta lasketaan mittataulukosta eikä kirjoiteta tähän: korkeusalue ja
+     pohjalaatta tulevat tuotekuva.koot()/tuotekuva.mitat():n kautta mittakaavio.js:n
+     PERHEET-taulukosta, joten taulukko, tuotekuva ja mittakaavio eivät voi ajautua
+     erilleen. Loput ovat copya, koska ne eivät ole geometriaa.
+
+     `rows` on yhä ominaisuus kerrallaan, vaikka taulukko piirtyy tuote kerrallaan:
+     ominaisuuden neljä arvoa on kirjoitettava peräkkäin tai niitä ei ole kirjoitettu
+     toisiaan vasten — ja juuri se on taulukon koko tehtävä. Käännös tehdään
+     renderöinnissä yhdellä rivillä.
+
+     Kuusi solua on [TÄYTETTÄVÄ], ja kaikki kuusi ovat AP:n ja PP:n riveillä. Se ei
+     ole taulukon vika vaan sen löydös: AP ja PP puuttuvat molemmista asiakkaan omista
+     kuluttajajulkaisuista (esite 2023, opas 2025), eikä PP:lle ole julkaistu kantavuutta
+     missään lähteessä (pilarilaskuri/LASKENTA.md, vaihe 0). Neljän perheen taulukko on
+     ensimmäinen paikka, jossa aukko näkyy rinnakkain — ei arvattu. */
+  cmp:{h3:"Perheet rinnakkain",
+    p:"Sama tieto neljästä perheestä samassa muodossa. Kortin kuvaus kertoo mihin perhe on tarkoitettu, taulukko kertoo kuinka paljon ne eroavat toisistaan.",
+    kulma:"Pilariperhe",
+    perheet:["AP","TP","KP","PP"],
+    otsikot:["AP-pilari","TP-pilari","KP-pilari","PP-pilari"],
+    /* Ominaisuus on [nimi, arvot] tai [nimi, "laskurin nimi"]; arvot ovat perheiden
+       järjestyksessä. Merkkijono viittaa LASKE-olion funktioon, joka lukee arvon
+       mittataulukosta perheittäin. Taulukossa näistä tulee sarakkeita. */
+    rows:[
+      /* Sama sanamuoto kuin korttien otsikoissa: yksi käsite ei saa kahta nimeä
+         samalla ruudulla. Tämä on taulukon ainoa sarake, jossa on lause eikä arvoa,
+         ja siksi ainoa jonka solut rivittyvät — merkitty «sanat». */
+      ["Mihin",["Kevyet piharakenteet","Terassit ja pienet rakennukset",
+        "Kantavat rakennukset","Pylvään ja tolpan jalusta"],"sanat"],
+      ["Korkeudet","korkeudet"],
+      /* Lähde: pilariesite 2023 ja Rakentajan opas 2025, molemmat asiakkaan omia ja
+         yhtäpitäviä (aineisto-taustamatskut luku 3.1). Sana «suositeltu» on syy siihen,
+         miksi tämä luku ja A-601:n kilonewtonit eivät ole ristiriidassa. */
+      ["Suositeltu enimmäiskuormitus",["[TÄYTETTÄVÄ]","1 600 kg","5 000 kg","[TÄYTETTÄVÄ]"]],
+      /* Kokokohtaiset painot ovat esitteessä 2023; tässä perheen vaihteluväli. */
+      ["Paino",["[TÄYTETTÄVÄ]","43–67 kg","126–187 kg","[TÄYTETTÄVÄ]"]],
+      /* Painon seuraus sanottuna ääneen. Tämä on kuluttajan kysymys «onnistuuko tämä
+         minulta», eikä 126–187 kg vastaa siihen ilman tätä riviä. AP:n arvo on
+         korttien hyväksyttyä copya, KP:n tämän sivun aiempaa tarvikecopya. */
+      /* Kaksi sanaa, ei lausetta: vertailusarakkeen tehtävä on olla vertailtavissa
+         yhdellä silmäyksellä, ja «Kahden ihmisen työ, ei konetta» rivittyi kahdelle
+         riville joka ruudulla. Varaumat («ei konetta», «nostokorvasta») ovat
+         perhesivun nostolohkon asia, ei tämän. */
+      ["Nostaminen",["Yksi ihminen","Kaksi ihmistä","Kone","[TÄYTETTÄVÄ]"]],
+      ["Pohjalaatta","laatta"],
+      /* PP:n pää on istukka eikä kierre, ja se on koko perheen ero muihin: siihen ei
+         kiinnitetä BCE:n tarvikkeita vaan siihen pujotetaan pylväs. Halkaisija on
+         tuotekoodista PP-60-600 ja kiristysrenkaan mitasta (tuotekuva.js). */
+      /* Sarakeotsikko on «Kiinnitys» eikä «Kiinnitys pilarin päässä»: kahdeksan
+         saraketta ei kestä kolmiriviaista otsikkoa, ja arvot sanovat itse missä
+         kiinnitys on. Kapealla pinottuna sama sana on rivin selitteenä.
+
+         «M20-kierre» eikä «M20-sisäkierre», «Istukka Ø60 mm» eikä «Istukka 60 mm:n
+         putkelle»: molemmat rivittyivät, ja rivittynyt kahden sanan arvo maksaa
+         vertailutaulukossa enemmän kuin sisä-etuliite tuo. Täysi muoto on
+         perhesivun teknisissä tiedoissa. */
+      ["Kiinnitys",["M20-kierre","M20-kierre","M20-kierre","Istukka Ø60 mm"]]],
+    /* Alaviitteessä ovat ne kaksi asiaa, jotka ovat tosia mutta eivät mahdu soluun
+       rikkomatta sarakkeen rytmiä: AP:n poikkeava koko ja PP:n istukan mitta. */
+    note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa. AP-300:n pohjalaatta on 450 × 450 mm, perheen kahden muun koon 330 × 330 mm. PP:n istukka on tarkoitettu 60 mm:n putkelle, eikä siihen kierretä BCE:n tarvikkeita.",
+    link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_dwg"]},
+
+  /* 2 · Tuotekoodihaku. Nostettu 23.9.2026 Ollin pyynnöstä perhekorttien yläpuolelle
+     ja omaksi lohkokseen: se on oikotie sille, joka tietää jo mitä hakee, eikä
+     oikotie kuulu sen jälkeen, mitä se ohittaa.
+
+     Haku toimii nyt oikeasti. Auditin 16.9.2026 havainto oli «kaksi hakukenttää,
+     kumpikaan ei toimi»: urakoitsija kirjoitti KP-900 ja sai tyhjän. `[TÄYTETTÄVÄ]`
+     kentän alta poistettiin samalla — se lupasi koodilistan, ja koodilista on nyt
+     haussa eikä tekstinä. EAN-koodit ovat tarvikesivulla; ne tulevat tähän vasta
+     jos jälleenmyyjäosio toteutetaan. */
+  find:{h3:"Etsi tuotekoodilla",
+    p:"Tunnistatko tuotteen pakkauksesta tai jälleenmyyjän tiskiltä? Syötä koodi, niin näytämme oikean sivun.",
+    ph:"Syötä tuotekoodi, esim. KP-900", cta:"Etsi",
+    vihje:"Haku tuntee 16 pilarikoodia ja 9 tarvikekoodia.",
+    tyhja:"Syötä tuotekoodi, esimerkiksi KP-900 tai PIK 50-70.",
+    eiloydy:"ei ole tuntemamme koodi. Tarkista kirjoitusasu tai valitse perhe alta.",
+    perhe:"pilariperheen sivu", tarvike:"kiinnitystarvikkeet"},
+
+  /* 4 · Käyttökohteet. 22.9.2026: lohko on nyt perheiden jälkeen, ei ennen niitä.
+     Peruste oli aiemmin, että enemmistö tietää projektinsa eikä tuotettaan — se
+     pätee etusivulla, mutta tänne on tultu klikkaamalla Pilarit. Se klikkaus on jo
+     tuotevalinta, ja käyttökohdevalitsin veisi kävijän heti pois tuotesivulta.
+     Perheet vastaavat ensin siihen mitä tältä sivulta haettiin; käyttökohde jää
+     reitiksi sille, joka ei perheistä tunnistanut omaansa. Lohko on etusivun
+     käyttökohdevalitsin sellaisenaan. */
+  use:{h2:"Mihin pilariperustusta käytetään",
+    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
+    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
+      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
+      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
+      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
+      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
+      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
+
+  /* 5 · Tarvikkeet. Jokaisesta on kerrottava mitä se tekee ja missä yhteydessä —
+     nimilista ei kerro kumpaakaan, ja tarvikkeiden jääminen tilaamatta on yleisin
+     virhe.
+
+     23.9.2026, kaksi muutosta samaan lohkoon kahdesta haarasta. **Kuvat:** rivin
+     toinen kenttä oli kuvapaikan teksti ("Detaljikuva: pilarikenkä pilarin päässä…");
+     nyt se on generaattorin tunnus, jolla kuva piirretään. Sama ratkaisu kuin
+     perhekorteissa ja TP-perhesivun samassa lohkossa. `pari` piirtää tarvikkeen ja
+     siihen kuuluvan puun, `osa` pelkän tarvikkeen — ja molemmissa on pilarin pää
+     mukana, koska lohkon kysymys on nimenomaan *miten rakenne kiinnittyy
+     perustukseen* (asennuskuva.js, TUOTEKUVAT.md luku 15). Pari valitaan rivin oman
+     copyn mukaan, ei TP-sivun mukaan: tämä rivi on **tuoteryhmä** eikä yksittäinen
+     nimike, joten «Liittää pystyrakenteen pilarin päähän» on PIK 90-140:n tehtävä,
+     kun taas TP-sivun rivi on PIK 50-70 yhdelle lankulle. Väärä pari olisi kuva, joka
+     sanoo eri asian kuin sen alla oleva lause — sama virhe, joka korjattiin
+     TP-sivulta 21.9.2026.
+
+     **Tekstit:** neljä tyhjää kenttää täytetty. Auditin havainto oli, että 3/4
+     kontekstiriviä on tyhjä ja teräslaatan tehtävä `[TÄYTETTÄVÄ]`, vaikka lohkon koko
+     peruste on kertoa mitä tarvike tekee. Tekstejä ei kirjoitettu tähän uusiksi eikä
+     arvattu: **jokainen on lyhennys tarvikesivun omasta tekstistä**, joka taas on
+     peräisin asiakkaan esitteestä 2023 (`../aineisto-taustamatskut-2026-09-18.md`
+     luku 3). Hubi on tarvikesivun kärki, ei toinen lähde — jos tarvikesivun teksti
+     muuttuu, tämä muuttuu sen mukana (`../jaettu-sisalto.md`).
+
+     PAK:n tehtäväteksti on tarkoituksella yleinen («liittää vaakapalkin pilariin»).
+     Kolme lähdettä on eri mieltä siitä, ripustetaanko palkki kylkeen vai lasketaanko
+     se päälle — pilari–tarvike-matriisin avoin kysymys A — eikä hubi ota siihen
+     kantaa ennen kuin se on ratkaistu. */
+  parts:{h2:"Perustus on pilarit ja tarvikkeet",
+    ing:"Yleisin virhe on tilata pelkät pilarit. Kiinnitystarvikkeet ratkaisevat sen, miten rakenne kiinnittyy perustukseen, ja ne mitoitetaan yhdessä pilarin kanssa. Kaikki tarvikkeet ovat BCE:n omaa valmistusta ja yhteensopivia keskenään. Tarvike ruuvataan pilarin valmiiseen kierteeseen, joten poraamista ei tarvita, ja säätövara korkeus- ja sivusuunnassa korjaa pienet heitot.",
+    items:[
+      ["Pilarikenkä",{pari:"pik-90-140"},
+       "Liittää pystyrakenteen pilarin päähän.",
+       "Terassin runkolankut (50–70 mm) ja katoksen kannatintolpat (90–140 mm). Korkeutta säädetään kiertämällä."],
+      ["Palkkikenkä PAK",{pari:"pak-100x150"},
+       "Liittää vaakapalkin pilariin.",
+       "Välipohjan ja rungon kannatinpalkit. Kaksi kokoa: 100 × 150 ja 100 × 200 mm."],
+      /* tl-150x150 on ainoa räjäytetty pari: paikalleen laskettuna lauta peittäisi
+         koko laatan (yhdistelmakuva.js). Räjäytys näyttää sen, mitä rivin teksti
+         sanoo — rakenne tulee suoraan laatan päälle. */
+      ["Teräslaatta",{pari:"tl-150x150"},
+       "Antaa tasaisen tukipinnan pilarin päähän.",
+       "Kun valmis rakenne asennetaan suoraan pilarin päälle. Kolme kokoa, ero on kiinnityspisteissä."],
+      ["Nostokorva",{osa:"nostokorva-m20"},
+       "Pilarin nostamiseen paikalleen.","KP-perheen pilarit painavat 126–187 kg ja nostetaan koneella."]],
+    /* Perhekohtaiset tarvikesuositukset ovat perhesivuilla. */
+    cta:"Katso kaikki kiinnitystarvikkeet"},
+
+  /* 8 · Konfiguraattorin oma CTA-lohko. Projektin päämittari syntyy tästä.
+     Kuvassa on aito konfiguraattorin tulosnäkymä, ei piirretty jäljitelmä. */
+  /* 8 · Konfiguraattori. Ratkaisijat ja laskuri vastasivat samaan tarpeeseen
+     kahdessa eri lohkossa — yhdistetty. Kolme asiaa ratkaisee valinnan, ja
+     konfiguraattori kysyy juuri ne. Kuvassa on aito tulosnäkymä. */
+  cfg:{h2:"Miten valitset oikean pilarin",
+    ing:"Kolme asiaa ratkaisee: mitä rakennat, kuinka iso siitä tulee ja kuinka korkealle maasta rakenne halutaan. Konfiguraattori kysyy ne ja antaa sijoittelukaavion, pilarimäärän ja tarvikelistan kappalemäärineen.",
+    steps:[
+      ["Mitä rakennat","Kevyt rakennelma, terassi tai sauna, vai autokatos ja isompi rakennus. Tämä ratkaisee perheen."],
+      ["Kuinka iso","Mitä isompi rakennus, sitä suurempi kantavuus. Muista myös myöhemmät lisäykset — esimerkiksi terassin lasitus lisää kuormaa merkittävästi."],
+      ["Kuinka korkealle maasta","Korkeus valitaan sen mukaan, kuinka korkealle rakenne halutaan ja kuinka syvälle pilari asennetaan."]],
+    alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
+    /* `sub` poistettu 20.9.2026 Ollin pyynnöstä. Teksti oli varauma painikkeen
+       alla («et tarvitse kuormalaskelmia»), ja se vastasi vastaväitteeseen, jota
+       lukija ei ollut vielä ehtinyt esittää — kolme askelta sen yläpuolella
+       kertovat jo mitä konfiguraattori kysyy. Muilla sivuilla `.act .sub` jää. */
+    cta:"Suunnittele perustus"},
+
+  /* 9 · Jälleenmyyjäklikki on sivun mitattavin tapahtuma. Yksi lista, sama kuin
+     etusivulla, tasapuolisesti: sama järjestys, sama koko, ei korostuksia. */
+  buy:{h2:"Osta jälleenmyyjältä",
+    ing:"BCE-pilarit ja tarvikkeet myydään rautakaupoissa kaikkialla Suomessa. Hinnat ovat samaa tasoa jälleenmyyjien välillä."},
+
+  /* 10 · Isompi kohde omana toimintonaan (kommentti 6) */
+  big:{h2:"Isompi kohde tai kysyttävää?",
+    p:"Suuremmat tilaukset ja projektikohteet hoituvat suoraan meidän kauttamme. Vastaamme tarjouspyyntöön tunnin sisällä.",
+    cta:"Pyydä tarjous", sub:"[TÄYTETTÄVÄ]"}   /* puhelin ja sähköposti */
+};
+
+(function(){
+  "use strict";
+  const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+  SPECSHELL(E,{crumb:C.crumb,active:"Pilarit"});
+
+  /* Perhekorttien tuotekuvat: neljä perhettä, kustakin suurin koko.
+
+     Neljä kuvaa on samassa mittakaavassa, ja se on lohkon koko peruste: perhe
+     valitaan sen mukaan kuinka iso rakennus on, joten AP-400 ei saa näyttää
+     KP-1000:n kokoiselta. tuotekuva.rivi tekee molemmat asiat joita se vaatii —
+     saman kertoimen ja saman kankaan — joten kuvat ovat keskenään samankokoisia
+     ja yksi CSS-sääntö skaalaa ne kaikki samalla kertoimella. Ilman yhteistä
+     kangasta jokainen kortti skaalautuisi omalla kertoimellaan heti kun laatikko
+     on kuvaa kapeampi, eli juuri kapeilla ruuduilla, joissa on 80,9 % kävijöistä.
+
+     koriste:true — kortin H3 kertoo tuotteen nimen, joten kuva on koriste eikä
+     ruudunlukija toista nimeä kahdesti (TUOTEKUVAT.md luku 6). merkinta:false —
+     kaiverrettu tuotekoodi ei lue tässä koossa. id on etuliite, josta jokainen
+     kuva saa oman päätteensä: neljä SVG:tä samassa dokumentissa, eikä kahdella
+     saa olla samaa sisäistä id:tä.
+
+     Kuvat tasataan alareunaan CSS:ssä (.serie .im.piirros), jotta neljä pilaria seisoo
+     samalla tasolla kuin hyllyllä. */
+  const KUVA={};
+  window.tuotekuva.rivi(window.tuotekuva.perheet,
+    {korkeus:200, koriste:true, merkinta:false, id:"kortti"})
+    .forEach(function(o){ KUVA[o.perhe]=o.svg; });
+  /* Tarvikelohkon asennuskuvat: pilarin pää, siihen kierretty tarvike ja siihen
+     tuleva puu. Yhteinen kangas ja yhteinen skaala, kuten perhekorteissa ja
+     TP-perhesivun samassa lohkossa — muuten jokainen kuva skaalautuu CSS:ssä omalla
+     kertoimellaan heti kun laatikko on kuvaa kapeampi, ja nostokorva olisi
+     moninkertaisessa mittakaavassa palkkikenkään nähden. Tasaus «ala» antaa neljälle
+     kuvalle saman pilarin rajauksen, eli pilarin pää on joka kortissa samalla tasolla.
+
+     koriste:true — kortin nimi on vieressä tekstinä, joten ruudunlukija ei toista
+     sitä kuvana. id on kuvakohtainen: neljä SVG:tä samassa dokumentissa, eikä
+     kahdella saa olla samaa sisäistä id:tä. */
+  const DET_KORKEUS=150;
+  const DET_SKAALA=DET_KORKEUS/Math.max.apply(null,
+    C.parts.items.map(p=>window.asennuskuva.laajuus(p[1])));
+  const DETALJI=window.tuotekuva.kangas(
+    C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
+      {skaala:DET_SKAALA, koriste:true, id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
+
+  /* Vertailutaulukon rivikuvat: jaettu mittakaava ja **yhteinen kangas**, kuten
+     perhekorteissa. Kangas on kaikilla 85 × 96 px, joten neljä riviä ovat yhtä
+     korkeita ja taulukko on taulukko eikä porras.
+
+     Välissä kokeiltiin omaa kangasta kullekin — silloin kuvan korkeus olisi itse
+     vertailu (AP 88, KP 150 px) eikä AP:n yläpuolelle jäisi tyhjää. Se hylättiin
+     23.9.2026 Ollin pyynnöstä: rivien eri korkeudet maksoivat enemmän kuin tyhjä
+     voitti, koska silmä lukee taulukkoa riviväliä pitkin. **Tyhjä AP:n kuvan
+     yläpuolella on nyt tarkoitettu**: se on se, mitä AP:n lyhyys näyttää.
+
+     56 px on suurimman pilarin korkeus ja tulee KP-1000:lle; kangas on aina 40 px
+     sitä korkeampi. Aiempi 110 teki KP:n rivistä 213 px:n korkuisen, mikä oli
+     lohkossa liikaa. Mittakaava on jaettu, ja se on koko kuvan peruste:
+     perhekohtaisesti normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa
+     eivätkä kertoisi sitä ainoaa asiaa, jonka ne voivat kertoa yhdellä silmäyksellä. */
+  const RIVIKUVA={};
+  window.tuotekuva.rivi(C.cmp.perheet,
+    {korkeus:56, koriste:true, merkinta:false, id:"rivi"})
+    .forEach(function(o){ RIVIKUVA[o.perhe]=o.svg; });
+
+  /* Vertailutaulukon lasketut rivit. Molemmat lukevat saman mittataulukon kuin
+     kortin tuotekuva, joten taulukko ei voi kertoa muuta kuin mitä kuva piirtää. */
+  const LASKE={
+    /* Pelkkä korkeusalue. Kokojen määrä («· 3 kokoa») oli mukana 23.9. aamupäivän
+       version ja poistettiin Ollin pyynnöstä samana päivänä: se ei ratkaise perheen
+       valintaa — alue ratkaisee — ja se teki jokaisesta solusta kaksirivisen, mikä
+       oli sarake sarakkeelta se mikä sai taulukon näyttämään rikkonaiselta.
+       PP:llä on yksi koko, joten väliviivaa ei tule. */
+    korkeudet:function(perhe){
+      const k=window.tuotekuva.koot(perhe);
+      return k.length>1 ? k[0]+"–"+k[k.length-1]+" mm" : k[0]+" mm";
+    },
+    /* D1 on pohjalaatan sivu, ja laatta on neliö. Se ei ole perheen vakio kaikkialla:
+       AP-300:n laatta on 450 ja perheen muiden 330. Poikkeusta ei keskiarvoisteta pois
+       vaan se kirjoitetaan näkyviin — juuri se on syy, miksi AP:n kokoasteikko on
+       epätasainen (aineisto-taustamatskut luku 3.7). */
+    laatta:function(perhe){
+      const ryhmat={};
+      window.tuotekuva.koot(perhe).forEach(function(koko){
+        const d=window.tuotekuva.mitat(perhe,koko).D1;
+        (ryhmat[d]=ryhmat[d]||[]).push(koko);
+      });
+      const arvot=Object.keys(ryhmat).sort((a,b)=>ryhmat[b].length-ryhmat[a].length);
+      /* Vain perheen yleisin mitta soluun. Poikkeus — AP-300:n laatta on 450 ja
+         perheen kahden muun koon 330 — oli solussa sulkeissa ja vei sen kolmelle
+         riville, eli yhden perheen erikoistapaus rikkoi koko sarakkeen rytmin.
+         Se on nyt taulukon alaviitteessä (C.cmp.poikkeus), jossa sille on tilaa
+         tulla sanotuksi kokonaisena. Tieto ei siis katoa, se siirtyy. */
+      return arvot[0]+" × "+arvot[0]+" mm";
+    }};
+  const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
+  const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
+  const arrow=t=>E(t)+" →";
+  const down=t=>E(t)+" ↓";
+  document.getElementById("main").innerHTML=
+
+  /* 1 · Hero */
+  '<div class="w"><section class="hero hero-spec">'+
+    "<div><h1>"+E(C.hero.h1)+'</h1><p class="lede">'+E(C.hero.lede)+"</p>"+
+      '<div class="cta"><a class="btn btn-1" href="'+E(SPECLINK(C.hero.cta1[1]))+'" data-event="'+E(C.hero.cta1[2])+
+        '" data-sijainti="'+E(C.hero.cta1[3])+'">'+E(C.hero.cta1[0])+"</a></div>"+
+      "</div>"+
+    '<div class="hero-img piirros">'+terassikuva.hero(C.hero.img)+"</div></section></div>"+
+
+  /* 2 · Tuotekoodihaku omana lohkonaan, perhekorttien yläpuolella */
+  sect('<div class="find find-yksin"><h3>'+E(C.find.h3)+"</h3><p>"+E(C.find.p)+"</p>"+
+    '<form id="koodilomake"><input id="koodikentta" class="field" type="search" aria-label="'+E(C.find.ph)+'" placeholder="'+E(C.find.ph)+'">'+
+    '<button class="btn btn-2" type="submit" data-event="haku_tuotekoodi">'+E(C.find.cta)+"</button></form>"+
+    '<p class="tulos" id="kooditulos" role="status" aria-live="polite">'+E(C.find.vihje)+"</p></div>","koodi")+
+
+  /* 3 · Neljä perhettä — etusivun .series kuvineen, neljä korttia kolmen sijaan */
+  sect(head(C.fam.h2,C.fam.ing)+
+    '<div class="series series-4">'+C.fam.series.map(s=>'<div class="serie"><div class="im piirros">'+KUVA[s[2]]+
+      "</div><h3>"+E(s[0])+"</h3><p>"+E(s[1])+"</p>"+
+      '<a class="more lk" href="'+E(SPECLINK(s[4]))+'" data-event="cta_pilariperhe" data-perhe="'+E(s[0])+'">'+arrow(s[3])+"</a></div>").join("")+"</div>"+
+    /* 3c · Vertailutaulukko korttien ja lohkon toiminnon väliin: se on korttien
+       jatke eikä oma kysymyksensä, ja «Laske pilarien määrä» on molempien jälkeen.
+       th[scope=row] on ominaisuuden nimi ja data-lbl kantaa perheen nimen kapealle
+       ruudulle, jossa .stack piilottaa otsikkorivin ja pinoaa rivit lohkoiksi. */
+    '<div class="vertailu"><h3>'+E(C.cmp.h3)+"</h3><p>"+E(C.cmp.p)+"</p>"+
+      /* Käännös: `rows` on ominaisuus kerrallaan, taulukko piirtyy perhe kerrallaan.
+         Arvot lasketaan kerran ominaisuutta kohti, ja rivi poimii niistä oman
+         indeksinsä — laskurit ajetaan siis neljä kertaa eikä 28. */
+      (function(){
+        const arvot=C.cmp.rows.map(r=>
+          typeof r[1]==="string" ? C.cmp.perheet.map(p=>LASKE[r[1]](p)) : r[1]);
+        return '<div class="tw"><table class="data stack vertailutaulu"><thead><tr><th>'+
+          E(C.cmp.kulma)+"</th>"+
+          C.cmp.rows.map(r=>"<th>"+E(r[0])+"</th>").join("")+"</tr></thead><tbody>"+
+          C.cmp.perheet.map((perhe,i)=>'<tr><th scope="row">'+
+            '<span class="pf"><span class="pf-im">'+RIVIKUVA[perhe]+"</span>"+
+            "<b>"+E(C.cmp.otsikot[i])+"</b></span></th>"+
+            arvot.map((a,j)=>'<td'+(C.cmp.rows[j][2]?' class="'+C.cmp.rows[j][2]+'"':"")+
+              ' data-lbl="'+E(C.cmp.rows[j][0])+'">'+T(a[i])+"</td>").join("")+
+            "</tr>").join("")+"</tbody></table></div>";
+      })()+
+      '<p class="fine">'+E(C.cmp.note)+"</p>"+
+      '<p class="next"><a class="more" href="'+E(SPECLINK(C.cmp.link[1]))+'" data-event="'+
+        E(C.cmp.link[2])+'">'+arrow(C.cmp.link[0])+"</a></p></div>"+
+    '<div class="cta-block"><a class="btn btn-1" href="'+E(SPECLINK(C.url.konf))+'" data-event="cta_konfiguraattori" data-sijainti="perheet">'+
+      E(C.fam.cta)+'</a><p class="sub">'+E(C.fam.sub)+"</p></div>","perheet")+
+
+  /* 4 · Käyttökohteet — etusivun .pick, perheiden jälkeen */
+  sect(head(C.use.h2,C.use.ing)+
+    '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
+      '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
+
+  /* 5 · Tarvikkeet — etusivun .pick-kortti kahdella tietorivillä: tehtävä ja käyttöyhteys */
+  sect(head(C.parts.h2,C.parts.ing)+
+    '<div class="pick pick-parts">'+C.parts.items.map((p,i)=>'<a href="'+E(SPECLINK(C.url.tarvikkeet))+'" data-event="cta_tarvikkeet" data-tarvike="'+E(p[0])+'"><span class="im piirros">'+DETALJI[i]+'</span><span class="nm">'+E(p[0])+"</span>"+
+      '<span class="fn">'+T(p[2])+"</span>"+
+      '<span class="cx">'+(p[3]?T(p[3]):"")+"</span></a>").join("")+"</div>"+
+    '<p class="next"><a class="more" href="'+E(SPECLINK(C.url.tarvikkeet))+'" data-event="cta_tarvikkeet" data-tarvike="kaikki">'+
+      arrow(C.parts.cta)+"</a></p>"+
+    "")+
+
+  /* 8 · Konfiguraattori — etusivun .cfg, ratkaisijat mukana samassa lohkossa */
+  /* Kommenttikierros 2 (15.9.2026): .cfg on kahdessa palstassa kaikilla sivuilla,
+     koska kuva vei aiemmin koko leveyden. Teksti, vaiheet ja toiminto vasemmalle,
+     kuva oikealle. */
+  /* `ei-snap` 20.9.2026: lohko ei ole enää scroll-snapin kohta. Snap-kohtia on
+     koko CSS:ssä vain tämä yksi, joten sivulta katoaa snap kokonaan. Animaatio
+     jää — se ajetaan vierityksen aikajanalla eikä tarvitse snappia. */
+  sect('<div class="cfg ei-snap"><div>'+head(C.cfg.h2,C.cfg.ing)+
+    '<ol class="steps">'+C.cfg.steps.map(x=>"<li><b>"+E(x[0])+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
+    '<p class="act"><a class="btn btn-1" href="'+E(SPECLINK(C.url.konf))+'" data-event="cta_konfiguraattori" data-sijainti="lopetus">'+
+    E(C.cfg.cta)+"</a></p></div>"+
+    '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
+    "</div>","loyda")+
+
+  /* 9 · Mistä ostat — yksi jälleenmyyjälista, sama kuin etusivulla */
+  sect(head(C.buy.h2,C.buy.ing)+
+    SPECDEALERS(E,{cls:"dealers-4",sijainti:"lopetus"}))+
+
+  /* 10 · Isompi kohde — oma toiminto */
+  sect('<div class="band"><div><h2>'+E(C.big.h2)+"</h2><p>"+E(C.big.p)+"</p></div>"+
+    '<div><a class="btn btn-1" href="'+E(SPECLINK(C.url.tarjous))+'" data-event="cta_yhteydenotto">'+E(C.big.cta)+"</a>"+
+    '<p class="sub">'+T(C.big.sub)+"</p></div></div>","yhteys");
+
+  /* Koodihaku toimii. Auditin 16.9.2026 havainto oli «kaksi hakukenttää, kumpikaan
+     ei toimi»; tämä korjaa niistä sivun oman. Koodilistaa ei kirjoiteta tähän käsin:
+     pilarikoodit luetaan mittakaavio.js:n PERHEET-taulukosta ja perhesivun osoite
+     C.fam.series-riviltä, joten uusi koko tulee hakuun samalla kun se tulee kuviin.
+     PP-600 on erikseen, koska se ei ole mittakaaviossa — sen pää on istukka eikä
+     M20-kierre. Tarvikekoodit ovat pilari–tarvike-matriisin luvusta 2 ja osoittavat
+     tarvikesivulle, koska tarvikekohtaisia slugeja ei ole.
+
+     Normalisointi poistaa kaiken paitsi kirjaimet ja numerot, joten «KP-900»,
+     «kp 900» ja «KP900» ovat sama koodi. Se on koko syy siihen, että haku toimii
+     jälleenmyyjän tiskillä: koodi luetaan pakkauksesta eikä kirjoitusasusta. */
+  const norm=v=>String(v==null?"":v).toUpperCase().replace(/×/g,"X").replace(/[^A-Z0-9]/g,"");
+  const KOODIT={}, PURL={};
+  C.fam.series.forEach(s=>{PURL[s[2]]=s[4];});
+  const PH=window.mittakaavio.perheet;
+  Object.keys(PH).forEach(k=>PH[k].kt.forEach(mm=>{
+    KOODIT[norm(k+mm)]={nimi:k+"-"+mm, url:PURL[k], mihin:C.find.perhe};
+  }));
+  KOODIT[norm("PP-600")]={nimi:"PP-600", url:PURL.PP, mihin:C.find.perhe};
+  ["PIK 50-70","PIK 90-140","P-PIK 50×70","PAK-100×150","PAK-100×200",
+   "TL 100×100×6","TL 150×150×8","TL 100×175×6","Nostokorva M20"]
+    .forEach(k=>{KOODIT[norm(k)]={nimi:k, url:C.url.tarvikkeet, mihin:C.find.tarvike};});
+
+  const kentta=document.getElementById("koodikentta"),
+        tulos=document.getElementById("kooditulos");
+  document.getElementById("koodilomake").addEventListener("submit",function(ev){
+    ev.preventDefault();
+    const syote=kentta.value.trim(), o=KOODIT[norm(syote)];
+    tulos.innerHTML = !syote ? E(C.find.tyhja)
+      : o ? '<a class="more" href="'+E(SPECLINK(o.url))+'" data-event="haku_tuotekoodi_osuma" data-koodi="'+E(o.nimi)+'">'+arrow(o.nimi+" — "+o.mihin)+"</a>"
+          : "<b>"+E(syote)+"</b> "+E(C.find.eiloydy);
+  });
+})();
+</script>
+</body>
+</html>

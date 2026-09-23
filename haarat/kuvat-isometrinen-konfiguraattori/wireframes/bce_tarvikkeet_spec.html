@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiinnitystarvikkeet — tarvikesivu (prototyyppi)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+<script src="terassikuva.js"></script>
+<!-- Tarvike- ja yhdistelmäkuvat piirretään DOMiin, ei <img>-elementtiin: teräksen
+     sävyt tulevat sivun --met-*-tokeneista ja kuva korjaantuu itsestään kun mitta
+     muuttuu. Lataamisjärjestys on riippuvuusjärjestys: tarvikekuva lukee kameran
+     tuotekuvasta, ja yhdistelmakuva asettaa tarvikkeen ja puun samaan kankaaseen.
+     mittakaavio.js on tuotekuvan mittalähde, ja asennuskuva lisää alle pilarin
+     pään. (TUOTEKUVAT.md luvut 11, 12 ja 15.) -->
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
+<script src="palkkikuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+/* Tarvikesivu /pilarien-kiinnitystarvikkeet/ — YHDISTELMÄ A + B, päätös 16.9.2026.
+
+   Kaksi kävijää, kaksi periaatetta, yksi sivu:
+   - Googlesta mittahaulla ("pilarikenkä m20", "pilarikenkä 140") tuleva on valitsemassa.
+     Hän saa version A suodattimen: valinta kannatinpalkin mitan ja näkyvyyden mukaan.
+   - Perhesivulta tai konfiguraattorin listalta tuleva on jo valinnut. Hän saa version B
+     tuoterivin: sama lohko kuin perhesivun ostolaatikossa tiiviinä — kuva, nimi,
+     sopivuus, koko, tuotekoodi, EAN ja Kopioi.
+
+   Suodatin PIILOTTAA sopimattomat, mutta EI VIERITÄ (17.9.2026). Auditti vaihtoi
+   16.9. piilotuksen vaimennukseksi kahdesta syystä, joista vain toinen jäi voimaan:
+   teräslaatat katosivat, koska niille ei ollut suodatinkorttia — se on korjattu
+   viidennellä kortilla — ja käyttäjän puolesta vierittäminen oli aito virhe, eikä
+   sitä tehdä. Vaimennus sen sijaan maksoi enemmän kuin kertoi: vaimennettu tuoterivi
+   on yhä noin 400 px korkea este, ja niitä on kahdeksan. Tyhjä ryhmä piiloutuu
+   otsikkoineen.
+
+   Ilman JavaScriptiä kortit ovat ankkurilinkkejä ryhmäotsikoihin ja koko lista
+   näkyy; tila luetaan ja kirjoitetaan osoitteeseen (?kiinnitys=), jotta suodatettu
+   näkymä on jaettavissa.
+
+   Yksi tuotedata (C.parts). A:ssa ja B:ssä koodit erosivat (PIK 90–140 / PIK 90-140,
+   P-PIK 50–70 / P-PIK 50×70, TL 150×150×[TÄYTETTÄVÄ] / TL 150×150×8) ja nimikemäärä oli
+   9 / 8. Tässä koodit ovat nykysivuston kirjoitusasussa (B, luettu 15.9.2026), PAK on
+   yksi nimike kahdella koolla (8 nimikettä).
+
+   Speksin luvun 8 kaksi ristiriitaa ratkesivat 18.9.2026 asiakkaan omasta aineistosta
+   (`../aineisto-taustamatskut-2026-09-18.md` luku 3.3): teräslaatan paksuus ja
+   teräslaatan kierteen pituus. Pilariesite 2023 ja Rakentajan opas 2025 sanovat
+   molemmat saman, merkki merkiltä: TL 100×100×6 · TL 100×175×6 · TL 150×150×8, ja
+   kaikissa kolmessa M20×50. Nykysivuston otsikoiden M20×100 on siis sivuston oma
+   virhe, ja se on korjattava sisällön migraatiossa. Merkinnät merkitään kerran lohkon
+   alle, ei joka riville: A:n 27 toistuvaa merkintää oli auditin löydös.
+
+   Kolme tietoista poikkeamaa speksistä, kuten A:ssa: ei tuotesivulinkkejä (sivukartan
+   luku 0.1), asennuslinkki /ohjeet/asennus/, FAQPage-schema vasta kun vastaukset ovat.
+
+   CTA-hierarkia kortin 4 mukaan: ensisijainen on ostopaikka (Mistä ostat, oma sivu, ei
+   ankkuri), toissijainen konfiguraattori. Konfiguraattorin nimi on sama kuin muualla. */
+const C={
+  crumb:[["Etusivu","/"],["Tarvikkeet",null]],
+
+  hero:{h1:"Pilarien kiinnitystarvikkeet",
+    lede:"Tarvike ratkaisee, miten rakenne kiinnittyy perustukseen. Kaikki tarvikkeet ruuvataan pilarin valmiiseen M20-kierteeseen, joten työmaalla ei porata, ja säätövara korjaa pienet heitot.",
+    cta:["Mistä ostat","/mista-ostat/","cta_mista_ostat","hero"],
+    cta2:["Suunnittele perustus","/konfiguraattori/","cta_konfiguraattori"]},
+
+  /* Lohko 2. Ankkuririvi: yksi pikalinkki per tuoteryhmä, kärjen alla.
+     23.9.2026: korvaa sekä kärjen kahdeksan tuotelinkkiä (`hero.idx`) että
+     suodattimen «Mihin kiinnität?». Kaksi syytä.
+
+     **Ryhmiä on neljä, suodatinkortteja oli viisi — ja ne eivät vastanneet
+     toisiaan.** Kolme korttia viidestä osoitti samaan otsikkoon (#pilarikengat)
+     eikä yksikään palkkikenkiin, joten sivun oma rakenne ei näkynyt rivistä
+     lainkaan. Ankkuri ryhmän otsikkoon on sama lupaus kuin navigaation
+     tarvikepudotuksessa, jossa nämä neljä nimeä jo ovat.
+
+     **Määrä lasketaan riveistä**, ei kirjoiteta: uusi nimike näkyy luvussa
+     samalla kun se näkyy listassa. */
+  jump:{lbl:"Tarvikeryhmät", n1:"1 tarvike", n:"#n tarviketta"},
+
+  /* Lohko 3. Kahdeksan nimikettä neljässä ryhmässä. tags on suodatusavain.
+     Käyttötekstit nykysivustolta 15.9.2026. Kiinnitettävä mitta on A:n kenttä. */
+  /* lbl.tuotekuva ("Tuotekuva") poistettiin 18.9.2026: paikassa on kuva, eikä
+     paikanpitäjän tekstiä jätetä kenttään jota ei renderöidä — asiakas luki kerran
+     sivulta merkintöjä, joita siellä ei ollut tarkoitus olla. */
+  parts:{lbl:{fit:"Sopii pilariin",mitta:"Kiinnitettävä mitta",ean:"EAN",size:"Valitse koko"},
+    copy:"Kopioi", copied:"Kopioitu", failed:"Kopiointi ei onnistunut",
+    /* Rivin jatkolinkki, sama kuvio kuin TP-perhesivun tarvikerivillä (`.plinks`):
+       tekstilinkki nuolella, ei painiketta. Kahdeksan `.btn-1`:tä samassa näkymässä
+       rikkoisi säännön «yksi ensisijainen toiminto per näkymä» (DESIGN-SYSTEM.md
+       luku 2, kohta 3), ja rivin oma tehtävä on tunnistaa tarvike — ei myydä sitä.
+
+       **Nimi on kanoninen, ei rivikohtainen.** Sama toiminto saa saman nimen joka
+       paikassa, ja kuoren painike lukee samalla ruudulla *Suunnittele perustus*;
+       rivikohtainen «Laske tarvikkeiden määrä» olisi kaksi nimeä yhdelle
+       osoitteelle samassa näkymässä. Tarvikelupaus on lohkon 5 otsikossa
+       («Montako tarviketta tarvitset?»), jossa se on sivun oma väite eikä
+       painikkeen teksti.
+
+       Mittaus: `cta_konfiguraattori` on jo käytössä, joten uutta tapahtumanimeä ei
+       synny. `data-sijainti="tuoterivi"` erottaa rivin kärjestä ja lopetuksesta, ja
+       `data-tarvike` kertoo mistä rivistä lähdettiin — se on se ulottuvuus, jolla
+       nähdään mikä tarvike vie laskuriin. */
+    cta:"Suunnittele perustus",
+    /* Yhteiset avoimet arvot kerran, ei joka rivillä. Speksin luku 8: ristiriidat 1, 2 ja 4. */
+    open:"Säätövarat korkeus- ja sivusuunnassa [TÄYTETTÄVÄ]. Pintakäsittely kuumasinkitty.",
+    /* `ik` on ankkuririvin tunnistekuva: se nimike, josta ryhmän tunnistaa.
+       Valinta ei ole johdettavissa listasta (ensimmäinen nimike ei ole sama asia
+       kuin selvin muoto), joten se on kenttänä ryhmän rivillä. Pilarikengistä
+       90-140, koska uran ja tolpan suhde lukee siinä selvimmin; teräslaatoista
+       150×150, koska reiät jokaisessa neljässä kulmassa erottavat laatan
+       nelikulmiosta. Avain on `tarvikekuva.js`:n `osa`, ei pari: rivi on
+       navigaatiota, ja puu toisi siihen toisen väitteen. */
+    groups:[
+      {id:"pilarikengat", ik:"pik-90-140", h2:"Pilarikengät", ing:"Pystyrakenne kiinnittyy pilarin päähän. Korkeutta säädetään kiertämällä, ja jälkisäätö onnistuu asennuksen jälkeenkin.",
+       items:[
+        {id:"pik-50-70", tags:["50-70"], n:"Pieni pilarikenkä PIK 50-70", im:{pari:"pik-50-70-palkki"},
+         p:"Yhdelle 50–70 mm:n lankulle, esimerkiksi terassin runkoon. Kierretapin uran ansiosta jälkisäätö on vaivatonta.",
+         mitta:"50–70 mm", fit:"AP · TP · KP", k:"PIK 50-70", ean:"6430000001070"},
+        {id:"pik-90-140", tags:["90-140"], n:"Pilarikenkä PIK 90-140", im:{pari:"pik-90-140"},
+         p:"90–140 mm:n tolpille, esimerkiksi katoksen kannatintolpat. Pyöreä laatta tekee jälkisäädöstä helppoa.",
+         mitta:"90–140 mm", fit:"AP · TP · KP", k:"PIK 90-140", ean:"6430000001090"},
+        {id:"p-pik-50x70", tags:["50-70","piilo"], n:"Pieni L-mallinen pilarikenkä P-PIK 50×70", im:{pari:"p-pik-50x70"},
+         /* Kaksi käyttökohdetta lisätty 18.9.2026 pilariesitteestä 2023 (s. 11). Ne ovat
+            asiakkaan omat sanat, ja rivi oli ainoa, joka kertoi vain sen mitä tarvike
+            ei tee (ei näy) eikä sitä, mihin sitä käytetään. */
+         p:"Puolikas pilarikenkä 50–70 mm:n lankuille. Piilokiinnike silloin kun kiinnikkeitä ei haluta näkyviin: terassirungon välilankut ja kevyen hirsirakennuksen pitkän sivun sisäpuolinen kiinnitys.",
+         mitta:"50–70 mm", fit:"AP · TP · KP", k:"P-PIK 50×70", ean:"6430000001050"}]},
+      {id:"palkkikengat", ik:"pak-100x150", h2:"Palkkikengät", ing:"Vaakasuuntainen kannatinpalkki ripustetaan pilarin kylkeen. Jos korkeussäätöä tarvitaan, palkkikengän alapohja täytetään.",
+       items:[
+        {id:"pak", tags:["90-140"], n:"Palkkikenkä PAK", im:{pari:"pak-100x150"},
+         p:"Välipohjan ja rungon kannatinpalkeille, jotka kiinnitetään pilariin tai seinään.",
+         mitta:"100 × 150 tai 100 × 200 mm", fit:"AP · TP · KP", k:"PAK", ean:"6430000002100",
+         sizes:[["PAK-100×150","100 × 150 mm"],["PAK-100×200","100 × 200 mm"]]}]},
+      {id:"teraslaatat", ik:"tl-150x150", h2:"Teräslaatat", ing:"Laatta kierretään kohtisuoraan pilarin kierteeseen, ja valmis rakenne asennetaan suoraan sen päälle. Ero on kiinnityspisteissä.",
+       items:[
+        {id:"tl-100x100", tags:["laatta"], n:"Teräslaatta TL 100×100×6", im:{osa:"tl-100x100"},
+         p:"Kaksi reikää vastakkaisissa nurkissa. Pienin laatoista.",
+         mitta:null, fit:"AP · TP · KP", k:"TL 100×100×6 M20×50", ean:"6430000003100"},
+        /* Paksuus 8 mm vahvistettu 18.9.2026: pilariesite 2023 s. 11 ja Rakentajan opas
+           2025 s. 5 sanovat molemmat TL 150×150×8 M20×50. Sama kuin nykysivustolla. */
+        {id:"tl-150x150", tags:["laatta"], n:"Teräslaatta TL 150×150×8", im:{osa:"tl-150x150"},
+         p:"9 mm:n reiät jokaisessa neljässä kulmassa. Paksuin laatoista.",
+         mitta:null, fit:"AP · TP · KP", k:"TL 150×150×8 M20×50", ean:"6430000003150"},
+        {id:"tl-100x175", tags:["laatta"], n:"Teräslaatta TL 100×175×6", im:{osa:"tl-100x175"},
+         p:"Kiinnityspisteet ulottuvat pilarin kärjen ulkopuolelle, joten laatan voi kiinnittää alapuolelta myös jälkikäteen.",
+         mitta:null, fit:"AP · TP · KP", k:"TL 100×175×6 M20×50", ean:"6430000003175"}]},
+      {id:"nostokorva", ik:"nostokorva-m20", h2:"Nostokorva", ing:"Asennuksen apuväline, ei rakenteen osa.",
+       items:[
+        {id:"nostokorva-m20", tags:["apuvalineet"], n:"Nostokorva M20", im:{osa:"nostokorva-m20"},
+         p:"Ruuvataan pilarin kierteeseen. Nostokorvan läpi viedään tanko, jolloin kaksi ihmistä saa pilarin paikalleen.",
+         mitta:null, fit:"AP · TP · KP", k:"Nostokorva M20", ean:"6430000004020"}]}],
+    none:"—"},
+
+  /* Lohko "Mihin pilariin tarvike sopii" poistettu 17.9.2026. Se toisti neljännen
+     kerran saman asian: kärjen ingressi sanoo M20-kierteen, jokainen tuoterivi
+     sanoo "Sopii pilariin AP · TP · KP", ja teknisissä tiedoissa on rivi
+     Yhteensopivuus. Neljä riviä joissa kolmessa luki "Kaikki tarvikkeet" ei ole
+     tietoa vaan tilaa.
+
+     Kaksi asiaa säilyi: kuormahuomautus siirtyi teknisiin tietoihin, ja PP:n ero
+     näkyy siellä rivillä Yhteensopivuus. Menetetty: sivulta ei enää ole
+     sisältölinkkejä perhesivuille (navigaatiossa ne ovat). */
+  tech:{h2:"Tekniset tiedot",
+    fine:"Kuormankantokyky riippuu myös siitä, mitä rakennetaan. Suurissa kuormissa yhdistelmä tarkistetaan rakennesuunnittelijalla.",
+    /* Kuva täyttää puolikkaan sisältöleveyden taulukon vierestä, kuten perhesivulla.
+       Samalla palaa se havainnekuva, joka poistui yhteensopivuuslohkon mukana. */
+    img:"Detaljikuva: pilarin pää, valettu M20-kierre ja siihen kiertyvä tarvike",
+    rows:[["Kierre","M20"],["Kiinnityssyvyys","Vähintään 25 mm"],
+      ["Materiaali","[TÄYTETTÄVÄ]"],["Pintakäsittely","Kuumasinkitty"],
+      ["CE-merkintä","[TÄYTETTÄVÄ]"],["Yhteensopivuus","AP, TP ja KP"]],
+    dh3:"Ladattavat",
+    docs:[["Tarvikkeiden mitat","PDF","lataus_dokumentti","[TÄYTETTÄVÄ]"],
+      ["Asennusperiaate A-601","PDF · FI, SV, EN","lataus_dokumentti",null],
+      ["Tuote-esite","PDF","lataus_dokumentti","[TÄYTETTÄVÄ]"]]},
+
+  /* Asennus ohjaa ohjeeseen, ei toista sitä (A). Videon tunnistetta ei ole speksissä. */
+  asen:{h2:"Näin asennat tarvikkeet",
+    p:"Tarvikkeet asennetaan pilareihin sen jälkeen, kun pilarit ovat paikoillaan ja oikealla korkeudella. Koko perustuksen tekeminen vaihe vaiheelta on Rakentajan oppaassa.",
+    vid:"Asennusvideo [TÄYTETTÄVÄ]",
+    cta:"Kirjallinen asennusohje"},
+
+  cfg:{h2:"Montako tarviketta tarvitset?",
+    ing:"Konfiguraattori laskee pilarien lisäksi tarvikkeet kappalemäärineen. Tarvike määräytyy siitä, missä kohtaa ruudukkoa pilari on: kulmassa, reunalla vai keskellä.",
+    alt:"Isometrinen havainnekuva: terassi kohotettuna pilarien yläpuolelle, kulmapilarit korostettuina.",
+    cta:"Suunnittele perustus",
+    sub:"Kestää muutaman minuutin."},
+
+  buy:{h2:"Osta jälleenmyyjältä",
+    ing:"Tarvikkeet myydään samoissa rautakaupoissa kuin pilarit. Ota tuotekoodit mukaan, niillä myyjä löytää oikean osan.",
+    all:"Mistä ostat"},
+
+  /* Kysymykset näytetään, vastaukset jätetään näkyvästi tyhjiksi kunnes BCE on ne
+     kirjoittanut. Lähde: Roy. Mikään ei ole valmiiksi auki. */
+  ukk:{h2:"Usein kysytyt",
+    rows:["Tarvitsenko tarvikkeita, vai riittääkö pelkkä pilari?",
+      "Mistä tiedän kannatinpalkkini mitan?",
+      "Paljonko tarviketta voi säätää, jos korkeus ei täsmää?",
+      "Ruostuvatko tarvikkeet ulkokäytössä?",
+      "Sopivatko BCE:n tarvikkeet muiden valmistajien pilareihin?"],
+    a:"[TÄYTETTÄVÄ]"},
+
+  big:{h2:"Isompi kohde tai kysyttävää?",
+    p:"Suuremmat tilaukset ja projektikohteet hoituvat suoraan meidän kauttamme. Vastaamme tarjouspyyntöön tunnin sisällä.",
+    cta:"Pyydä tarjous", sub:"[TÄYTETTÄVÄ]"}
+};
+
+(function(){
+  "use strict";
+  const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+  const L=u=>E(SPECLINK(u));
+  SPECSHELL(E,{crumb:C.crumb,active:"Tarvikkeet"});
+  const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
+  const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
+  const arrow=t=>E(t)+" →";
+  const DLIC='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+
+    '<path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>';
+  const kaikki=C.parts.groups.reduce((a,g)=>a.concat(g.items),[]);
+
+  /* ---- Kuvat -------------------------------------------------------------
+     Kaksi joukkoa, kaksi tehtävää, ja **kummassakaan ei ole yhteistä
+     mittakaavaa.** Se on poikkeus TUOTEKUVAT.md:n sääntöön 4, ja poikkeus on
+     tehty 18.9.2026 tietoisesti — sääntö on oikea siellä, missä kuvat vertaavat
+     kokoja, eivätkä nämä vertaa.
+
+     Ankkuririvin neljä kuvaa tunnistavat tuoteryhmän. Niiden kappaleet eroavat
+     kooltaan niin paljon (nostokorva ⌀40 mm, PIK 90-140 371 mm), että yhteisellä
+     mittakaavalla pienin jäi napiksi eikä tunnistunut miksikään. Tunnistamattomuus
+     on pahempi väite kuin kokoeron puuttuminen: se lukee «tämä ryhmä on
+     vähäpätöinen», eikä navigaatiolinkki saa sanoa niin.
+
+     Tuoterivin tunnistekuva on nimen vieressä, ja rivit ovat sivun mitalla
+     toistensa alapuolella. Kahta tunnistetta ei voi verrata vierittämättä, joten
+     yhteinen mittakaava maksoi luettavuutta antamatta mitään.
+
+     **Missä sääntö pätee yhä:** tuotekuvasto (`bce_tuotekuvat.html#tarvikkeet`)
+     piirtää kaikki yhdeksän samassa mittakaavassa ja sanoo sen ääneen, ja
+     perhesivujen pilarikuvat käyttävät `kiintea:true`:ta ja `rivi()`:ä.
+     Kokovertailu on niiden tehtävä, ei näiden korttien.
+
+     id on pakollinen: sivulla on kymmeniä inline-SVG:itä, ja kahdella ei voi
+     olla samaa sisäistä id:tä (sääntö 3). */
+  const TK=window.tarvikekuva;
+
+  /* Ankkuririvin tunnistekuvat, yksi per ryhmä.
+
+     **Piirtokorkeus on 140 px, näyttökoko 56 px CSS:stä.** Syy on generaattorin
+     kiinteä 18 px:n reunus kankaassa: 56 px:n korkeuteen piirrettynä reunus on
+     neljännes kuvasta, ja kappale piirtyy puoleen luvatusta. Isona piirretty ja
+     CSS:llä pienennetty on sekä tarkempi että samankokoinen riippumatta siitä,
+     minkä kokoiseksi rivi mitoitetaan.
+
+     **Yhteistä mittakaavaa ei ole**, samasta syystä kuin kahdella muulla
+     kuvajoukolla tällä sivulla: nämä neljä eivät vertaa kokoja vaan tunnistavat
+     ryhmän. Yhteisellä skaalalla nostokorva (⌀40 mm) olisi pilarikengän vieressä
+     napin kokoinen eikä tunnistuisi miksikään — juuri se väite, jota
+     navigaatiolinkki ei saa esittää. */
+  const RYHMAKUVA={};
+  C.parts.groups.forEach(g=>{ RYHMAKUVA[g.id]=TK({osa:g.ik,korkeus:140,koriste:true,id:"ryhma-"+g.id}); });
+
+  /* Tuoterivin tunnistekuva nimen vieressä. Sama ratkaisu ja sama syy: rivit ovat
+     sivun mitalla toistensa alapuolella, joten kokovertailua ei voi tehdä
+     vierittämättä — jaettu mittakaava maksoi luettavuutta antamatta mitään.
+     Rivin kokotieto on «Kiinnitettävä mitta» -kentässä ja asennuskuvassa. */
+  const TUOTE=(function(){
+    const ulos={};
+    TK.osat().forEach(k=>{
+      ulos[k]=TK({osa:k,korkeus:150,koriste:true,id:"tuote-"+k});
+    });
+    return ulos;
+  })();
+
+  /* Kokovalinnan koodista generaattorin tunnus: "PAK-100×150" → "pak-100x150".
+     Johdettu eikä kirjoitettu, jotta koodi ja kuva eivät voi ajautua erilleen. */
+  const KOKOAVAIN=koodi=>String(koodi).toLowerCase().replace(/×/g,"x");
+  /* Ilman kokovalintaa piirretään suurempi koko. Sama ratkaisu kuin perhesivun
+     kokovalitsimessa: kuva ei voi olla valitsematta, joten se näyttää perheen
+     suurimman, ja koko lukee rivillä vaihteluvälinä ("100 × 150 tai 100 × 200 mm").
+     Rivin muu tila — tuotekoodi, EAN — ei väitä kokoa (heuristiikka 5). */
+  const RIVIKUVA=it=>TUOTE[it.sizes?KOKOAVAIN(it.sizes[it.sizes.length-1][0]):it.id]||"";
+
+  /* ---- Asennuskuva: rivin suurin kuvapaikka ------------------------------
+     Täytetty 20.9.2026. Paikka oli tyhjä kaikilla kahdeksalla rivillä siitä asti
+     kun variantti 2 palautettiin 17.9. — se on rivin suurin elementti, koska
+     kiinnikkeen tunnistaa siitä miltä se näyttää kiinni eikä siitä miltä se
+     näyttää yksin. Generaattoria ei ollut ennen kuin `asennuskuva.js` kirjoitettiin.
+
+     `it.im` oli paikanpitäjän teksti («Asennuskuva: PIK 50-70 pilarin päässä,
+     lankku kiinni»); nyt se on generaattorin kuvaus. Sama ratkaisu kuin
+     perhesivun tarvikerivillä ja Pilarit-hubin perhekorteilla.
+
+     **Puu on mukana viidellä rivillä kahdeksasta, ja se on tietoinen jako:**
+
+       pilarikengät   `pari` — tolppa uraan; P-PIK:ssä tolppa pohjalevyn päälle ja
+                      levy sen kylkeen. P-PIK sai parinsa 21.9.2026, kun sen
+                      ristiriita ratkesi (yhdistelmakuva.js).
+       palkkikengät   `pari` — palkki satulaan, molemmat koot
+       teräslaatat    `osa` — ei puuta. Laatat eroavat toisistaan **reikien
+                      määrästä ja paikasta**, ja päälle laskettu lauta peittää
+                      juuri ne. Sama havainto on yhdistelmakuva.js:ssä, jossa
+                      TL 150×150 on ainoa pari räjäytettynä. Lisäksi 100×100:lle
+                      ja 100×175:lle ei ole paria eikä lähdettä sille, mikä puu
+                      niiden päälle tulee — kolme laattaa, joista yhdellä on
+                      lauta, väittäisi eroa jota lähteissä ei ole.
+       nostokorva     `osa` — ei kiinnitettävää puuta. Rivin teksti lupaa myös
+                      tangon korvan läpi; sitä ei ole piirretty, koska tanko on
+                      asentajan oma eikä BCE:n tuote.
+
+     **Yhteinen mittakaava ja yhteinen kangas, toisin kuin sivun kahdella muulla
+     kuvajoukolla.** Ylempänä on perusteltu, miksi tuoterivien tunnistekuvat ja
+     suodatinkortit eivät jaa mittakaavaa: ne eivät vertaa kokoja. Asennuskuvat
+     ovat eri tapaus, ja syy ei ole vertailu vaan **vakio**: jokaisessa kuvassa on
+     sama TP-400:n pää. Jos jokainen kuva täyttäisi oman laatikkonsa, sama pilari
+     olisi joka rivillä eri kokoinen, ja silloin kuva valehtelisi siitä mikä on
+     tarvikkeen koko suhteessa pilariin — juuri se, mitä rivi on näyttämässä.
+     Tasaus on «ala», koska kaikilla on yhteinen alataso: pilarin rajaus. */
+  const AK=window.asennuskuva;
+  const ASENNUS=(function(){
+    /* Kokovalinnallisella rivillä tunnus johdetaan kokovalinnan koodista
+       (KOKOAVAIN), ja kenttä — pari vai osa — säilyy riviltä, jotta
+       kuvausta ei tarvitse kirjoittaa kahdesti. */
+    const kuvaus=(im,tunnus)=>im.pari?{pari:tunnus}:{osa:tunnus};
+    const rivit=[];
+    kaikki.forEach(it=>{
+      (it.sizes?it.sizes.map(v=>KOKOAVAIN(v[0])):[it.id])
+        .forEach(t=>rivit.push([t,kuvaus(it.im,t)]));
+    });
+    const sk=300/Math.max.apply(null,rivit.map(r=>AK.laajuus(r[1])));
+    const kuvat=window.tuotekuva.kangas(rivit.map(r=>AK(Object.assign({},r[1],
+      {skaala:sk,koriste:true,id:"asennus-"+r[0]}))),"ala");
+    const ulos={};
+    rivit.forEach((r,i)=>{ulos[r[0]]=kuvat[i];});
+    return ulos;
+  })();
+  const ASENNUSKUVA=it=>ASENNUS[it.sizes?KOKOAVAIN(it.sizes[it.sizes.length-1][0]):it.id]||"";
+
+  /* Tuoterivi, variantti 2 (palautettu 17.9.2026). Vasemmalla asennuskuva rivin
+     korkuisena, oikealla tuotekuva tunnisteena nimen vieressä, ingressi otsikon
+     alla, kenttärivit ja tilaustiedot niiden alla. Kiinnikkeen tunnistaa siitä
+     miltä se näyttää palkissa kiinni, joten asennuskuva on rivin suurin elementti.
+
+     B:stä säilytetty sellaisenaan: tuotekoodi, EAN ja Kopioi, kokovalinta, ja
+     merkintä "Sopii valintaasi", joka on paikallaan aina mutta piilossa kunnes
+     suodatin osuu — kuittaus on tekstiä, ei pelkkä vaimennus.
+
+     Kuvapaikat ovat kanoninen .ph, eivät oma .tim: DESIGN-SYSTEM.md luku 3. */
+  function rivi(it){
+    const kentta=(l,v)=>'<div class="fr"><span>'+E(l)+"</span><b>"+T(v)+"</b></div>";
+    return '<article class="tcard" id="'+E(it.id)+'" data-tags="'+E(it.tags.join(" "))+'">'+
+      '<div class="timcol"><span class="ph piirros">'+ASENNUSKUVA(it)+"</span></div>"+
+      "<div>"+
+        '<div class="tid"><span class="ph ph-1 piirros">'+RIVIKUVA(it)+"</span>"+
+          "<div><h3>"+T(it.n)+"</h3>"+
+            '<p class="tu">'+E(it.p)+"</p></div></div>"+
+        '<div class="frs">'+
+          kentta(C.parts.lbl.mitta,it.mitta||C.parts.none)+
+          kentta(C.parts.lbl.fit,it.fit)+
+        "</div>"+
+        (it.sizes?'<div class="sizes sizes-s" role="group" aria-label="'+E(C.parts.lbl.size)+'">'+
+          it.sizes.map(v=>'<button type="button" aria-pressed="false" data-koodi="'+E(v[0])+
+            '"><b>'+E(v[0])+"</b><span>"+E(v[1])+"</span></button>").join("")+"</div>":"")+
+        '<div class="sku"><span class="k">'+T(it.k)+"</span>"+
+          '<span class="e">'+E(C.parts.lbl.ean)+" "+E(it.ean)+"</span>"+
+          '<button class="cp" type="button" data-event="kopioi_koodit" data-koodi="'+E(it.k)+
+          '" data-ean="'+E(it.ean)+'">'+E(C.parts.copy)+"</button></div>"+
+        '<p class="plinks"><a class="more" href="'+L("/konfiguraattori/")+
+          '" data-event="cta_konfiguraattori" data-sijainti="tuoterivi" data-tarvike="'+
+          E(it.k)+'">'+arrow(C.parts.cta)+"</a></p>"+
+      "</div></article>";
+  }
+
+  document.getElementById("main").innerHTML=
+
+  /* 1 · Kärki ja ankkuririvi. Ensisijainen on ostopaikka omalle sivulleen.
+
+     Kärki on yksipalstainen (`.lead.solo`) 23.9.2026 alkaen: oikean palstan
+     hakemistolaatikko poistui, ja ankkuririvi tuli sen tilalle kärjen **alle**
+     koko leveydeltä. Laatikko oli kahdeksan tuotelinkkiä 380 pikselin palstassa;
+     rivi on neljä ryhmää, ja jokaisella on kuva. */
+  '<div class="w"><section class="lead solo">'+
+    "<div><h1>"+E(C.hero.h1)+'</h1><p class="lede">'+E(C.hero.lede)+"</p>"+
+      '<div class="cta"><a class="btn btn-1" href="'+L(C.hero.cta[1])+'" data-event="'+
+        E(C.hero.cta[2])+'" data-sijainti="'+E(C.hero.cta[3])+'">'+E(C.hero.cta[0])+"</a>"+
+        '<a class="more" href="'+L(C.hero.cta2[1])+'" data-event="'+E(C.hero.cta2[2])+
+        '" data-sijainti="hero">'+arrow(C.hero.cta2[0])+"</a></div></div>"+
+    /* Tapahtuma on `cta_sivuankkuri` (mittaus-tapahtumaspec, sääntö 2): ankkuri
+       samalle sivulle on sama teko riippumatta kohteesta, ja viisi erillistä
+       ankkurinimeä teki hyppyjen kokonaisluvun mahdottomaksi. Ulottuvuus on
+       `data-kohde`, tässä ryhmän nimi.
+       Suodattimen `valinta_kiinnitystarve` katoaa sivulta kokonaan. */
+    '<nav class="anchors" aria-label="'+E(C.jump.lbl)+'">'+
+      C.parts.groups.map(g=>{
+        const n=g.items.length;
+        const maara=(n===1?C.jump.n1:C.jump.n).replace("#n",String(n));
+        return '<a href="#'+E(g.id)+'" data-event="cta_sivuankkuri" data-kohde="'+
+          E(g.h2)+'"><span class="ic">'+RYHMAKUVA[g.id]+"</span>"+
+          "<span><b>"+E(g.h2)+' <span class="ar" aria-hidden="true">↓</span></b>'+
+          '<span class="n">'+E(maara)+"</span></span></a>";
+      }).join("")+"</nav></section></div>"+
+
+  /* 2 · Kahdeksan tuoteriviä neljässä ryhmässä (B), ryhmät samassa osiossa (A) */
+  '<div class="w" id="tuotteet"><section>'+
+    C.parts.groups.map(g=>'<div class="tgroup" id="'+E(g.id)+'">'+
+      '<div class="head gh"><h2>'+E(g.h2)+"</h2><p>"+E(g.ing)+"</p></div>"+
+      '<div class="tgrid">'+g.items.map(rivi).join("")+"</div></div>").join("")+
+    '<p class="fine mt">'+T(C.parts.open)+"</p>"+
+  "</section></div>"+
+
+  /* 4 · Tekniset tiedot ja lataukset. Sama leiska kuin perhesivulla (.techrow):
+     yksi sarake arvopareja, kuva viereen, jotta puolikas sisältöleveys ei jää
+     tyhjäksi. Kuusi riviä koko sisältöleveydellä jätti oikean puolen tyhjäksi ja
+     venytti arvon niin kauas nimestä, ettei paria lukenut yhtenä. */
+  sect(head(C.tech.h2)+
+    '<div class="techrow"><div>'+
+    '<dl class="spec2">'+C.tech.rows.map(r=>"<div><dt>"+E(r[0])+"</dt><dd>"+T(r[1])+"</dd></div>").join("")+"</dl>"+
+    '<p class="fine tech-note">'+E(C.tech.fine)+"</p></div>"+
+    '<div class="ph tekninen">'+E(C.tech.img)+"</div></div>"+
+    '<h3 class="sh">'+E(C.tech.dh3)+"</h3>"+
+    '<div class="dl">'+C.tech.docs.map(d=>'<a href="'+L("/ohjeet/suunnittelijalle/")+
+      '" data-event="'+E(d[2])+'" data-tiedosto="'+E(d[0])+'"><span class="ty">'+DLIC+E(d[1])+
+      "</span><b>"+E(d[0])+"</b>"+(d[3]?'<span class="st">'+T(d[3])+"</span>":"")+
+      "</a>").join("")+"</div>")+
+
+  /* 5 · Asennus (A): ohjaa ohjeeseen */
+  sect('<div class="side flip">'+
+    "<div>"+head(C.asen.h2)+"<p>"+E(C.asen.p)+"</p>"+
+      '<p><a class="more" href="'+L("/ohjeet/asennus/")+'" data-event="cta_asennusohjeet">'+
+      arrow(C.asen.cta)+"</a></p></div>"+
+    '<span class="im vid">'+T(C.asen.vid)+"</span></div>")+
+
+  /* 6 · Konfiguraattori, sama nimi kuin muualla */
+  sect('<div class="cfg"><div>'+head(C.cfg.h2,C.cfg.ing)+
+    '<p class="act"><a class="btn btn-1" href="'+L("/konfiguraattori/")+'" data-event="cta_konfiguraattori" data-sijainti="lopetus">'+
+    E(C.cfg.cta)+'</a><span class="sub">'+E(C.cfg.sub)+"</span></p></div>"+
+    '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
+    "</div>","mitoita")+
+
+  /* 7 · Mistä ostat */
+  sect(head(C.buy.h2,C.buy.ing)+
+    SPECDEALERS(E,{cls:"dealers-4",sijainti:"lopetus"})+
+    '<p class="mt"><a class="more" href="'+L("/mista-ostat/")+
+      '" data-event="cta_mista_ostat" data-sijainti="lopetus">'+arrow(C.buy.all)+"</a></p>","ostat")+
+
+  /* 8 · Usein kysytyt (A) */
+  sect(head(C.ukk.h2)+'<div class="faq">'+C.ukk.rows.map(q=>
+    "<details><summary>"+E(q)+'<span class="c" aria-hidden="true">▾</span></summary>'+
+    '<div class="b">'+T(C.ukk.a)+"</div></details>").join("")+"</div>","ukk")+
+
+  sect('<div class="band"><div><h2>'+E(C.big.h2)+"</h2><p>"+E(C.big.p)+"</p></div>"+
+    '<div><a class="btn btn-1" href="'+L("/yhteystiedot/tarjouspyynto/")+'" data-event="cta_yhteydenotto">'+
+    E(C.big.cta)+"</a>"+'<p class="sub">'+T(C.big.sub)+"</p></div></div>","yhteys");
+
+  /* Suodatin poistui 23.9.2026 ankkuririvin myötä: sivulla ei ole enää tilaa,
+     jota piilottaminen muuttaisi, eikä `?kiinnitys=`-parametria. Sen mukana
+     poistuivat myös hakemistolinkkien purkukäsittelijät — ankkuri osoittaa nyt
+     ryhmään, joka on aina näkyvissä. */
+  const rivit=[...document.querySelectorAll(".tcard")];
+
+  /* ---- Kuittaukset ja kopiointi: sama toteutus kuin perhesivulla ---- */
+  const say=document.createElement("p");
+  say.className="sr";say.setAttribute("role","status");say.setAttribute("aria-live","polite");
+  document.body.appendChild(say);
+  function kopioi(btn,teksti,kuittaus){
+    const vanha=btn.textContent;
+    function ok(){btn.textContent=C.parts.copied;btn.setAttribute("data-copied","true");
+      say.textContent=kuittaus;
+      setTimeout(function(){btn.textContent=vanha;btn.removeAttribute("data-copied");},2200);}
+    function fail(){btn.textContent=C.parts.failed;btn.setAttribute("data-failed","true");
+      say.textContent=C.parts.failed;
+      setTimeout(function(){btn.textContent=vanha;btn.removeAttribute("data-failed");},2600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(teksti).then(ok,fail);
+    } else { fail(); }
+  }
+  [...document.querySelectorAll(".tcard .cp")].forEach(function(b){
+    b.addEventListener("click",function(){
+      kopioi(b,b.dataset.koodi+"  "+b.dataset.ean,C.parts.copied+": "+b.dataset.koodi);
+    });
+  });
+
+  /* Kokovalinta vaihtaa tuotekoodin samassa lohkossa ja kuittaa sen ruudunlukijalle.
+     Ei esivalintaa, ei vieritystä. */
+  rivit.forEach(function(lohko){
+    const napit=[...lohko.querySelectorAll(".sizes button")];
+    if(!napit.length)return;
+    const k=lohko.querySelector(".sku .k"), cp=lohko.querySelector(".sku .cp");
+    const perus=k.textContent;
+    /* Valinta vaihtaa myös kuvan. Koot ovat samassa mittakaavassa, joten
+       PAK-100×150 piirtyy matalampana kuin PAK-100×200 — valinnan vaikutus näkyy
+       samalla silmäyksellä eikä vain tuotekoodin numerossa. Ilman valintaa
+       piirretään suurempi koko, sama kuin ensimmäisellä renderöinnillä. */
+    const kuva=lohko.querySelector(".tid .ph.piirros");
+    const peruskuva=kuva?kuva.innerHTML:"";
+    /* Kokovalinta vaihtaa myös rivin asennuskuvan: PAK-100×150 ja PAK-100×200
+       eroavat satulan korkeudesta, ja se on koko valinnan sisältö. Kuvat ovat
+       yhteisellä kankaalla, joten matalampi piirtyy matalampana eikä vaihto
+       liikuta riviä. */
+    const akuva=lohko.querySelector(".timcol .ph.piirros");
+    const aperus=akuva?akuva.innerHTML:"";
+    napit.forEach(function(b){
+      b.addEventListener("click",function(){
+        const oli=b.getAttribute("aria-pressed")==="true";
+        napit.forEach(x=>x.setAttribute("aria-pressed","false"));
+        if(oli){k.textContent=perus;cp.dataset.koodi=perus;say.textContent=perus;
+          if(kuva)kuva.innerHTML=peruskuva;
+          if(akuva)akuva.innerHTML=aperus;return;}
+        b.setAttribute("aria-pressed","true");
+        k.textContent=b.dataset.koodi;cp.dataset.koodi=b.dataset.koodi;say.textContent=b.dataset.koodi;
+        if(kuva&&TUOTE[KOKOAVAIN(b.dataset.koodi)])kuva.innerHTML=TUOTE[KOKOAVAIN(b.dataset.koodi)];
+        if(akuva&&ASENNUS[KOKOAVAIN(b.dataset.koodi)])akuva.innerHTML=ASENNUS[KOKOAVAIN(b.dataset.koodi)];
+      });
+    });
+  });
+
+  /* Harmonikan avaus on mitattava tapahtuma. */
+  [...document.querySelectorAll(".faq details")].forEach(function(d){
+    d.addEventListener("toggle",function(){
+      if(!d.open)return;
+      d.dataset.event="avaus_ukk";
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
+    });
+  });
+})();
+</script>
+</body>
+</html>
