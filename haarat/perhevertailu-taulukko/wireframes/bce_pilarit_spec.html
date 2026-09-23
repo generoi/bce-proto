@@ -317,38 +317,25 @@ const C={
     C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
       {skaala:DET_SKAALA, koriste:true, id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
 
-  /* Vertailutaulukon rivikuvat: jaettu mittakaava, **oma kangas kullekin**.
+  /* Vertailutaulukon rivikuvat: jaettu mittakaava ja **yhteinen kangas**, kuten
+     perhekorteissa. Kangas on kaikilla 85 × 96 px, joten neljä riviä ovat yhtä
+     korkeita ja taulukko on taulukko eikä porras.
 
-     Tämä on tarkoituksella eri kuin korttien `tuotekuva.rivi`, joka vie kuvat myös
-     yhteiselle kankaalle. Yhteinen kangas on siellä pakko: kortit ovat vierekkäin,
-     ja CSS skaalaisi eri kokoiset kankaat eri kertoimilla heti kun laatikko on kuvaa
-     kapeampi. Taulukossa kuvat ovat allekkain eikä niitä kutisteta, joten yhteisestä
-     kankaasta jäisi vain sen haitta: AP-400 seisoisi KP-1000:n korkuisen laatikon
-     pohjalla, ja kapealla ruudulla nimen ja pilarin väliin jäisi sata pikseliä
-     tyhjää. Omilla kankailla kuvan korkeus **on** vertailu — 46 px ja 110 px
-     nähdään suoraan, eikä lukijan tarvitse etsiä mistä hahmo alkaa.
+     Välissä kokeiltiin omaa kangasta kullekin — silloin kuvan korkeus olisi itse
+     vertailu (AP 88, KP 150 px) eikä AP:n yläpuolelle jäisi tyhjää. Se hylättiin
+     23.9.2026 Ollin pyynnöstä: rivien eri korkeudet maksoivat enemmän kuin tyhjä
+     voitti, koska silmä lukee taulukkoa riviväliä pitkin. **Tyhjä AP:n kuvan
+     yläpuolella on nyt tarkoitettu**: se on se, mitä AP:n lyhyys näyttää.
 
-     Mittakaava on silti jaettu, ja se on koko kuvan peruste: perhekohtaisesti
-     normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa. Laskenta on sama
-     kuin `tuotekuva.rivi`:n sisällä (korkeus × oma laajuus / suurin laajuus),
-     ilman viimeistä kangasvaihetta.
-
-     110 px on suurimman kuva; se tulee KP-1000:lle. Pienempi tekisi AP:stä
-     tunnistamattoman, isompi kasvattaisi rivin korkeutta ilman että kuva kertoo
-     enempää. */
+     56 px on suurimman pilarin korkeus ja tulee KP-1000:lle; kangas on aina 40 px
+     sitä korkeampi. Aiempi 110 teki KP:n rivistä 213 px:n korkuisen, mikä oli
+     lohkossa liikaa. Mittakaava on jaettu, ja se on koko kuvan peruste:
+     perhekohtaisesti normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa
+     eivätkä kertoisi sitä ainoaa asiaa, jonka ne voivat kertoa yhdellä silmäyksellä. */
   const RIVIKUVA={};
-  (function(){
-    const osat=C.cmp.perheet.map(function(perhe){
-      const koot=window.tuotekuva.koot(perhe), koko=koot[koot.length-1];
-      return {perhe:perhe, koko:koko, kor:window.tuotekuva.laajuus(perhe,koko).kor};
-    });
-    const suurin=Math.max.apply(null,osat.map(s=>s.kor));
-    osat.forEach(function(s){
-      RIVIKUVA[s.perhe]=window.tuotekuva({perhe:s.perhe, koko:s.koko, kiintea:false,
-        korkeus:110*s.kor/suurin, koriste:true, merkinta:false,
-        id:"rivi-"+s.perhe.toLowerCase()});
-    });
-  })();
+  window.tuotekuva.rivi(C.cmp.perheet,
+    {korkeus:56, koriste:true, merkinta:false, id:"rivi"})
+    .forEach(function(o){ RIVIKUVA[o.perhe]=o.svg; });
 
   /* Vertailutaulukon lasketut rivit. Molemmat lukevat saman mittataulukon kuin
      kortin tuotekuva, joten taulukko ei voi kertoa muuta kuin mitä kuva piirtää. */

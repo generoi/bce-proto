@@ -1835,8 +1835,9 @@ html.vienti .cfg .shot{display:flex}
    tämä taulukko saa koko sisältöleveyden. Perustustapasivun taulukko pitää 900:n.
 
    Rivin ensimmäinen solu on nimi ja sen alla tuotekuva. Kuvat ovat jaetussa
-   mittakaavassa mutta **omilla kankaillaan**, joten kuvan korkeus on itsessään
-   vertailu: AP on 46 px ja KP 110 px. Sarake mitoittuu leveimmän kuvan mukaan.
+   mittakaavassa ja **yhteisellä kankaalla** (85 × 96 px), joten neljä riviä ovat
+   yhtä korkeita ja sarake ei hypi riveittäin. Pilarit seisovat kankaan alareunassa,
+   eli AP:n kuvan yläpuolelle jäävä tyhjä on se, mitä AP:n lyhyys näyttää.
    Kuva on koriste (koriste:true), koska nimi lukee sen yläpuolella.
 
    Kapealla .stack pinoaa rivin lohkoksi: otsikkosolu on silloin lohkon otsikko, ja

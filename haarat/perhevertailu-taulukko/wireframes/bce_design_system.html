@@ -189,21 +189,14 @@ const kuvaDemo=(function(){
         ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta",
          "Nostokorva M20"]);
     })(),
-    /* Vertailutaulukon rivikuvat: jaettu mittakaava, **oma kangas kullekin**.
-       Ei tuotekuva.rivi, koska se vie kuvat myös yhteiselle kankaalle — se on
-       oikein vierekkäisille korteille ja väärin allekkaisille taulukkoriveille,
-       joissa kuvan korkeus itse on se vertailu. Sama laskenta kuin rivi():n
-       sisällä, ilman viimeistä kangasvaihetta. */
+    /* Vertailutaulukon rivikuvat: jaettu mittakaava ja yhteinen kangas, sama
+       tuotekuva.rivi kuin korteilla mutta pienemmällä korkeudella. Yhteinen
+       kangas pitää taulukon rivit yhtä korkeina. */
     vertailu:(function(){
-      const ku={}, TK=window.tuotekuva;
-      const osat=TK.perheet.map(perhe=>{
-        const koot=TK.koot(perhe), koko=koot[koot.length-1];
-        return {perhe:perhe,koko:koko,kor:TK.laajuus(perhe,koko).kor};
-      });
-      const suurin=Math.max.apply(null,osat.map(o=>o.kor));
-      osat.forEach(o=>{ku[o.perhe]=TK({perhe:o.perhe,koko:o.koko,kiintea:false,
-        korkeus:110*o.kor/suurin,koriste:true,merkinta:false,
-        id:"dsv-"+o.perhe.toLowerCase()});});
+      const ku={};
+      window.tuotekuva.rivi(window.tuotekuva.perheet,
+        {korkeus:56,koriste:true,merkinta:false,id:"dsv"})
+        .forEach(o=>{ku[o.perhe]=o.svg;});
       return ku;
     })(),
     /* Oma piirtokutsu eikä sama SVG kahdesti: kuvan sisäiset id:t (rakeisuus,
@@ -383,7 +376,7 @@ sect("data","Taulukot ja tiedot","Taulukko kuuluu alasivulle, ei etusivulle. Kai
    rule:"Pinoutuu alle 560 px: otsikkorivi piiloon, jokainen rivi omaksi lohkokseen, sarakeotsikko td:n data-lbl-attribuutista. Käytä kun taulukko on koko sivun tiivistelmä eikä sitä saa joutua vierittämään. Mittataulukko (.dims) tekee päinvastoin: se vierittyy vaakaan, koska ammattilainen etsii yhtä lukua.",
    demo:'<div class="tw"><table class="data stack"><thead><tr><th>Perustustapa</th><th>Kesto</th><th>Kalusto</th><th>Sää</th></tr></thead><tbody><tr><th scope="row">Pilariharkko</th><td data-lbl="Kesto">Noin 2 päivää</td><td data-lbl="Kalusto">Harkot, raudoitus, betoni</td><td data-lbl="Sää">Rajoittaa</td></tr><tr><th scope="row">Valmispilari</th><td data-lbl="Kesto">Yksi päivä</td><td data-lbl="Kalusto">Ei erikoiskalustoa</td><td data-lbl="Sää">Ei rajoita</td></tr></tbody></table></div>'},
   {id:"vertailu",n:"Vertailu lohkon sisällä",c:".vertailu (h3 + ingressi + table.data.stack.vertailutaulu)",on:on("pil"),
-   rule:"Lohkon toinen alaosa, ei omaa lohkoa: erotinviiva, H3 ja ingressi, sitten taulukko ja sen alahuomautus. Sama erotin ja sama mitta kuin .find:llä, jotta yhden lohkon kaksi alaosaa lukevat samalla rytmillä. <strong>Rivi on tuote ja sarake on ominaisuus</strong>, ja rivin ensimmäinen solu on nimi ja sen alla tuotekuva — kokoero nähdään ennen kuin yhtäkään lukua on luettu. Nimi on kuvan <em>yläpuolella</em>, koska vierekkäin ladottuna rivin tunniste jäi sata pikseliä alemmas kuin rivin arvot. Kuvat ovat jaetussa mittakaavassa mutta <strong>omilla kankaillaan</strong>, ei <code>tuotekuva.rivi</code>:n yhteisellä: yhteinen kangas on oikein vierekkäisille korteille, mutta allekkaisilla taulukkoriveillä kuvan korkeus itse on se vertailu (AP 88 px, KP 150 px) eikä lukijan tarvitse etsiä mistä hahmo alkaa. Kahdeksan saraketta ei mahdu .data.stack:in 900 pikseliin, joten .vertailutaulu ottaa koko sisältöleveyden — luokka on kirjoitettava kolmanneksi (<code>.data.stack.vertailutaulu</code>), muuten se häviää tarkkuudessa. Kuvan svg ei saa max-width:100%:a: taulukon sarake mitoitetaan min-content-leveydestä, ja prosenttiraja tekee siitä nollan. Ingressin sääntö on .vertailu h3+p eikä .vertailu>p, joka voittaisi myös .fine:n.",
+   rule:"Lohkon toinen alaosa, ei omaa lohkoa: erotinviiva, H3 ja ingressi, sitten taulukko ja sen alahuomautus. Sama erotin ja sama mitta kuin .find:llä, jotta yhden lohkon kaksi alaosaa lukevat samalla rytmillä. <strong>Rivi on tuote ja sarake on ominaisuus</strong>, ja rivin ensimmäinen solu on nimi ja sen alla tuotekuva — kokoero nähdään ennen kuin yhtäkään lukua on luettu. Nimi on kuvan <em>yläpuolella</em>, koska vierekkäin ladottuna rivin tunniste jäi sata pikseliä alemmas kuin rivin arvot. Kuvat ovat jaetussa mittakaavassa ja <strong>yhteisellä kankaalla</strong> (<code>tuotekuva.rivi</code>, 85 × 96 px), joten neljä riviä ovat yhtä korkeita ja sarake ei hypi riveittäin. Omaa kangasta kullekin kokeiltiin — silloin kuvan korkeus olisi itse vertailu eikä lyhyen tuotteen yläpuolelle jäisi tyhjää — mutta eri korkuiset rivit maksoivat enemmän kuin tyhjä voitti, koska silmä lukee taulukkoa riviväliä pitkin. Pilarit seisovat kankaan alareunassa: tyhjä AP:n yläpuolella <em>on</em> se, mitä AP:n lyhyys näyttää. Kahdeksan saraketta ei mahdu .data.stack:in 900 pikseliin, joten .vertailutaulu ottaa koko sisältöleveyden — luokka on kirjoitettava kolmanneksi (<code>.data.stack.vertailutaulu</code>), muuten se häviää tarkkuudessa. Kuvan svg ei saa max-width:100%:a: taulukon sarake mitoitetaan min-content-leveydestä, ja prosenttiraja tekee siitä nollan. Ingressin sääntö on .vertailu h3+p eikä .vertailu>p, joka voittaisi myös .fine:n.",
    demo:'<div class="vertailu"><h3>Perheet rinnakkain</h3><p>Sama tieto neljästä perheestä samassa muodossa.</p><div class="tw"><table class="data stack vertailutaulu"><thead><tr><th>Pilariperhe</th><th>Korkeudet</th><th>Paino</th><th>Pohjalaatta</th></tr></thead><tbody>'+
      [["AP","200–400 mm · 3 kokoa","[TÄYTETTÄVÄ]","330 × 330 mm (AP-300: 450 × 450)"],
       ["TP","200–600 mm · 5 kokoa","43–67 kg","450 × 450 mm"],
