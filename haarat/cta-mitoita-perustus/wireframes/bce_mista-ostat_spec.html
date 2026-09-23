@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mistä ostat — ostopaikkasivu (prototyyppi)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
+<script src="palkkikuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="terassikuva.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+/* /mista-ostat/, sivutyyppikortti 7. Tehtävä yhdellä lauseella: vastata kysymykseen
+   "voiko tilata teiltä suoraan vai rautakaupasta".
+
+   Sivun rajaus syntyi siitä havainnosta, että neljän ketjun lohko on jo joka sivulla
+   (SPECDEALERS). Sivu ei siis voi olla jälleenmyyjälista — se olisi kiertotie siihen,
+   mitä kävijä juuri katsoi. Lohko kertoo keneltä, sivu kertoo miten.
+
+   Jälleenmyyjäetsimestä (postinumero, etäisyys, kartta) on NO-GO 17.9.2026, perustelu
+   ../tyopaja-ominaisuudet-runko.md. Ketjut vastaavat saatavuuskysymykseen jo itse ja
+   reaaliaikaisesti: K-Raudan TP-400-sivulla "Saatavilla 82 eri myymälästä", Starkilla
+   "Heti saatavilla 15 myymälässä", molemmilla myymäläkohtainen saatavuus ja
+   postinumerohaku. Oma lista olisi huonompi versio siitä, mikä on yhden klikkauksen
+   päässä. Siksi lohko 2 on luovutus: valitse koko, valitse kauppa, saatavuus
+   tarkistetaan siellä missä se tiedetään. Saatavuusvaraus on linkki, ei varoitus —
+   ja se on sama klikkaus kuin sivun päämittari.
+
+   Sivukartassa lukee "Jälleenmyyjät, kartta, verkkokaupat". Kartta on tässä jätetty
+   pois yllä olevan päätöksen mukaisesti; se on kerrottava asiakkaalle. */
+const C={
+  crumb:[["Etusivu","/"],["Mistä ostat",null]],
+  url:{konf:"/konfiguraattori/", tarjous:"/yhteystiedot/tarjouspyynto/",
+       pilarit:"/bce-pilarit/", tarvikkeet:"/pilarien-kiinnitystarvikkeet/",
+       tp:"/bce-pilarit/tp-pilari/", hinta:"/ohjeet/usein-kysytyt/"},
+
+  /* 1 · Kärki. Jakelumalli on ensimmäinen lause, koska se on sivun koko tehtävä.
+     Ei oranssia painiketta: sivun ensisijainen toiminto on jälleenmyyjäklikki, joka on
+     heti seuraavassa lohkossa. Ankkuri oranssina painikkeena olisi auditin P0. */
+  hero:{h1:"Mistä ostat BCE-pilarit ja tarvikkeet",
+    lede:"BCE ei myy suoraan kuluttajalle. Pilarit ja tarvikkeet myydään rautakaupoissa kaikkialla Suomessa, ja hinnat ovat jälleenmyyjien omia. Tältä sivulta näet mitkä kaupat myyvät, mitä otat mukaan tiskille ja miten saat pilarit työmaalle.",
+    idx:"Tällä sivulla"},
+  jump:[["Mistä ostat","#osta"],
+        ["Näin tilaat","#tilaa"],
+        ["Nouto ja kuljetus","#nouto"],
+        ["Iso projekti","#yhteys"]],
+
+  /* 2 · Sivun ensisijainen toiminto. Kokovalinta ennen jälleenmyyjälinkkiä, jotta
+     linkki vie oikean tuotteen sivulle — siellä on myymäläkohtainen saatavuus ja
+     postinumerohaku. SPECDEALERSIZE vaihtaa linkit. Ei esivalintaa (heuristiikka 5):
+     valitsematta linkit vievät ketjun BCE-sivulle, jossa on koko valikoima. */
+  shop:{h2:"Osta jälleenmyyjältä",
+    ing:"Jokaisella ketjulla on oma BCE-sivunsa, jolla on koko valikoima: kaikki pilariperheet, JeKi-sokkeli ja tarvikkeet. Hinnan ja myymäläkohtaisen saatavuuden näet siellä.",
+    lbl:"Osta jälleenmyyjältä",
+    /* Saatavuusvaraus on tässä muodossa tarkoituksella: se kertoo mistä tieto löytyy,
+       ei pahoittele sitä ettei se ole meillä. */
+    fine:"Hinnat ja myymäläkohtainen saatavuus vaihtelevat ketjuittain. Ketjun verkkokaupassa näet, mitkä myymälät pitävät tuotetta varastossa.",
+    /* Toissijainen linkki omille tuotesivuille poistettiin: se osoitti samaan paikkaan
+       kuin lohkon 3 "Katso pilarien koodit" mutta eri nimellä, ja kilpaili lohkon
+       ensisijaisen toiminnon kanssa. Tuotesivuille pääsee lohkosta 3. */},
+
+  /* 3 · Kortin 7 kohta "Näin tilaat tiskillä". Koodit ovat sivun ainoa sisältö, jota
+     P4 (jälleenmyyjän myyjä) käyttää työkaluna. EAN-koodit on luettu ketjujen
+     tuotesivujen osoitteista ja varmennettu K-Raudan tuotesivun tekstistä 17.9.2026
+     ("EAN-koodi: 6438313536154" = TP-400). TP-perhesivulla samat kentät ovat yhä
+     paikanpitäjiä — ne on päivitettävä sinne. */
+  order:{h2:"Näin tilaat",
+    ing:"Sama kolme askelta kaikilla jälleenmyyjillä.",
+    steps:[
+      /* Askel 1 on ainoa, jonka otsikko on linkki. Kolmas alkio on tuotanto-URL
+         ja neljäs tapahtumanimi; ilman niitä otsikko on pelkkää tekstiä.
+         «Laske määrä» on käsky, jota ei voi totella tällä sivulla — askel kertoi
+         mitä tehdä muttei vienyt minnekään, ja konfiguraattorilohko on vasta
+         kaksi lohkoa alempana. `cta_konfiguraattori` on kortin 7 tukimittari
+         («paluu mitoitukseen», ../mittarit-per-sivu.md), joten uutta
+         tapahtumanimeä ei synny — sijainti erottaa tämän lopetuslohkosta. */
+      ["Laske määrä","Konfiguraattori antaa pilarimäärän ja tarvikelistan kappalemäärineen. Ilman listaa myymälässä arvataan.",
+        "konf","cta_konfiguraattori"],
+      ["Ota koodit mukaan","Tuotekoodi ja EAN riittävät: niillä myyjä löytää oikean tuotteen, vaikka nimi olisi kaupan omassa järjestelmässä toinen. Koodit ovat kunkin tuotteen omalla sivulla, ja konfiguraattorin tilauslista kokoaa ne valmiiksi."],
+      ["Varmista saatavuus ennen käyntiä","Isommat erät ja korkeat pilarit eivät ole joka myymälässä hyllyssä. Verkkokaupasta näet tilanteen ja voit tilata noutoon."]],
+    codesCta:"Katso pilarien koodit",
+    partsCta:"Katso tarvikkeiden koodit"},
+
+  /* 4 · Nouto ja kuljetus. Tätä ei ole millään muulla sivulla, ja se on aito ostoeste:
+     kävijä ei tiedä mahtuuko pilari autoon. Painot ovat tiedossa, loput eivät —
+     merkitty täytettäväksi eikä arvattu. */
+  haul:{h2:"Nouto ja kuljetus",
+    ing:"Pilari on betonia, ja paino ratkaisee miten sen saa työmaalle. TP-pilarin nostaa kaksi ihmistä käsin, KP-pilari vaatii koneen.",
+    pts:["TP-pilarit painavat 43–67 kg. Kaksi ihmistä nostaa käsin: nostokorvan läpi pujotetaan tanko.",
+      "KP-pilarit painavat 176–187 kg ja vaativat kurottajan tai kaivinkoneen sekä nostokorvat.",
+      "Henkilöauton peräkärryyn mahtuu [TÄYTETTÄVÄ] pilaria.",
+      "Kuljetus työmaalle: [TÄYTETTÄVÄ, ketjukohtainen]"],
+    img:"Kuva: kaksi ihmistä nostaa TP-pilaria tangolla nostokorvan läpi, vieressä peräkärry lastattuna",
+    cmpQ:"Entä lava ja pakkaus?", cmp:"[TÄYTETTÄVÄ]"},
+
+  /* 5 · Kortin 7 CTA-hierarkian kohta 2: mitoita ensin. Sama lohko kuin muilla sivuilla. */
+  cfg:{h2:"Etkö tiedä vielä määrää",
+    ing:"Konfiguraattori kysyy mitä rakennat, kuinka ison ja kuinka korkealle maasta. Se antaa sijoittelukaavion, pilarimäärän ja tarvikelistan kappalemäärineen — sen listan, jonka otat myymälään mukaan.",
+    steps:[
+      ["Mitä rakennat","Kevyt rakennelma, terassi tai sauna, vai autokatos ja isompi rakennus."],
+      ["Kuinka iso","Mitä isompi rakennus, sitä suurempi kantavuus."],
+      ["Kuinka korkealle maasta","Korkeus valitaan asennussyvyyden ja halutun lattiakorkeuden mukaan."]],
+    alt:"Konfiguraattorin tulosnäkymä puhelimessa: sijoittelukaavio ja tarvikelista kappalemäärineen, vieressä terassin perustus pilareineen.",
+    cta:"Suunnittele perustus",
+    sub:"Kestää muutaman minuutin."},
+
+  /* 6 · Ostokohtaiset kysymykset. Kysymykset näytetään, vastaukset jätetään näkyvästi
+     tyhjiksi kunnes BCE on ne kirjoittanut — sama käytäntö kuin tarvikesivulla. */
+  ukk:{h2:"Usein kysytyt",
+    a:"[TÄYTETTÄVÄ]",
+    rows:["Voinko tilata pilarit suoraan BCE:ltä?",
+      "Saanko yhden pilarin vai onko minimierä?",
+      "Mitä teen, jos lähimmässä myymälässä ei ole varastossa?",
+      "Miksi hinta vaihtelee kauppojen välillä?",
+      "Voinko palauttaa ylimääräiset pilarit?",
+      "Kuinka nopeasti tilaus tulee myymälään?"]},
+
+  /* 7 · Viimeinen lohko on seuraava askel: ammattilainen ja isot erät. */
+  big:{h2:"Isompi kohde tai kysyttävää?",
+    p:"Suuremmat tilaukset ja projektikohteet hoituvat suoraan meidän kauttamme. Vastaamme tarjouspyyntöön tunnin sisällä.",
+    cta:"Pyydä tarjous", sub:"[TÄYTETTÄVÄ]"}
+};
+
+(function(){
+  "use strict";
+  const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const T=s=>E(s).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+  const L=u=>E(SPECLINK(u));
+  /* Kuoren alapalkki jätetään pois: sen toinen painike on "Mistä ostat", ja tällä
+     sivulla se osoittaisi sivulle itselleen. Sivun ensisijainen toiminto on toisessa
+     lohkossa, eli mobiilissa näkyvissä heti kärjen jälkeen. */
+  SPECSHELL(E,{crumb:C.crumb,active:"Mistä ostat",bar:false});
+  const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
+  const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
+  const arrow=t=>E(t)+" →";
+  const down=t=>E(t)+" ↓";
+
+  document.getElementById("main").innerHTML=
+
+  /* 1 · Kärki */
+  '<div class="w"><section class="lead">'+
+    "<div><h1>"+E(C.hero.h1)+'</h1><p class="lede">'+E(C.hero.lede)+"</p></div>"+
+    '<nav class="idx" aria-label="'+E(C.hero.idx)+'"><p class="lbl">'+E(C.hero.idx)+"</p>"+
+      C.jump.map(j=>'<a href="'+E(j[1])+'" data-event="cta_sivuankkuri" data-kohde="'+E(j[0])+'">'+
+        down(j[0])+"</a>").join("")+"</nav></section></div>"+
+
+  /* 2 · Ostopaikat — sivun ensisijainen toiminto.
+     17.9.2026: kokovalitsin poistettiin. Se esivalitsi TP-perheen kaikille kävijöille,
+     vaikka sivulle tullaan myös KP:n, AP:n, PP:n, JeKi-sokkelin ja tarvikkeiden takia
+     (heuristiikka 5: ei esivalintaa, jota käyttäjä ei ole tehnyt). Linkit vievät nyt
+     ketjun BCE-sivulle, joka suodattaa valikoiman valmiiksi; koon ja saatavuuden
+     valitsee kävijä siellä, missä molemmat ovat totta reaaliajassa. */
+  sect(head(C.shop.h2,C.shop.ing)+
+    SPECDEALERS(E,{cls:"dealers-4",sijainti:"ostat"})+
+    '<p class="fine">'+E(C.shop.fine)+"</p>"+
+    "","osta")+
+
+  /* 3 · Näin tilaat */
+  sect(head(C.order.h2,C.order.ing)+
+    '<ol class="steps">'+C.order.steps.map(x=>"<li><b>"+(x[2]
+      ? '<a href="'+L(C.url[x[2]])+'" data-event="'+x[3]+'" data-sijainti="tilaa">'+E(x[0])+"</a>"
+      : E(x[0]))+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
+    '<p class="next">'+
+      '<a class="more" href="'+L(C.url.pilarit)+'" data-event="cta_tuotteet" data-sijainti="tilaa">'+
+      arrow(C.order.codesCta)+"</a> "+
+      '<a class="more" href="'+L(C.url.tarvikkeet)+'" data-event="cta_tarvikkeet" data-sijainti="tilaa">'+
+      arrow(C.order.partsCta)+"</a></p>","tilaa")+
+
+  /* 4 · Nouto ja kuljetus. Oli taulukko, mutta tämä on asia joka näytetään:
+     nosto ja lastaus ovat kuvia, eivät rivejä (rungon periaate 4, näytä älä taulukoi). */
+  sect('<div class="side"><div>'+head(C.haul.h2,C.haul.ing)+
+    '<ul class="uses">'+C.haul.pts.map(x=>"<li>"+T(x)+"</li>").join("")+"</ul>"+
+    '<p class="cmp"><b>'+E(C.haul.cmpQ)+"</b> "+T(C.haul.cmp)+"</p></div>"+
+    '<div class="im">'+E(C.haul.img)+"</div></div>","nouto")+
+
+  /* 5 · Konfiguraattori, kahdessa palstassa kuten muilla sivuilla — mutta
+     matalana: tämän sivun ensisijainen toiminto on *Katso mistä ostat*, ja
+     vieritysanimaatio antaisi toissijaiselle nostolle kaksi ruutua matkaa.
+     `.cfg.matala` + `terassikuva.cfgMatala` = koottu rakenne, ei runwaytä. */
+  sect('<div class="cfg matala"><div>'+head(C.cfg.h2,C.cfg.ing)+
+    '<ol class="steps">'+C.cfg.steps.map(x=>"<li><b>"+E(x[0])+"</b><span>"+E(x[1])+"</span></li>").join("")+"</ol>"+
+    '<p class="act"><a class="btn btn-1" href="'+L(C.url.konf)+'" data-event="cta_konfiguraattori" data-sijainti="lopetus">'+
+    E(C.cfg.cta)+'</a><span class="sub">'+E(C.cfg.sub)+"</span></p></div>"+
+    '<div class="shot">'+terassikuva.cfgMatala(C.cfg.alt)+'</div>'+
+    "</div>","mitoita")+
+
+  /* 6 · Usein kysytyt */
+  sect(head(C.ukk.h2)+'<div class="faq">'+C.ukk.rows.map(q=>
+    "<details><summary>"+E(q)+'<span class="c" aria-hidden="true">▾</span></summary>'+
+    '<div class="b">'+T(C.ukk.a)+"</div></details>").join("")+"</div>","ukk")+
+
+  /* 7 · Isompi kohde */
+  sect('<div class="band"><div><h2>'+E(C.big.h2)+"</h2><p>"+E(C.big.p)+"</p></div>"+
+    '<div><a class="btn btn-1" href="'+L(C.url.tarjous)+'" data-event="cta_yhteydenotto">'+E(C.big.cta)+"</a>"+
+    '<p class="sub">'+T(C.big.sub)+"</p></div></div>","yhteys");
+
+  /* ---- Kuittaukset ruudunlukijalle: sama toteutus kuin perhe- ja tarvikesivulla ---- */
+  const say=document.createElement("p");
+  say.className="sr";say.setAttribute("role","status");say.setAttribute("aria-live","polite");
+  document.body.appendChild(say);
+
+  /* ---- FAQ-avaukset mittariin ---- */
+  [...document.querySelectorAll(".faq details")].forEach(function(d){
+    d.addEventListener("toggle",function(){
+      if(!d.open)return;
+      d.dataset.event="avaus_ukk";
+      d.dataset.kysymys=d.querySelector("summary").textContent.replace("▾","").trim();
+    });
+  });
+})();
+</script>
+</body>
+</html>
