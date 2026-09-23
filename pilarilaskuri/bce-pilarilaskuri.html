@@ -1582,7 +1582,7 @@ function back(){
   /* Paluu on epäröinnin ainoa suora mittari. Ilman tätä tapahtumaa palatun askeleen
      erottaa datassa vain siitä, että laskuri_step toistuu samalla askeleella — ja se
      tulkinta menee rikki heti kun askeljärjestys muuttuu rakennustyypin mukaan. */
-  push('laskuri_back', { askel:SCREEN, paluu:HIST[HIST.length - 1] });
+  push('laskuri_back', { askel:SCREEN, paluu:HIST[HIST.length - 1], askel_nro:stepNo(SCREEN) });
   SCREEN = HIST.pop();
   SUUNTA = 'taakse';
   naytaRuutu();
@@ -1590,11 +1590,11 @@ function back(){
 function toResult(){
   RESULT = compute(state, RULES, LANG);
   if (RESULT.handoff){
-    push('laskuri_handoff', { syy:RESULT.handoff.code, rakennus:state.building, pinta_ala:RESULT.area });
+    push('laskuri_handoff', { syy:RESULT.handoff.code, rakennus:state.building, pinta_ala:RESULT.area, askelia:stepsTotal() });
     go('handoff');
   } else {
     push('laskuri_result', { perhe:RESULT.family, maara:totalPillars(RESULT), pinta_ala:RESULT.area,
-                             rakennus:state.building });
+                             rakennus:state.building, askelia:stepsTotal() });
     go('result');
   }
 }
@@ -2804,7 +2804,11 @@ phone.addEventListener('click', function(e){
       state.mass = null; state.massValue = 0;
       state.poles = (v === 'katos') ? 4 : 2;
     }
-    push('laskuri_step', { askel:SCREEN, arvo:v });
+    /* askel_nro ja askelia kulkevat mukana, koska ilman BigQueryä istunnon
+       askelsekvenssiä ei voi koota jälkikäteen: eteneminen on luettava yhdestä
+       tapahtumasta. Askelia on kahdesta yhdeksään rakennustyypin mukaan, joten
+       pelkkä numero ei kerro mitään ilman kokonaismäärää. */
+    push('laskuri_step', { askel:SCREEN, arvo:v, askel_nro:stepNo(SCREEN), askelia:stepsTotal() });
     render();
     /* Jokaisella klikkiruudulla on tasan yksi kysymys, joten valinta vie eteenpäin
        eikä erillistä Jatkaa tarvita. Viive jättää valinnan näkyviin hetkeksi.

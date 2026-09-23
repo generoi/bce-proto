@@ -1991,8 +1991,15 @@ html.vienti .cfg .shot{display:flex}
    tekevät 126–187 ja 43–67 eri mittaisiksi samalla merkkimäärällä. */
 .vertailutaulu td{font-variant-numeric:tabular-nums}
 /* Kapealla .stack tekee otsikkosolusta lohkon otsikon: nimi on silloin H3:n kokoinen
-   ja kuva sen vasemmalla puolella, eli sama pari kuin leveällä. */
+   ja kuva sen vasemmalla puolella, eli sama pari kuin leveällä.
+
+   `width:1%` on **purettava** täällä. Se on taulukon sarakejaon ohje, mutta pinotussa
+   lohkossa solu on tavallinen lohkoelementti, ja 1 % 358 pikselistä on kolme pikseliä:
+   kuva ja nimi valuvat ulos solustaan ja asettuvat mihin sattuu. Vika näkyy vain
+   kapealla eikä lainkaan taulukkomuodossa, jossa sarakejako ohittaa ilmoitetun
+   leveyden. */
 @media(max-width:560px){
+  .vertailutaulu tbody th{width:auto;white-space:normal}
   .vertailu .pf{gap:14px}
 }
 .vertailu h3{margin-bottom:6px}
