@@ -195,6 +195,18 @@ const kuvaDemo=(function(){
     {koko:k,korkeus:120,kiintea:true,koriste:true,id:"dsb-"+k})));
 
   return {
+    /* Ankkuririvin demo piirtyy samasta generaattorista kuin tarvikesivun rivi,
+       joten katalogi ei voi näyttää muuta kuin mitä sivulla on. Sama 140 px:n
+       piirtokorkeus ja sama CSS-mitoitus. */
+    anchors:[["Pilarikengät","pik-90-140","3 tarviketta"],
+             ["Palkkikengät","pak-100x150","1 tarvike"],
+             ["Teräslaatat","tl-150x150","3 tarviketta"],
+             ["Nostokorva","nostokorva-m20","1 tarvike"]].map(function(r){
+      return '<a href="#anchors"><span class="ic">'+
+        TKU({osa:r[1],korkeus:140,koriste:true,id:"dsank-"+r[1]})+"</span>"+
+        "<span><b>"+E(r[0])+' <span class="ar" aria-hidden="true">↓</span></b>'+
+        '<span class="n">'+E(r[2])+"</span></span></a>";
+    }).join(""),
     mk:'<div class="ds-mk">'+window.mittakaavio({perhe:"TP",id:"dsmk"})+"</div>",
     pilarit:rivi(perheet.map(o=>o.svg),perheet.map(o=>window.tuotekuva.koodi(o.perhe,o.koko))),
     tarvikkeet:rivi(tkuvat,tavaimet.map(k=>TKU.tieto(k).koodi)),
@@ -320,10 +332,15 @@ sect("karki","Sivun kärki","Viidellä sivulla on viisi erilaista ensimmäistä 
    rule:"Verkkokaupan konventio: galleria vasemmalla, tuotetiedot ja ostolaatikko oikealla. Kokovalinta ei ole esivalittu eikä vieritä. Ostolaatikossa on yksi .btn-1 ja jälleenmyyjät painikkeina.",
    merge:"Tarvikkeet B:n .plot on tämän lohkon tiivis toisto: sama kentät ja järjestys. Jos B valitaan, .plot ja .shop dokumentoidaan yhdeksi tuotelohkoksi kahdella tiheydellä.",
    demo:'<div class="shop" style="padding:0"><div class="col"><div class="gal" style="position:static"><div class="im">Tuotekuva: TP-pilari asennettuna</div><div class="thumbs"><button type="button" aria-pressed="true">Kuva 1</button><button type="button" aria-pressed="false">Kuva 2</button><button type="button" aria-pressed="false">Kuva 3</button></div></div></div><div><h1>TP-pilari</h1><p class="subh">Terassit, pienmökit ja saunat</p><p class="lede">BCE:n yleisin perustuspilari. Kaksi ihmistä nostaa paikalleen.</p><h2 class="lbl">Sopii näihin kohteisiin</h2><ul class="uses"><li><a href="#">Terassit ja kuistit</a></li><li><a href="#">Piha- ja rantasaunat</a></li></ul><div class="box"><p class="lbl">Valitse korkeus</p><div class="sizes"><button type="button" aria-pressed="false"><b>TP-200</b><span>43 kg</span></button><button type="button" aria-pressed="false"><b>TP-400</b><span>55 kg</span></button><button type="button" aria-pressed="false"><b>TP-600</b><span>67 kg</span></button></div><a class="btn btn-1 wide" href="#">Laske pilarien määrä</a><p class="lbl">Osta jälleenmyyjältä</p><div class="dealers"><a href="#">Hartman</a><a href="#">K-Rauta</a><a href="#">Soraterminaali</a><a href="#">Stark</a></div><p class="fine">Hinnat ja saatavuus jälleenmyyjillä.</p></div></div></div>',paper:true},
-  {id:"topline",wp:wp("acf","Kärki itse on lohkomalli. Sivun sisäinen hakemisto <code>.idx</code> on <code>bce/sivuhakemisto</code>, joka generoi linkit H2-otsikoista — käsin ylläpidetty hakemisto vanhenee ensimmäisessä muokkauksessa."),n:"Tekstikärki",c:".topline (h1 .lede) · .lead (h1 .lede .cta + .idx)",on:on("a","b"),
+  {id:"topline",wp:wp("acf","Kärki itse on lohkomalli. Sivun sisäinen hakemisto <code>.idx</code> on <code>bce/sivuhakemisto</code>, joka generoi linkit H2-otsikoista — käsin ylläpidetty hakemisto vanhenee ensimmäisessä muokkauksessa."),n:"Tekstikärki",c:".topline (h1 .lede) · .lead (h1 .lede .cta + .idx) · .lead.solo (ei oikeaa palstaa)",on:on("a","b"),
    rule:"Kun sivu on työkalu tai luettelo, kärki on H1 ja yksi kappale, jotta seuraava lohko nousee ruudun alareunaan. .lead lisää oikealle hakemiston.",
    merge:"A:lla ei ole kärjessä toimintoa lainkaan; B:n ensisijainen painike Osta jälleenmyyjältä on ankkuri saman sivun alaosaan. Toinen puuttuu, toinen on väärä väline. Kun A/B ratkaistaan, tästä jää yksi.",
-   demo:'<div class="topline" style="padding:0"><h1>Pilarien kiinnitystarvikkeet</h1><p class="lede">Kiinnike valitaan kannatinpalkin mitan ja halutun ulkonäön mukaan. Kaikkiin BCE-pilareihin sopivat samat tarvikkeet.</p></div>',paper:true}
+   demo:'<div class="topline" style="padding:0"><h1>Pilarien kiinnitystarvikkeet</h1><p class="lede">Kiinnike valitaan kannatinpalkin mitan ja halutun ulkonäön mukaan. Kaikkiin BCE-pilareihin sopivat samat tarvikkeet.</p></div>',paper:true},
+
+  {id:"anchors",wp:wp("acf","<code>bce/sivuhakemisto</code>, kuvallinen variantti. Sama lohko kuin <code>.idx</code>, ei viidestoista custom-lohko: linkit generoituvat H2-otsikoista, ja kuva sekä nimikemäärä tulevat ryhmän omasta datasta. Kumpaakaan ei kirjoiteta käsin."),n:"Ankkuririvi",c:".anchors a (.ic b .ar .n) · .lead.solo",on:on("a"),status:["ok","uusi 23.9."],
+   rule:"Yksi pikalinkki per ryhmä kärjen alle: havainnekuva 56 px, nimi, nimikkeiden määrä ja ↓. Ei valkoista levyä, ei kehystä, ei kuvapaikkaa — kortin ulkonäkö tekisi tästä tuotteen eikä navigaatiota. Nuoli on ↓ eikä →, koska kohde on samalla sivulla. Yläviiva sitoo linkit nauhaksi, jokaisen oma reunus tekisi neljä laatikkoa. Määrä lasketaan riveistä, kuva on ryhmän oma <code>ik</code>-nimike.",
+   merge:"Korvasi tarvikesivulla sekä kärjen hakemiston (.idx, kahdeksan tuotelinkkiä) että suodatinkortit (.pick-how). Suodatin jää versioon B. Jos hakemisto halutaan takaisin jollekin sivulle, se on yhä olemassa — tämä on sen kuvallinen sisarus, ei korvaaja.",
+   demo:'<nav class="anchors" style="margin:0">'+kuvaDemo.anchors+"</nav>",paper:true}
 ])+
 
 sect("kortit","Kortit ja ruudukot","Kortti on oikea väline kun kohteet ovat rinnakkaisia valintoja. Kaksi ruudukkoa peräkkäin on kielletty, ja identtinen ikoni + otsikko + teksti -ruudukko on mallipohjan tunnusmerkki.",[
@@ -365,7 +382,7 @@ sect("kortit","Kortit ja ruudukot","Kortti on oikea väline kun kohteet ovat rin
   {id:"dl",wp:wp("acf","<code>bce/lataus</code>. Jokainen PDF saa laskeutumissivun ja mitatun tapahtuman, joten paljas linkki ei kelpaa. <code>ohje</code>-sivupohjassa sama renderöityy <code>lataukset</code>-repeaterista."),n:"Latauskortti",c:".dl a (.ty .ic b .st)",on:on("tp","b"),
    rule:"Tiedostotyyppi latausikonilla selitteenä, nimi lihavoituna, tila pienenä. Neljä rinnakkain, kaksi 900 px:n alla.",
    demo:'<div class="dl" style="grid-template-columns:repeat(2,minmax(0,1fr))"><a href="#"><span class="ty"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>DWG</span><b>Mittapiirustukset</b><span class="st">'+T("[TÄYTETTÄVÄ]")+'</span></a><a href="#"><span class="ty"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>PDF · FI, SV, EN</span><b>Asennusperiaate A-601</b></a></div>'},
-  {id:"pickhow",wp:wp("acf","<code>bce/tarvikesuodatin</code>. Aito custom: korostaa ja piilottaa tuoterivit, kuittaa ruudunlukijalle, purkupainike. JS-riippuvuus."),n:"Suodatinkortti",c:".pick-how a (b span) [aria-current] · .fstate .msg .lnk",on:on("a","b"),
+  {id:"pickhow",wp:wp("acf","<code>bce/tarvikesuodatin</code>. Aito custom: korostaa ja piilottaa tuoterivit, kuittaa ruudunlukijalle, purkupainike. JS-riippuvuus."),n:"Suodatinkortti",c:".pick-how a (b span) [aria-current] · .fstate .msg .lnk",on:on("b"),
    rule:"Kortti on toiminto, ei navigaatio: valittu tila on paksu reuna ja ✓, kuittaus sanoin (Näytetään 3 tarviketta 9:stä) ja purkupainike. Ilman skriptiä ankkurilinkki. Ei esivalintaa.",
    merge:"A:n suodatin vierittää käyttäjän puolesta (scrollIntoView) klikkauksen jälkeen. Sama virhe korjattiin TP:n kokovalinnasta 15.9. B käyttää samaa luokkaa pelkkänä sisällysluettelona.",
    demo:'<div class="pick-how" style="grid-template-columns:repeat(3,1fr)"><a href="#" aria-current="true"><b>Terassin runkopalkki</b><span>Ohuemmat runkopalkit ja välilankut</span></a><a href="#"><b>Kannatinpalkki</b><span>Paksummat kannatinpalkit ja hirsirakenteet</span></a><a href="#"><b>Piilotettu kiinnitys</b><span>Kun kiinnikkeen ei haluta näkyvän</span></a></div><p class="fstate"><span class="msg">Näytetään 3 tarviketta 9:stä.</span><button class="lnk" type="button">Näytä kaikki tarvikkeet</button></p>'}
