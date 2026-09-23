@@ -6,6 +6,9 @@ window.SPEC={
   logo:"BCE-logo",
   home:"bce_etusivu_spec.html",
   menu:"Valikko",
+  /* Mobiilin haitarin avaaja. Nimike täydentyy kohdan nimellä ("Näytä alavalikko:
+     Ohjeet"), koska ruudunlukija lukee samalla sivulla neljä samanlaista painiketta. */
+  subtog:"Näytä alavalikko",
   crumbLabel:"Murupolku",
   /* Navigaatio sivukartan luvun 0.1 mukaan.
 
@@ -255,9 +258,11 @@ window.SPECNAV=function(E,active){
     return '<a'+(cls?' class="'+cls+'"':"")+' href="'+E(SPECLINK(n[1]))+'"'+
       (n[0]===active?' aria-current="page"':"")+">"+ikoni(n[1])+E(n[0])+(kärki?chev:"")+"</a>";
   };
-  return SPEC.nav.map(function(n){
+  return SPEC.nav.map(function(n,i){
+    const id="sub-"+i;
     const top = n[1] ? link(n,null,!!n[2])
       : '<button class="navtop" type="button" aria-expanded="false"'+
+        (n[2]?' aria-controls="'+id+'"':"")+
         (on(n)?' aria-current="true"':"")+">"+E(n[0])+(n[2]?chev:"")+"</button>";
     if(!n[2]) return top;
     const ryhmat=n[2].some(function(x){ return !!x[2]; });
@@ -267,8 +272,17 @@ window.SPECNAV=function(E,active){
             (g[2]||[]).map(function(x){ return link(x); }).join("")+"</span>";
         }).join("")
       : n[2].map(function(x){ return link(x); }).join("");
-    return '<span class="hassub'+(on(n)?" on":"")+'">'+top+
-      '<span class="sub'+(ryhmat?" grid":"")+'">'+sisalto+"</span></span>";
+    /* Mobiilin haitarille tarvitaan avaaja, ja päätasolla on kahdenlaisia kohtia.
+       Ryhmä ilman omaa sivua (Tuotteet, Sokkelit) on jo painike ja avaa itse.
+       Linkki, jolla on lapsia (Perustuksen teko, Ohjeet), ei voi olla avaaja: sen
+       pitää yhä viedä omalle sivulleen. Siksi sen viereen tulee oma painike, joka
+       on työpöydällä piilossa — siellä avaa osoitin tai fokus. */
+    const tog = n[1]
+      ? '<button class="subtog" type="button" aria-expanded="false" aria-controls="'+id+'"'+
+        ' aria-label="'+E(SPEC.subtog+": "+n[0])+'">'+chev+"</button>"
+      : "";
+    return '<span class="hassub'+(on(n)?" on":"")+'">'+top+tog+
+      '<span class="sub'+(ryhmat?" grid":"")+'" id="'+id+'">'+sisalto+"</span></span>";
   }).join("");
 };
 
@@ -334,32 +348,56 @@ window.SPECSHELL=function(E,o){
   const b=q("#menub"),n=q("#mainnav");
   b.addEventListener("click",()=>{const o2=n.getAttribute("data-open")==="true";
     n.setAttribute("data-open",String(!o2));b.setAttribute("aria-expanded",String(!o2));});
-  /* Ryhmä ilman sivua ("Tuotteet") on painike, ei linkki. Työpöydällä osoitin ja
-     näppäimistöfokus avaavat pudotuksen, klikkaus jättää sen auki ja klikkaus muualle
-     sulkee. Mobiilissa lista on jo auki, joten painike ei kerro sulkevansa mitään. */
+  /* Alavalikon avaaminen, sama `data-open` molemmilla leveyksillä.
+     -------------------------------------------------------------------------
+     Työpöydällä osoitin ja näppäimistöfokus avaavat pudotuksen (CSS), klikkaus
+     jättää sen auki ja klikkaus muualle sulkee.
+
+     Mobiilissa lista oli ennen kokonaan auki: 28 kohtaa, 1 415 px, eli alaosa
+     (Referenssit, Mistä ostat, Yhteystiedot) oli kahden ruudullisen päässä. Nyt
+     se on haitari — kiinni oletuksena, kahdeksan kohtaa, mahtuu ruutuun kerralla.
+     Auki jää se ryhmä, jossa nykyinen sivu on (.hassub.on), jotta lukija näkee
+     mistä kohtaa valikkoa hän tuli. Klikkaus muualle ei sulje mobiilissa: valikko
+     on oma paneelinsa, eikä sen sisällä liikkuminen saa romauttaa avattua ryhmää.
+
+     Leveyden vaihtuessa tila nollataan, koska sama attribuutti tarkoittaa eri
+     asiaa: mobiilissa "tämä ryhmä on auki listassa", työpöydällä "tämä pudotus
+     roikkuu näkyvissä". Ilman nollausta mobiilissa avattu ryhmä jäisi työpöydällä
+     leijumaan ruudulle ilman että mikään osoitin on sen päällä. */
   const kapea=window.matchMedia("(max-width:980px)");
-  [...document.querySelectorAll("#mainnav .navtop")].forEach(function(bt){
-    const w=bt.parentNode;
+  const nollaa=[];
+  [...document.querySelectorAll("#mainnav .hassub")].forEach(function(w){
+    /* Kaksi avaajaa, ks. SPECNAV: ryhmä ilman sivua on itse painike, ja sivullisen
+       linkin vieressä on erillinen painike. Kummallakin sama tila. */
+    const napit=[...w.querySelectorAll(":scope > .navtop, :scope > .subtog")];
+    if(!napit.length) return;
     const sync=function(){
-      bt.setAttribute("aria-expanded", kapea.matches||w.getAttribute("data-open")==="true" ? "true":"false");
+      const auki = w.getAttribute("data-open")==="true";
+      napit.forEach(function(bt){ bt.setAttribute("aria-expanded", auki?"true":"false"); });
     };
-    bt.addEventListener("click",function(e){
-      if(kapea.matches) return;
-      e.stopPropagation();
-      w.setAttribute("data-open", w.getAttribute("data-open")==="true" ? "false":"true");
-      sync();
+    napit.forEach(function(bt){
+      bt.addEventListener("click",function(e){
+        e.stopPropagation();
+        w.setAttribute("data-open", w.getAttribute("data-open")==="true" ? "false":"true");
+        sync();
+      });
     });
-    kapea.addEventListener("change",sync);
-    sync();
     document.addEventListener("click",function(e){
       if(kapea.matches||w.contains(e.target)) return;
       w.setAttribute("data-open","false"); sync();
     });
     w.addEventListener("keydown",function(e){
       if(e.key!=="Escape") return;
-      w.setAttribute("data-open","false"); sync(); bt.focus();
+      w.setAttribute("data-open","false"); sync(); napit[0].focus();
+    });
+    nollaa.push(function(){
+      w.setAttribute("data-open", kapea.matches && w.classList.contains("on") ? "true":"false");
+      sync();
     });
   });
+  const haitari=function(){ nollaa.forEach(function(f){ f(); }); };
+  kapea.addEventListener("change",haitari);
+  haitari();
   if(o.crumb){
     const c=q(".crumb");
     c.setAttribute("aria-label",SPEC.crumbLabel);
