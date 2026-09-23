@@ -953,6 +953,74 @@
     return terassikuva(o);
   };
 
+  /* ---- Hero-kuva: valmis kohde käyttöyhteydessä ---------------------------
+     23.9.2026, Pilarit-hubi (`bce_pilarit_spec.html`, `C.hero.img`).
+
+     ****  TÄMÄ ON VÄLIAIKAINEN PAIKANPITÄJÄ. KUVA KORVATAAN VALOKUVALLA,  ****
+     ****  KUN SELLAINEN ON. Kun valokuva saapuu, tämä funktio ja sen      ****
+     ****  kutsu hubissa poistetaan — ei jätetä kumpaakin rinnakkain.      ****
+
+     `SVG-INVENTAARIO.md` luku 2 luokittelee kaikkien sivujen hero-kuvat
+     valokuvan paikoiksi, eikä se sääntö muutu tästä: hero myy kohteen eikä
+     tuotetta, ja kolme tehtävää ovat yhä eri tehtävää (mittakaavio mitoittaa,
+     tuotekuva jättää muistijäljen muodosta, valokuva näyttää käyttöyhteyden).
+     Piirros on tässä siksi, että asiakasesittelyssä tämä on parempi kuin
+     katkoviivalaatikko jossa lukee «Hero-kuva» — ei siksi, että piirros olisi
+     ratkaissut kuvapuutteen.
+
+     Se, mitä kuva saa väittää, on sidottu heron ensimmäiseen lauseeseen:
+     *«Perustuspilari on valmiiksi valettu betonielementti. Se lasketaan
+     sorapatjan päälle…»*. Koottu rakenne vastaa siihen yhdellä silmäyksellä —
+     valmis terassi seisoo valmiiden betonipilarien päällä, ja pilarit seisovat
+     maapedin päällä eivätkä valetussa anturassa.
+
+     Neljä valintaa, jotka eivät ole makuasioita:
+
+       rajahdys 0      hero näyttää lopputuloksen, ei kokoonpanoa. Räjäytyskuva
+                       on konfiguraattorilohkon työ (`cfg`), ja sama kuva
+                       kahdessa tehtävässä samalla sivulla olisi toisto
+       TP-600          ei TP-400 kuten `OLETUS`issa. Hero-kuvapaikka on
+                       mitattuna 561 px leveä työpöydällä ja 327 px 375 px:n
+                       ruudulla, eli kuvan koko leveys on alle kolmasosa siitä,
+                       mihin katalogin terassikuva on piirretty. TP-400:n pilari
+                       jää siinä parinkymmenen pikselin korkuiseksi eikä sen
+                       muotoa — jalkalaatta, viiste, runko — erota. TP-600 lukee
+                       vielä 327 pikselissä, ja juuri muodon tunnistaminen on
+                       kuvan tehtävä. Perhe on TP, koska kuvassa on terassi
+       3600 × 1800     vaakasuuntainen sommittelu: kuvapaikka on leveä eikä
+                       korkea (`.hero-img`, 4:3 työpöydällä ja 16:10 kapealla).
+                       Laskurin sääntö antaa tästä 4 × 3 = 12 pilaria, eli
+                       etureunaan kuusi näkyvää — tarpeeksi että «pilarien
+                       päällä» lukee rivinä eikä yksittäisenä tukena
+       ei koristeita   syykuvio, oksat ja rakeisuus eivät erotu 327 px:ssä,
+                       mutta kolminkertaistavat merkkauksen (885 kB → 281 kB
+                       mitattuna). Sama päätös ja sama syy kuin `cfgPohja`ssa
+
+     Ei mittaviivoja: «3,6 m» piirtyisi muutaman pikselin korkuisena, ja hero
+     puhuu käyttöyhteydestä eikä terassin koosta. Samalla oranssi `--accent`
+     jää pois kuvasta, johon se ei `TUOTEKUVAT.md`:n säännön 5 mukaan kuulu.
+
+     Tiedostopään varaus 1 pätee tähänkin ja se on tässä painavampi kuin
+     katalogissa: **pilarit seisovat kuvassa maan päällä**. A-601 olettaa
+     500 mm täyttöä pohjalaatan päällä, eli oikeassa kohteessa laatta ja osa
+     rungosta jäävät täytön alle. Hero on kuitenkin juuri se paikka, jossa
+     väite «lasketaan sorapatjan päälle» on se väite joka halutaan — asennus-
+     syvyyden näyttää `asennus-tp-b.png`, ei tämä. */
+  terassikuva.hero = function (nimike) {
+    return terassikuva({
+      id: "hero",
+      leveys: 3600, pituus: 1800,
+      perhe: "TP", koko: 600,
+      maareuna: 350,
+      rajahdys: 0,
+      leveysPx: 1100,
+      mitat: false, selitteet: false,
+      syyt: false, oksat: false, rakeisuus: false,
+      animaatio: false,
+      nimike: nimike
+    });
+  };
+
   terassikuva.ruudukko = function (o) {
     o = o || {};
     return ruudukko(o.leveys || OLETUS.leveys, o.pituus || OLETUS.pituus,

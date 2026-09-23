@@ -9,16 +9,24 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
 <link rel="stylesheet" href="bce-v4.css">
 <script src="bce-spec-shell.js"></script>
+<!-- Perhekorttien tuotekuvat ja heron terassikuva piirretään DOMiin, ei
+     <img>-elementtiin: silloin betoni- ja puupinnat tulevat sivun --bet-*- ja
+     --puu-*-tokeneista eivätkä viedyn tiedoston fallback-arvoista, ja kuva
+     korjaantuu itsestään kun mitta muuttuu (TUOTEKUVAT.md luku 2).
+
+     Järjestys on riippuvuusjärjestys eikä aakkosjärjestys, ja se on sitova:
+     mittakaavio.js ensin, koska tuotekuva.js lukee mitat sen PERHEET-taulukosta
+     — ja tuotekuva.js ennen kolmea muuta, koska palkkikuva, tarvikekuva ja
+     terassikuva lukevat kameran `tuotekuva.projektio`-oliosta *latautuessaan*,
+     eivät piirtäessään. Väärässä järjestyksessä ne eivät kaadu vaan putoavat
+     omaan fallback-kameraansa, eikä sitä huomaa kuvasta niin kauan kuin luvut
+     sattuvat olemaan samat. 23.9.2026 tämä sivu oli väärässä järjestyksessä.
+     Oikea järjestys on sama kuin bce_mista-ostat_spec.html:ssä. -->
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
 <script src="palkkikuva.js"></script>
 <script src="tarvikekuva.js"></script>
 <script src="terassikuva.js"></script>
-<!-- Perhekorttien tuotekuvat piirretään DOMiin, ei <img>-elementtiin: silloin
-     betonipinnat tulevat sivun --bet-*-tokeneista eivätkä viedyn tiedoston
-     fallback-arvoista, ja kuva korjaantuu itsestään kun mitta muuttuu.
-     mittakaavio.js on ensin, koska tuotekuva.js lukee mitat sen PERHEET-taulukosta
-     (TUOTEKUVAT.md luku 2). -->
-<script src="mittakaavio.js"></script>
-<script src="tuotekuva.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Siirry sisältöön</a>
@@ -68,7 +76,16 @@ const C={
        ensimmäisen vierityksen sisällä. Heroon jää yksi painike.
        Tapahtumat `cta_vertailu_ankkuri` ja `cta_koodihaku_ankkuri` katoavat;
        kumpaakaan ei ollut mittausdokumenteissa. */
-    img:"Hero-kuva: pilari asennettuna käyttöyhteydessä"},
+    /* Heron kuva on 23.9.2026 alkaen piirretty (terassikuva.hero), ja tämä kenttä
+       on sen tekstivastine — ei enää kuvapaikan teksti. Hero ei ole koriste: se on
+       sivun ainoa kuva, joka kertoo mihin tuotetta käytetään, eikä sen vieressä
+       lue mitään mikä toistaisi saman (TUOTEKUVAT.md luku 6). Teksti kertoo mitä
+       kuvasta pitäisi nähdä, ei mitä osia siinä on — osaluettelo on generaattorin
+       oletusnimike, ja se vastaisi väärään kysymykseen.
+
+       PIIRROS ON VÄLIAIKAINEN. Se korvataan valokuvalla kun sellainen on; ks.
+       terassikuva.js, terassikuva.hero. */
+    img:"Valmis terassi seisoo betonisten perustuspilarien päällä: laudoitus lepää palkkien varassa, palkit pilarikengissä ja pilarit suoraan sorapatjan päällä. Valettua perustusta ei ole."},
 
   /* 2 · Neljä perhettä heti heron alla. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
      PP:llä. Kantavuusarvot ovat perhesivuilla — niitä ei ole tällä tasolla.
@@ -223,7 +240,7 @@ const C={
       '<div class="cta"><a class="btn btn-1" href="'+E(SPECLINK(C.hero.cta1[1]))+'" data-event="'+E(C.hero.cta1[2])+
         '" data-sijainti="'+E(C.hero.cta1[3])+'">'+E(C.hero.cta1[0])+"</a></div>"+
       "</div>"+
-    '<div class="hero-img">'+E(C.hero.img)+"</div></section></div>"+
+    '<div class="hero-img piirros">'+terassikuva.hero(C.hero.img)+"</div></section></div>"+
 
   /* 2 · Tuotekoodihaku omana lohkonaan, perhekorttien yläpuolella */
   sect('<div class="find find-yksin"><h3>'+E(C.find.h3)+"</h3><p>"+E(C.find.p)+"</p>"+

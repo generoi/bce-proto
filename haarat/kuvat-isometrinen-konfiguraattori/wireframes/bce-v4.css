@@ -1540,7 +1540,24 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kuva on itse sisältö, sanoo mittansa erikseen (.serie alla).
 
    Mitattu 390 px: ei vaakavieritystä. */
-.ph.piirros,.im.piirros{background:transparent;border:0;border-radius:0;padding:0}
+.ph.piirros,.im.piirros,.hero-img.piirros{background:transparent;border:0;border-radius:0;padding:0}
+/* Hero: kuvasuhde tulee kuvasta, ei paikanpitäjältä. .hero-img on 4:3 ja
+   kapealla 16:10, ja molemmat ovat paikanpitäjän mittoja — piirretty terassi on
+   1,53:1, joten kumpi tahansa niistä jättäisi kuvan ylä- ja alapuolelle kaistan
+   tyhjää ja tekisi lohkosta sivun korkeimman elementin (vrt. .img-band).
+
+   Myös max-width 56ch lähtee, ja se on paikanpitäjän mitta samasta syystä:
+   katkoviivalaatikko on kuvan lupaus eikä kuva, ja se kapenee jottei tyhjä
+   laatikko olisi lohkon massiivisin asia. Aito kuva on sisältöä ja saa
+   sarakkeensa. Mitattuna 1600 px:n ruudulla (sivu leveimmillään, --w 1200):
+   561 × 367 px kun sarake on sen, ja 446 × 291 px 56ch-katolla — jälkimmäinen
+   jätti sarakkeen vasempaan laitaan 115 px tyhjää, joka luki virheenä eikä
+   väljyytenä. Hero itse on samassa kohdassa 514 px korkea, eli kuva ei nouse
+   lohkon suurimmaksi elementiksi kummallakaan arvolla.
+
+   375 px:n ruudulla kuva on 327 × 214 px eikä sivu vierity vaakaan (mitattu). */
+.hero-img.piirros{aspect-ratio:auto;display:block;max-width:none}
+.hero-img.piirros>svg{display:block;width:100%;height:auto}
 /* Suodatinkortissa alaviiva ei ole paikanpitäjän kehys vaan kortin rakenne: se
    erottaa kuva-alueen tekstistä. Modifier veisi sen mukanaan muun kehyksen kanssa,
    joten se palautetaan tässä yhtenäisenä — katkoviiva tarkoittaa yhä puuttuvaa. */
