@@ -199,20 +199,20 @@ const kuvaDemo=(function(){
     pilarit:rivi(perheet.map(o=>o.svg),perheet.map(o=>window.tuotekuva.koodi(o.perhe,o.koko))),
     tarvikkeet:rivi(tkuvat,tavaimet.map(k=>TKU.tieto(k).koodi)),
     palkit:rivi(pkuvat,pavaimet.map(k=>window.palkkikuva.nimi(k))),
-    parit:rivi([YKU({pari:"pik-50-70",korkeus:200,koriste:true,id:"dsy1"}),
+    parit:rivi([YKU({pari:"pik-50-70-palkki",korkeus:200,koriste:true,id:"dsy1"}),
                 YKU({pari:"pak-100x150",korkeus:200,koriste:true,id:"dsy2"}),
                 YKU({pari:"tl-150x150",korkeus:200,koriste:true,id:"dsy3"})],
-               ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta"]),
+               ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta"]),
     /* Asennuskuvat yhteiseen mittakaavaan ja yhdelle kankaalle. Tasaus «ala»,
        koska neljällä kuvalla on nyt yhteinen alataso: pilarin rajaus. */
     asennus:(function(){
-      const kuvaukset=[{pari:"pik-50-70"},{pari:"pak-100x150"},
+      const kuvaukset=[{pari:"pik-50-70-palkki"},{pari:"pak-100x150"},
                        {pari:"tl-150x150"},{osa:"nostokorva-m20"}];
       const AK=window.asennuskuva;
       const sk=190/Math.max.apply(null,kuvaukset.map(k=>AK.laajuus(k)));
       return rivi(KAN(kuvaukset.map((k,i)=>AK(Object.assign({},k,
                {skaala:sk,koriste:true,id:"dsa"+i}))),"ala"),
-        ["PIK 50-70 + tolppa","PAK-100×150 + palkki","TL 150×150 + lauta",
+        ["PIK 50-70 + runkolankku","PAK-100×150 + palkki","TL 150×150 + lauta",
          "Nostokorva M20"]);
     })(),
     /* Oma piirtokutsu eikä sama SVG kahdesti: kuvan sisäiset id:t (rakeisuus,
@@ -397,9 +397,12 @@ sect("data","Taulukot ja tiedot","Taulukko kuuluu alasivulle, ei etusivulle. Kai
   {id:"table",wp:wp("acf","<code>bce/mittataulukko</code>. Luvut eivät ole sivun sisältöä vaan tuotedataa, joten <code>core/table</code> olisi väärä: se antaisi toimittajan kirjoittaa mitat uusiksi."),n:"Datataulukko",c:"table.data (thead th, td.n) · .tw · .dims (code .cpc .cp) · tr[data-pick]",on:on("tp"),
    rule:"Vaakavieritettävä .tw-kehyksessä, ei typistetty. Tuotekoodi code-elementissä, Kopioi omassa sarakkeessaan oikealla. Lyhenteet (H1, D2) selitetään kaaviolla samassa lohkossa.",
    demo:'<div class="tw"><table class="data dims" style="min-width:0"><thead><tr><th class="c1">Tuotekoodi</th><th>H1</th><th>D1</th><th>Paino</th><th>EAN</th><th class="cpc"></th></tr></thead><tbody><tr><td class="c1"><code>TP-200 125/450</code></td><td>200</td><td>450</td><td>43 kg</td><td>6430000000200</td><td class="cpc"><button class="cp" type="button">Kopioi</button></td></tr><tr data-pick="true"><td class="c1"><code>TP-400 125/450</code></td><td>400</td><td>450</td><td>55 kg</td><td>6430000000400</td><td class="cpc"><button class="cp" type="button">Kopioi</button></td></tr></tbody></table></div>'},
-  {id:"stack",wp:wp("core","<code>core/table</code>, lohkotyyli <em>stack</em>. Sisältö on sivukohtaista copya, joten tämä saa olla ydinlohko."),n:"Menetelmätaulukko",c:"table.data.stack (th[scope=row], td[data-lbl])",on:on("tavat"),
+  {id:"stack",wp:wp("core","<code>core/table</code>, lohkotyyli <em>stack</em>. Sisältö on sivukohtaista copya, joten tämä saa olla ydinlohko."),n:"Menetelmätaulukko",c:"table.data.stack (th[scope=row], td[data-lbl])",on:on("tavat","pil"),
    rule:"Pinoutuu alle 560 px: otsikkorivi piiloon, jokainen rivi omaksi lohkokseen, sarakeotsikko td:n data-lbl-attribuutista. Käytä kun taulukko on koko sivun tiivistelmä eikä sitä saa joutua vierittämään. Mittataulukko (.dims) tekee päinvastoin: se vierittyy vaakaan, koska ammattilainen etsii yhtä lukua.",
    demo:'<div class="tw"><table class="data stack"><thead><tr><th>Perustustapa</th><th>Kesto</th><th>Kalusto</th><th>Sää</th></tr></thead><tbody><tr><th scope="row">Pilariharkko</th><td data-lbl="Kesto">Noin 2 päivää</td><td data-lbl="Kalusto">Harkot, raudoitus, betoni</td><td data-lbl="Sää">Rajoittaa</td></tr><tr><th scope="row">Valmispilari</th><td data-lbl="Kesto">Yksi päivä</td><td data-lbl="Kalusto">Ei erikoiskalustoa</td><td data-lbl="Sää">Ei rajoita</td></tr></tbody></table></div>'},
+  {id:"vertailu",wp:wp("acf","Ei itsenäinen lohko vaan Perhekorttien jatke. Kaksi riviä lasketaan mittataulukosta, joten <code>core/table</code> antaisi kirjoittaa ne käsin."),n:"Vertailu lohkon sisällä",c:".vertailu (h3 + ingressi + table.data.stack)",on:on("pil"),
+   rule:"Lohkon toinen alaosa, ei omaa lohkoa: erotinviiva, H3 ja ingressi, sitten taulukko ja sen alahuomautus. Sama erotin ja sama mitta kuin .find:llä, jotta yhden lohkon kaksi alaosaa lukevat samalla rytmillä. Perhevertailussa akseli on toisin päin kuin menetelmätaulukossa — rivi on ominaisuus ja sarake on perhe — jolloin kapealla ruudulla pinottu lohko on ominaisuus otsikkonaan ja neljä perhettä sen alla nimettyinä arvoina. Viisi saraketta mahtuu vain lyhyillä arvoilla: pitkä lause sarakkeessa kuuluu kortille eikä taulukkoon. Ingressin sääntö on .vertailu h3+p eikä .vertailu>p, joka voittaisi myös .fine:n.",
+   demo:'<div class="vertailu"><h3>Perheet rinnakkain</h3><p>Sama tieto neljästä perheestä samassa muodossa.</p><div class="tw"><table class="data stack"><thead><tr><th>Ominaisuus</th><th>AP-pilari</th><th>TP-pilari</th><th>KP-pilari</th><th>PP-pilari</th></tr></thead><tbody><tr><th scope="row">Korkeudet</th><td data-lbl="AP-pilari">200–400 mm · 3 kokoa</td><td data-lbl="TP-pilari">200–600 mm · 5 kokoa</td><td data-lbl="KP-pilari">400–1000 mm · 7 kokoa</td><td data-lbl="PP-pilari">600 mm · 1 koko</td></tr><tr><th scope="row">Paino</th><td data-lbl="AP-pilari"><span class="tbd">[TÄYTETTÄVÄ]</span></td><td data-lbl="TP-pilari">43–67 kg</td><td data-lbl="KP-pilari">126–187 kg</td><td data-lbl="PP-pilari"><span class="tbd">[TÄYTETTÄVÄ]</span></td></tr></tbody></table></div><p class="fine">Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo.</p></div>'},
   {id:"spec2",wp:wp("acf","Tekniset arvoparit tuotedatasta. Osa Ostolaatikkoa ja tuotesivupohjaa, ei itsenäinen lohko."),n:"Arvoparit",c:"dl.spec2 (div dt dd)",on:on("tp","b"),
    rule:"Otsikko–arvo-parit kahdessa sarakkeessa, arvo lihavoituna oikealla. Sama viiva kuin taulukossa. Puuttuva arvo on merkintä, ei tyhjä.",
    merge:".facts (kuollut), .codes/.code (kuollut) ja .fr-rivit (A) ovat sama otsikko–arvo-pari eri tyylillä.",
@@ -456,10 +459,10 @@ sect("toiminnot","Valitsimet ja toiminnot","Toiminto kuittaa itsensä sanoin. Mi
 ])+
 
 sect("kuori","Kuori","Ylä- ja alatunniste tämän sivun ympärillä ovat itse komponentti: <code>SPECSHELL(E,{crumb,active})</code> renderöi ne <code>bce-spec-shell.js</code>:n copysta.",[
-  {id:"header",wp:wp("teema","Blade-sivupohja. Valikko WP-valikosta. Alasvetojen neljä sääntöä ja neljän kaistan leveysmitoitus ovat teeman koodia, eivät toimittajan valintoja."),n:"Apurivi, ylätunniste, navigaatio",c:".urow (.search .ulink .lang) · header.site (.logo .menu-btn nav .hassub .sub .tools .btn-s.hdr-cta)",on:on("kuori","ak"),status:["ok","korjattu 16.9."],
-   rule:"Logo vasemmalla, valikko keskellä, yksi toiminto oikealla. Alavalikko avautuu osoittimella ja fokuksella, vanhempi on itsekin linkki — paitsi ryhmä ilman omaa sivua (Tuotteet, Sokkelit), joka on painike ja ryhmäotsikko. Tuotteet-pudotus on kolme ryhmää, muut yksi sarake. Mobiilissa lapset ovat auki sisennettynä ja ensisijainen toiminto (.hdr-cta) on valikon viimeisenä kohtana täysleveänä — kiinteä alapalkki poistettiin 23.9.2026. aria-current merkitsee aktiivisen kohdan, myös jälkeläisen perusteella.",
-   merge:"Päätös 16.9.: kuoren painike piilotettiin mobiilissa, jolloin ylätunniste putosi 123 → 76 px, ja toiminto oli alapalkissa. Päätös 23.9.2026: kiinteä alapalkki poistettiin (se peitti ruudun alareunan koko selauksen ajan), ja painike palasi — nyt valikon sisään, jolloin ylätunniste pysyy 76 px:ssä suljettuna.",
-   demo:'<p class="fine" style="margin:0">Katso sivun yläreuna. Mittaa 390 px:llä: apurivi 44 px, ylätunniste 76 px, murupolku 45 px.</p>'},
+  {id:"header",wp:wp("teema","Blade-sivupohja. Valikko WP-valikosta. Alasvetojen neljä sääntöä, mobiilin haitari ja neljän kaistan leveysmitoitus ovat teeman koodia, eivät toimittajan valintoja."),n:"Apurivi, ylätunniste, navigaatio",c:".urow (.search .ulink .lang) · header.site (.logo .menu-btn nav .hassub .subtog .sub .tools .btn-s.hdr-cta)",on:on("kuori","ak"),status:["ok","mobiilin haitari 23.9."],
+   rule:"Logo vasemmalla, valikko keskellä, yksi toiminto oikealla. Työpöydällä alavalikko avautuu osoittimella ja fokuksella, vanhempi on itsekin linkki — paitsi ryhmä ilman omaa sivua (Tuotteet, Sokkelit), joka on painike ja ryhmäotsikko. Tuotteet-pudotus on kolme ryhmää, muut yksi sarake. Mobiilissa valikko on haitari: päätaso on kuusi kohtaa, alavalikot kiinni, auki se ryhmä jossa nykyinen sivu on. Sivullisen kohdan (Perustuksen teko, Ohjeet) avaa oma 44 px:n painike (.subtog) linkin vieressä, koska linkin pitää yhä viedä sivulle; ryhmä ilman sivua avaa itse. Auki oleva valikko on oma vierityspalstansa, ja ensisijainen toiminto (.hdr-cta) on sen alla täysleveänä — kiinteä alapalkki poistettiin 23.9.2026. aria-current merkitsee aktiivisen kohdan, myös jälkeläisen perusteella.",
+   merge:"Päätös 16.9.: kuoren painike piilotettiin mobiilissa, jolloin ylätunniste putosi 123 → 76 px, ja toiminto oli alapalkissa. Päätös 23.9.2026: kiinteä alapalkki poistettiin (se peitti ruudun alareunan koko selauksen ajan), ja painike palasi valikon sisään. Samalla korjattiin kaksi mitattua vikaa: valikko avautui sticky-ylätunnisteeseen 1 578 px korkeana eikä alaosaa saanut näkyviin millään vieritysasemalla, ja kaikki 28 kohtaa olivat auki kerralla. Nyt lista on haitari (kahdeksan kohdetta, 327 px) ja saa oman vierityspalstansa.",
+   demo:'<p class="fine" style="margin:0">Katso sivun yläreuna, ja mobiilissa myös Valikko-painikkeen takaa. Mittaa 390 px:llä: apurivi 44 px, ylätunniste 76 px, murupolku 45 px; auki oleva valikko 327 px kun alavalikot ovat kiinni.</p>'},
   {id:"crumb",wp:wp("teema","Teema."),n:"Murupolku",c:"nav.crumb (a .sep span[aria-current])",on:on("pil","tp","a","b","sivu","ak"),
    rule:"Alasivuilla aina, etusivulla ei. Viimeinen kohta on nykyinen sivu ilman linkkiä. Linkkien osuma-alue 33 px paddingilla, rivi ei kasva.",
    demo:'<p class="fine" style="margin:0">Katso murupolku tämän sivun yläreunassa: Etusivu › Design system.</p>'},

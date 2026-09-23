@@ -75,6 +75,40 @@
      kahteen sarakkeeseen, 560 yhteen sarakkeeseen. Uudet säännöt käyttävät vain näitä. */
 }
 *,*::before,*::after{box-sizing:border-box}
+
+/* ===== kosketus ==============================================================
+   Kaksi sääntöä, jotka koskevat vain sormea. Mobiili on 80,9 % istunnoista,
+   joten ne eivät ole reunatapaus vaan pääkäyttötapa.
+
+   1 · Tuplanapautus ei saa zoomata napautuskohdetta. Kaksi nopeaa napautusta
+       samaan pisteeseen on selaimelle zoom-ele, ja se syntyy tavallisesta
+       käytöstä: säätimen plus ja miinus napautetaan peräkkäin samaan kohtaan,
+       ja laskurissa ruutu vaihtuu itsestään, jolloin seuraavan ruudun
+       ensimmäinen kortti on samassa kohdassa kuin edellisen.
+
+       touch-action:manipulation poistaa nimenomaan tuplanapautuksen.
+       Nipistyszoomi ja vieritys jäävät, joten sivu on yhä suurennettavissa
+       eikä WCAG 1.4.4 rikkoudu. Viewportin user-scalable=no korjaisi saman
+       oireen mutta veisi zoomin kokonaan — sitä ei käytetä.
+
+       Sääntö on napautuskohteilla eikä bodylla: vain niissä tuplanapautus on
+       virhe, tekstissä se on suurennus.
+
+   2 · Hover on portin takana: @media (hover: hover) and (pointer: fine).
+       Kosketuslaitteella :hover jää päälle napautuksen jälkeen, jolloin kortti
+       tai painike näyttää valitulta vaikkei ole — ja jää siltä näyttämään
+       kunnes käyttäjä napauttaa jotain muuta. Portti on kirjoitettu jokaisen
+       säännön ympärille sinne missä sääntö on, ei yhteen lohkoon tiedoston
+       loppuun: se muuttaa vain milloin sääntö on voimassa, ei sitä kumpi
+       voittaa.
+
+       Poikkeus, joka on jätetty tahallaan: #mainnav .hassub:hover .sub avaa
+       päävalikon pudotuksen. Se ei ole ulkoasu vaan näkyvyys, sillä on
+       :focus-within-pari näppäimistölle ja [data-open]-pari kosketukselle,
+       ja kapealla ruudulla koko pudotus on eri mekanismi (sisennetty lista).
+       Sen portittaminen olisi navigaation muutos, ei hover-korjaus. */
+a,button,input,select,textarea,label,summary,[role="button"]{touch-action:manipulation}
+
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ff);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
 h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:600;text-transform:uppercase;line-height:1.1}
 h1{font-size:clamp(32px,4vw,52px)}
@@ -109,16 +143,16 @@ header.site .w{display:flex;align-items:center;gap:24px;min-height:76px}
 header.site nav{margin-left:auto;display:flex;gap:6px}
 header.site nav a,header.site nav .navtop{text-decoration:none;font-weight:600;font-size:15px;padding:9px 12px;border-radius:3px;color:var(--ink)}
 header.site nav .navtop{font-family:inherit;line-height:inherit;background:none;border:0;cursor:pointer;display:inline-flex;align-items:center}
-header.site nav a:hover,header.site nav .navtop:hover{background:var(--paper-2)}
+@media (hover: hover) and (pointer: fine){header.site nav a:hover,header.site nav .navtop:hover{background:var(--paper-2)}}
 header.site nav a[aria-current],header.site nav .navtop[aria-current]{box-shadow:inset 0 -3px 0 var(--accent);border-bottom-left-radius:0;border-bottom-right-radius:0}
 .menu-btn{display:none;font:inherit;font-weight:600;font-size:15px;align-items:center;gap:9px;background:#fff;border:1px solid var(--rule-2);border-radius:3px;padding:10px 14px;cursor:pointer}
 .menu-btn .ic{display:grid;gap:3px}
 .menu-btn .ic i{display:block;width:16px;height:2px;background:var(--ink)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--ff-d);text-transform:uppercase;font-size:19px;font-weight:600;letter-spacing:.02em;padding:14px 24px;border:2px solid transparent;border-radius:3px;text-decoration:none;cursor:pointer}
 .btn-1{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}}
 .btn-2{background:#fff;color:var(--ink);border-color:var(--rule-2)}
-.btn-2:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.btn-2:hover{border-color:var(--ink)}}
 .btn-s{font-size:16px;padding:11px 18px}
 .hdr-cta{flex:none}
 /* Kuudes valikkokohta (Yhteystiedot, 21.9.2026) vie palkin yli reunan kaistalla
@@ -136,7 +170,7 @@ header.site nav a[aria-current],header.site nav .navtop[aria-current]{box-shadow
 .crumb{font-size:14px;color:var(--ink-3);border-bottom:1px solid var(--rule);background:#fff}
 .crumb .w{padding-top:11px;padding-bottom:11px}
 .crumb a{text-decoration:none}
-.crumb a:hover{text-decoration:underline}
+@media (hover: hover) and (pointer: fine){.crumb a:hover{text-decoration:underline}}
 
 section{padding:60px 0}
 section+section{border-top:1px solid var(--rule)}
@@ -188,7 +222,7 @@ table.bom tr:last-child td{border-bottom:0}
 .buy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;align-items:start}
 .shops{display:grid;gap:0;border-top:1px solid var(--rule)}
 .shops a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule);text-decoration:none;font-weight:600;font-size:18px}
-.shops a:hover{color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.shops a:hover{color:var(--accent-dark)}}
 .shops a span{font-size:14px;font-weight:400;color:var(--ink-3)}
 
 /* kysyttyä */
@@ -202,14 +236,14 @@ details .b{padding:0 0 20px;color:var(--ink-2);max-width:68ch}
 /* muut käyttökohteet */
 .rel{display:flex;gap:10px;flex-wrap:wrap}
 .rel a{text-decoration:none;font-weight:600;font-size:15px;padding:10px 16px;border:1px solid var(--rule-2);border-radius:3px;background:#fff}
-.rel a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.rel a:hover{border-color:var(--ink)}}
 
 footer{background:var(--dark);color:#e9e7e5;margin-top:0;padding:44px 0 34px;font-size:15px}
 footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px}
 footer h3{font-size:13px;letter-spacing:.08em;color:#fff;margin-bottom:12px}
 footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 footer a{color:#c8c5c2;text-decoration:none}
-footer a:hover{color:#fff;text-decoration:underline}
+@media (hover: hover) and (pointer: fine){footer a:hover{color:#fff;text-decoration:underline}}
 footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:#a5a2a0;font-size:13px}
 
 @media(max-width:980px){
@@ -270,7 +304,7 @@ footer .end{margin-top:30px;padding-top:18px;border-top:1px solid #4b4a4b;color:
 @media(max-width:760px){.pick{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:430px){.pick{grid-template-columns:1fr}}
 .pick a{text-decoration:none;border:1px solid var(--rule-2);border-radius:4px;background:#fff;overflow:hidden;display:block}
-.pick a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.pick a:hover{border-color:var(--ink)}}
 .pick .im{aspect-ratio:4/3;background:var(--paper-2);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:12px;color:var(--ink-3);border-bottom:1px solid var(--rule)}
 .pick .nm{padding:13px 16px;font-family:var(--ff-d);text-transform:uppercase;font-size:18px;font-weight:600}
 
@@ -308,7 +342,7 @@ table.data td.n{text-align:right;font-weight:700;white-space:nowrap;padding-righ
 .hero .lede{font-size:20px;color:var(--ink-2);max-width:52ch}
 .hero .cta{display:flex;gap:14px 26px;flex-wrap:wrap;align-items:center;margin-top:30px}
 .more{font-weight:600;font-size:17px;text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:2px}
-.more:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.more:hover{border-color:var(--ink)}}
 .hero .trust{margin-top:26px;padding-top:18px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}
 .hero .trust b{color:var(--ink)}
 .hero-img{aspect-ratio:4/3;background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;color:var(--ink-3);font-size:13px;line-height:1.5;max-width:56ch;margin-left:auto}
@@ -350,7 +384,7 @@ table.data td.n{text-align:right;font-weight:700;white-space:nowrap;padding-righ
 /* ===== spec 1.0: globaalit elementit ===== */
 .abar{background:var(--dark);color:#fff}
 .abar a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;text-decoration:none;font-weight:600;font-size:15px;padding:8px 20px;text-align:center}
-.abar a:hover{background:#3d3c3d}
+@media (hover: hover) and (pointer: fine){.abar a:hover{background:#3d3c3d}}
 header.site .tools{display:flex;align-items:center;gap:14px;margin-left:auto}
 .search{display:flex;align-items:center;gap:8px;border:1px solid var(--rule-2);border-radius:3px;background:#fff;padding:0 12px;height:42px;min-width:min(320px,34vw)}
 .search input{font:inherit;font-size:14px;border:0;outline:0;background:none;width:100%;padding:10px 0}
@@ -358,7 +392,7 @@ header.site .tools{display:flex;align-items:center;gap:14px;margin-left:auto}
 .lang{display:flex;gap:2px;font-size:14px}
 .lang a{text-decoration:none;padding:6px 8px;border-radius:3px;color:var(--ink-2);font-weight:600}
 .lang a[aria-current]{background:var(--paper-2);color:var(--ink)}
-.lang a:hover{background:var(--paper-2)}
+@media (hover: hover) and (pointer: fine){.lang a:hover{background:var(--paper-2)}}
 
 /* numeroidut väitteet */
 .claims{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
@@ -472,7 +506,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
    2 px reunaviiva, joka tummenee osoitettaessa. Otsikko on toiminnon nimi,
    joten se on myös se sana, jota klikataan — ei erillistä «lue lisää». */
 .flow .st b a,.steps b a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
-.flow .st b a:hover,.steps b a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.flow .st b a:hover,.steps b a:hover{border-color:var(--ink)}}
 .fsub{display:block;margin-top:10px;font-size:14px;color:var(--ink-3)}
 
 /* sarjakortteihin kuva (ss1) */
@@ -586,7 +620,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 
 /* apurivin tekstilinkki (Yhteystiedot) */
 .urow .ulink{font-size:14px;color:var(--ink-2);text-decoration:none;padding:0 4px}
-.urow .ulink:hover{color:var(--ink);text-decoration:underline}
+@media (hover: hover) and (pointer: fine){.urow .ulink:hover{color:var(--ink);text-decoration:underline}}
 
 /* Apurivi: haku + Yhteystiedot + kielivalinta eivät mahdu 390 px:n riville, ja
    rivi työnsi koko sivun 398 px leveäksi. Haku saa kutistua kapealla. */
@@ -641,7 +675,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 /* Kosketuskoko vähintään 44 px, ja kuittaus näkyy tekstissä eikä pelkkänä reunavärinä. */
 .cp{font:inherit;font-size:13px;font-weight:600;padding:0 14px;min-height:44px;min-width:92px;
   background:none;border:1px solid var(--rule-2);border-radius:3px;color:var(--ink-2);cursor:pointer}
-.cp:hover{border-color:var(--ink);color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.cp:hover{border-color:var(--ink);color:var(--ink)}}
 .cp[data-copied]{border-color:var(--accent-dark);color:var(--accent-dark);font-weight:700}
 .cp[data-failed]{border-color:var(--ink);color:var(--ink)}
 /* Ruudunlukijan kuittaus, ei näkyvissä. */
@@ -670,7 +704,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
 .dl a{display:block;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
   padding:18px 20px;text-decoration:none}
-.dl a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.dl a:hover{border-color:var(--ink)}}
 .dl .ty{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .dl b{display:block;margin-top:8px;font-size:16px}
 .dl .st{display:block;margin-top:10px;font-size:13px}
@@ -695,7 +729,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .kids li{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 0;
   border-bottom:1px solid var(--rule);font-size:16px}
 .kids a{font-weight:600;text-decoration:none;border-bottom:2px solid var(--rule-2);padding-bottom:1px}
-.kids a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.kids a:hover{border-color:var(--ink)}}
 .stub{margin-top:32px;font-size:15px;color:var(--ink-2);max-width:70ch}
 
 /* alavalikko. Yksi sarake, paitsi Tuotteet, jossa on kolme tuoteperhettä omina
@@ -713,7 +747,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 #mainnav .hassub:hover .sub,#mainnav .hassub:focus-within .sub,
 #mainnav .hassub[data-open="true"] .sub{display:block}
 #mainnav .sub a{display:block;padding:11px 20px;font-size:16px;white-space:nowrap}
-#mainnav .sub a:hover{background:var(--paper-2)}
+@media (hover: hover) and (pointer: fine){#mainnav .sub a:hover{background:var(--paper-2)}}
 /* kolme ryhmää rinnakkain */
 #mainnav .hassub:hover .sub.grid,#mainnav .hassub:focus-within .sub.grid,
 #mainnav .hassub[data-open="true"] .sub.grid{display:grid}
@@ -723,7 +757,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
   text-transform:uppercase;color:var(--ink-3);padding:4px 0 9px;white-space:nowrap;
   border-bottom:1px solid var(--rule);margin-bottom:6px}
 #mainnav .sub a.sh{color:var(--ink)}
-#mainnav .sub a.sh:hover{background:none;text-decoration:underline}
+@media (hover: hover) and (pointer: fine){#mainnav .sub a.sh:hover{background:none;text-decoration:underline}}
 #mainnav .sub.grid a{padding:9px 0}
 @media(max-width:980px){
   /* Mobiilissa alavalikko ei roiku päällä vaan on osa listaa — ja se on haitari,
@@ -793,7 +827,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .thumbs button{font:inherit;aspect-ratio:1;background:var(--paper-2);border:1px dashed var(--rule-2);
   border-radius:4px;display:flex;align-items:center;justify-content:center;text-align:center;
   padding:8px;font-size:11px;line-height:1.3;color:var(--ink-3);cursor:pointer}
-.thumbs button:hover{border-color:var(--ink-3)}
+@media (hover: hover) and (pointer: fine){.thumbs button:hover{border-color:var(--ink-3)}}
 .thumbs button[aria-pressed="true"]{border-style:solid;border-color:var(--ink);color:var(--ink)}
 
 /* Ostolaatikko: yksi rajattu alue, jossa valinta, toiminto ja ostopaikka. */
@@ -807,7 +841,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
   border-radius:4px;padding:9px 12px;cursor:pointer;line-height:1.25}
 .sizes button b{display:block;font-size:15px}
 .sizes button span{display:block;font-size:12px;color:var(--ink-3)}
-.sizes button:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.sizes button:hover{border-color:var(--ink)}}
 .sizes button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .btn.wide{width:100%}
 /* Valittu koko näyttää tuotekoodin ja EANin heti laatikossa, jottei sivua tarvitse
@@ -830,8 +864,8 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .dealers{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
 .dealers a{display:grid;gap:8px;padding:10px 12px 12px;border:1px solid var(--rule-2);border-radius:var(--r-card);
   background:#fff;text-decoration:none;color:var(--ink);transition:border-color .15s var(--ease),background-color .15s var(--ease)}
-.dealers a:hover{border-color:var(--ink);background:var(--paper-2)}
-.dealers a:hover .dgo{color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.dealers a:hover{border-color:var(--ink);background:var(--paper-2)}}
+@media (hover: hover) and (pointer: fine){.dealers a:hover .dgo{color:var(--accent-dark)}}
 .dealers .dlogo{display:flex;align-items:center;justify-content:center;min-height:44px;padding:4px 8px;text-align:center;
   background:var(--paper-2);border:1px dashed var(--rule-2);border-radius:var(--r-ctl);font-size:12px;color:var(--ink-3)}
 .dealers .dgo{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:14px;line-height:1.3}
@@ -882,7 +916,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .pick-how{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 .pick-how a{display:block;border:1px solid var(--rule-2);border-radius:4px;background:#fff;
   padding:18px 20px;text-decoration:none;min-height:96px}
-.pick-how a:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.pick-how a:hover{border-color:var(--ink)}}
 .pick-how b{display:block;font-family:var(--ff-d);text-transform:uppercase;font-size:19px;
   font-weight:600;line-height:1.15;margin-bottom:8px}
 .pick-how span{display:block;font-size:14px;color:var(--ink-2)}
@@ -900,7 +934,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .fstate .msg{font-size:15px;color:var(--ink-2)}
 .lnk{font:inherit;font-size:15px;font-weight:600;background:none;border:0;padding:11px 0;
   color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px}
-.lnk:hover{color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.lnk:hover{color:var(--accent-dark)}}
 
 /* Lohko 3. Neljä ryhmää, jokainen oma ankkurinsa. Ryhmät ovat samassa osiossa,
    joten niiden väliin tulee ohut viiva eikä osioiden välinen 60px rako. */
@@ -1084,7 +1118,7 @@ footer .certrow span{border:1px dashed #5a595a;border-radius:3px;padding:8px 12p
 .uses li::before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;
   background:var(--accent);border-radius:50%}
 .uses a{text-decoration:none;border-bottom:1px solid var(--rule-2);padding-bottom:1px}
-.uses a:hover{border-color:var(--ink);color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.uses a:hover{border-color:var(--ink);color:var(--accent-dark)}}
 /* Otsikko on pieni selite eikä kilpaile H1:n kanssa, mutta pysyy otsikkoelementtinä. */
 h2.lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
   font-family:var(--ff);font-weight:600;margin:24px 0 8px}
@@ -1144,7 +1178,7 @@ h2.lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--
 .idx a{display:block;padding:9px 0;border-bottom:1px solid var(--rule);text-decoration:none;
   font-weight:600;font-size:15px}
 .idx a:last-child{border-bottom:0}
-.idx a:hover{color:var(--accent-dark)}
+@media (hover: hover) and (pointer: fine){.idx a:hover{color:var(--accent-dark)}}
 @media(max-width:900px){.lead{grid-template-columns:1fr;gap:28px}}
 
 .plots{border-top:1px solid var(--rule)}
@@ -1207,9 +1241,11 @@ footer a{display:inline-block;padding:4px 0;margin:-4px 0}
 
 /* Alle 19 px:n ensisijainen painike (kuoren .btn-s 16 px) ei täytä 4,5:1
    brändioranssilla (3,6:1), joten pienissä painikkeissa pohja on --accent-dark:
-   valkoinen sen päällä on 5,5:1. Iso painike säilyy brändioranssina. */
+   valkoinen sen päällä on 5,5:1. Iso painike säilyy brändioranssina.
+   `.bar`-viittaukset poistuivat 23.9.2026 kiinteän alapalkin mukana; hover-portti
+   jäi, koska kosketusnäytöllä hover jää päälle napautuksen jälkeen. */
 .btn-s.btn-1{background:var(--accent-dark);border-color:var(--accent-dark)}
-.btn-s.btn-1:hover{background:#9a3609;border-color:#9a3609}
+@media (hover: hover) and (pointer: fine){.btn-s.btn-1:hover{background:#9a3609;border-color:#9a3609}}
 
 /* ===== tarvikesivu, yhdistelmä A + B (16.9.2026) =====
    Suodatin korostaa ja merkitsee, ei piilota: osuva rivi saa tekstimerkinnän, muut
@@ -1264,7 +1300,7 @@ section.tight{padding:0;border:0}
 .koot button{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;
   font:inherit;text-align:left;background:#fff;border:1px solid var(--rule-2);border-radius:4px;
   padding:10px 14px;cursor:pointer;min-height:48px}
-.koot button:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.koot button:hover{border-color:var(--ink)}}
 .koot button[aria-checked="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .koot .sil{display:flex;align-items:flex-end;justify-content:center;height:34px;color:var(--rule-2)}
 .koot button[aria-checked="true"] .sil{color:var(--accent)}
@@ -1624,6 +1660,18 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kertoimellaan, ja yhteinen mittakaava — koko lohkon peruste — hajoaisi juuri
    kapeilla ruuduilla. */
 .serie .im.piirros{aspect-ratio:auto;align-items:flex-end}
+/* Pilarit-hubin tarvikekortit (23.9.2026). Sama ratkaisu kuin .serie:llä: kuvasuhde
+   tulee kuvalta eikä kuvapaikalta, koska paikanpitäjän 4:3 puristaisi pystykuvat
+   samaan korkeuteen ja söisi asennuskuvan mittakaavan. Neljä kuvaa on yhteisellä
+   kankaalla, joten ne ovat jo keskenään samankorkuisia — alareunan tasaus pitää
+   pilarin pään samalla tasolla joka kortissa.
+
+   Kaksi asiaa palautetaan, jotka .im.piirros nollaa yleissääntönä: erotinviiva
+   kuvan ja nimen väliin (kortti on valkoinen, ja ilman viivaa kuva vuotaa tekstiin)
+   ja ylävara, jottei piirros osu kortin yläreunaan. Sama poikkeus ja sama syy kuin
+   .pick-how .ph.piirros:lla. */
+.pick-parts .im.piirros{aspect-ratio:auto;align-items:flex-end;
+  padding:14px 12px 0;border-bottom:1px solid var(--rule)}
 
 /* Tarvikerivi: sama syy kuin perhekortilla. Kuvapaikan 4:3 on paikanpitäjän
    mitta, ja asennuskuva on pystysuuntainen — pilarin pää, tarvike ja puu
@@ -1680,7 +1728,7 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
 /* Korkeus oikeaan reunaan: luvut allekkain samaan linjaan, jolloin ero luetaan
    pystysuunnassa ilman että silmä etsii jokaisen rivin alusta. */
 .tval-koko span{margin-left:auto;font-size:var(--fs-fine);color:var(--ink-3)}
-.tval-koko:hover{border-color:var(--ink)}
+@media (hover: hover) and (pointer: fine){.tval-koko:hover{border-color:var(--ink)}}
 .tval-koko:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .tval-koko:has(input:focus-visible){outline:3px solid var(--accent-dark);outline-offset:2px}
 
@@ -1825,8 +1873,8 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
 .navik{display:inline-flex;align-items:center;flex:none;margin-right:10px;
   color:var(--ink-3);vertical-align:-6px}
 .navik svg{display:block;height:24px;width:auto}
-header.site nav .sub a:hover .navik,
 header.site nav .sub a[aria-current] .navik{color:inherit}
+@media (hover: hover) and (pointer: fine){header.site nav .sub a:hover .navik{color:inherit}}
 /* Mobiilissa pudotus on sisennetty lista. Ikoni pysyy, koska se on siellä sama
    tunniste — mutta hieman pienempänä, koska rivi on tiiviimpi. */
 @media(max-width:980px){
@@ -1834,3 +1882,37 @@ header.site nav .sub a[aria-current] .navik{color:inherit}
   .navik{margin-right:8px}
 }
 
+
+/* Vientitila: litteä kaappaus ei voi esittää vieritysmatkaa.
+   `.cfg` on 200 svh **vieritysmatkaa**, jonka sisällä palstat ovat sticky. Se on oikein
+   selaimessa, mutta Miroon vietävässä kuvassa siitä jää kaksi ruudullista tyhjää: etusivulla
+   lohko oli 1 800 px kun sen sisältö on 666 px. Vanha kääre injektoi tähän
+   `.cfg{min-height:860px}`, mutta se ei riitä enää, koska `.cfg>*` on oma 100 svh —
+   lapset pysyivät ruudun korkuisina ja lohko jäi ~900 px:iin.
+
+   Kaappaaja lisää `<html>`-elementille luokan `vienti`, ja tämä sääntö purkaa matkan:
+   palstat staattisiksi ja sisällön mittaan, pystykeskitys kuten matala-variantissa.
+   Sääntö ei koske selainta lainkaan — luokkaa ei aseta mikään muu kuin vienti.
+
+   Tarkoituksella `html.vienti .cfg` (0,1,2) eikä `.cfg.vienti` (0,2,0): näin
+   `.cfg.matala` (0,2,0) voittaa tämän ja pitää oman ladontansa, samasta syystä kuin
+   se voitti vanhan injektion. */
+html.vienti .cfg{min-height:0;scroll-snap-align:none;view-timeline-name:none;
+  align-items:center;
+  padding-top:clamp(34px,4vw,60px);padding-bottom:clamp(34px,4vw,60px)}
+html.vienti .cfg>*{position:static;min-height:0;display:block}
+html.vienti .cfg .shot{display:flex}
+
+/* Perhevertailu Pilarit-hubin lohkossa 3 (23.9.2026). Taulukko on korttien jatke eikä
+   oma lohkonsa, joten se ei saa H2:ta vaan H3:n — mutta ilman erotinta H3 istuu kiinni
+   neljän kortin ruudukossa ja lukee viidennen kortin otsikkona. Sama erotin ja sama
+   mitta kuin .find:llä samassa lohkossa: yksi lohko, kaksi alaosaa, sama rytmi.
+
+   Leveyttä ei rajata tässä — table.data.stack tuo oman 900 px:n mittansa, ja kappale
+   on 68ch. Mitattu 1 200 · 900 · 390 px: ei vaakavieritystä. Alle 560 px .stack
+   pinoaa rivit, jolloin viisi saraketta on viisi riviä eikä vieritystä synny. */
+.vertailu{margin-top:40px;padding-top:28px;border-top:1px solid var(--rule)}
+.vertailu h3{margin-bottom:6px}
+/* Vain ingressi, ei lohkon muita kappaleita: .vertailu>p voittaisi myös .fine:n
+   ja taulukon alahuomautus kasvaisi ingressin kokoiseksi. */
+.vertailu h3+p{font-size:15px;color:var(--ink-2);margin:0 0 20px;max-width:68ch}

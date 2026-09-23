@@ -94,7 +94,7 @@ const C={
     thumbs:[
       {nimi:"TP-600 kolmiulotteisena", piirra:{tuote:600}},
       {nimi:"TP-pilari halkaistuna, mitat merkittyinä", piirra:{kaavio:true}},
-      {nimi:"Pilarikenkä ja siihen tuleva puutolppa", piirra:{pari:"pik-50-70"}},
+      {nimi:"Pilarikenkä ja siihen tuleva runkolankku", piirra:{pari:"pik-50-70-palkki"}},
       {nimi:"Kuva: kohde valmiina"}]},
 
   /* 1b · Ostolaatikko. Osto tapahtuu jälleenmyyjällä, ja jälleenmyyjäklikki on
@@ -195,7 +195,7 @@ const C={
      sisällön. Videoiden sisältöä ei ole käyty läpi — jos video on tuote-esittely eikä
      asennusohje, linkin teksti vaihtuu. */
   parts:{h2:"TP-pilariin sopivat tarvikkeet",
-    ing:"Valitse tarvike sen mukaan, miten rakenne liittyy pilariin. Pystytolppa kiinnitetään pilarikenkään, vaakapalkki lasketaan palkkikengälle ja tasainen rakenne teräslaatan päälle.",
+    ing:"Valitse tarvike sen mukaan, mikä pilarin päähän tulee. Yksi lankku kiinnitetään pilarikenkään, kantava palkki lasketaan palkkikengälle ja tasainen rakenne teräslaatan päälle.",
     /* Rivi: nimi · kuva · johtolause · kuvaus · ankkuri tarvikesivulla.
        Johtolause on erillään, koska se on se sana jolla rivi tunnistetaan
        silmäillessä — loppu luetaan vasta kun rivi on löytynyt.
@@ -232,17 +232,25 @@ const C={
        tarvikkeet*. `-terassi`-parit ovat yhä olemassa ja ovat oikea valinta
        siellä, missä kysymys on terassin pinnasta.
 
-       **Pilarikenkä on yhä pystytolppa eikä runkopalkki, ja syy on ristiriita
-       lähteissä.** Tämän rivin teksti sanoo «Pystytolpalle», mutta laskurin
-       sääntö (`fixing='nakyva'` + palkki 48 × 148 → PIK 50-70) ja tarvikesivun
-       kortti («Terassin runkopalkki») sanovat runkopalkkia. Ura on 70 mm
-       kummassakin luennassa eikä geometria ratkaise asiaa. Kuva
-       `pik-50-70-terassi` on olemassa runkopalkkiversiona, muttei käytössä
-       täällä ennen kuin BCE vastaa — muuten rivin teksti ja kuva väittäisivät
-       eri asiaa. */
+       **Pilarikenkärivi korjattiin 21.9.2026, eikä se ollut BCE:n kysymys vaan
+       meidän virhe.** Rivillä luki 18.–21.9. «Pystytolpalle. Puutolppa asetetaan
+       kengän sisään», ja se oli **Generon omaa copya ilman lähdettä.** Asiakkaan
+       oma materiaali sanoo neljässä paikassa toisin:
+
+         pilariesite 2023 s. 10–11  «Terassirakenteissa runkoon. Tarkoitettu
+                                    yhteen lankkuun»
+         nykysivusto                «Yksi lankku (50–70 mm) terassin runkoon»
+         tarvikesivun kortti        «Yhdelle 50–70 mm:n lankulle»
+         laskurin sääntö            näkyvä kiinnitys + palkki 48 × 148 → PIK 50-70
+
+       Pystytolppa on PIK 90-140:n tehtävä, ja esite sanoo senkin suoraan: «Esim.
+       katosten puiset kannatintolpat.» Kuva on nyt `pik-50-70-palkki` (kenkä ja
+       runkolankku, ei laudoitusta) ja lohkon ingressi sanoo «yksi lankku» eikä
+       «pystytolppa». Väärä pari `pik-50-70` on jäljellä yhdistelmakuva.js:ssä
+       varoituksella merkittynä — virhe kannattaa olla luettavissa. */
     items:[
-      ["Pilarikenkä",{pari:"pik-50-70"},
-       "Pystytolpalle.","Puutolppa asetetaan kengän sisään ja pultataan kiinni: liitos pysyy irti maasta ja kuivana.",
+      ["Pilarikenkä",{pari:"pik-50-70-palkki"},
+       "Yhdelle lankulle.","Runkolankku lasketaan kengän uraan ja ruuvataan levyjen reikien läpi molemmilta puolilta, esimerkiksi terassin runkoon. Ura on 50–70 mm.",
        "pilarikengat","Katso pilarikenkä"],
       ["Palkkikenkä PAK",{pari:"pak-100x150"},
        "Vaakapalkille.","Niskapalkki lasketaan pilarin päälle kengän varaan, esimerkiksi terassin tai autokatoksen kantavaksi rakenteeksi.",

@@ -27,6 +27,13 @@
 <script src="palkkikuva.js"></script>
 <script src="tarvikekuva.js"></script>
 <script src="terassikuva.js"></script>
+<!-- Tarvikelohkon kuvat ovat asennuskuvia: pilarin pää, siihen kierretty tarvike ja
+     siihen tuleva puu samassa kuvassa (TUOTEKUVAT.md luku 15). asennuskuva.js ei piirrä
+     itse mitään vaan asettaa muiden generaattorien kappaleet samaan kankaaseen, joten
+     yhdistelmakuva.js on oltava ladattuna ennen sitä. Molemmat lukevat kameran
+     tuotekuva.js:stä, joten ne tulevat sen jälkeen kuten muutkin. -->
+<script src="yhdistelmakuva.js"></script>
+<script src="asennuskuva.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Siirry sisältöön</a>
@@ -43,7 +50,7 @@
    16.9.2026, auditin P1: sivu toisti etusivun neljä lohkoa sanasta sanaan (.claims,
    .cases, JeKi-.side, .img-band) ja oli 657 sanaa etusivun 665:tä vastaan. Kävijä, joka
    klikkasi Pilarit, luki saman sivun eri otsikolla. Ne poistettiin. Jäljelle jäi se, mitä
-   vain tällä sivulla on: käyttökohteet, neljä perhettä, tuotekoodihaku, tarvikkeet,
+   vain tällä sivulla on: neljä perhettä, tuotekoodihaku, käyttökohteet, tarvikkeet,
    konfiguraattori, jälleenmyyjät, isompi kohde. JeKi tavoitetaan navigaatiosta ja
    alatunnisteesta; miksi pilari eikä valu on etusivun ja käyttökohdesivun asia. */
 const C={
@@ -63,7 +70,14 @@ const C={
   /* Jälleenmyyjät tulevat kuoresta (SPEC.dealers, SPECDEALERS). */
 
   /* 1 · Hero. Ensimmäinen lause määrittelee tuotteen, koska kategoriahakija
-     ei välttämättä tiedä mikä perustuspilari on. Kolme reittiä kolmelle tulijalle. */
+     ei välttämättä tiedä mikä perustuspilari on. Kaksi reittiä: laskuri ja tuotekoodi.
+
+     22.9.2026: kolmas reitti «Vertaile pilariperheitä ↓» poistettu Ollin pyynnöstä.
+     Kun perheet nousivat heti heron alle, ankkuri vieritti seuraavaan lohkoon, joka
+     oli jo puoliksi ruudussa — se lupasi siirtymän eikä tehnyt mitään. Lohko itse
+     on se reitti. Jäljelle jäävä `.cta-2` on nyt yksi linkki, kuten muillakin
+     sivuilla. Tapahtuma `cta_vertailu_ankkuri` katosi samalla; se ei ollut
+     mittarilistalla eikä muualla koodissa. */
   hero:{h1:"BCE-pilarit — valmis betoniperustus ilman valua",
     lede:"Perustuspilari on valmiiksi valettu betonielementti. Se lasketaan sorapatjan päälle ja kantaa terassin, saunan, autokatoksen tai mökin ilman että työmaalla valetaan mitään. Neljä perhettä, 16 kokoa.",
     /* 16.9.2026: painike lataa konfiguraattorin kuten muilla sivuilla. Aiemmin se oli
@@ -87,8 +101,9 @@ const C={
        terassikuva.js, terassikuva.hero. */
     img:"Valmis terassi seisoo betonisten perustuspilarien päällä: laudoitus lepää palkkien varassa, palkit pilarikengissä ja pilarit suoraan sorapatjan päällä. Valettua perustusta ei ole."},
 
-  /* 2 · Neljä perhettä heti heron alla. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
-     PP:llä. Kantavuusarvot ovat perhesivuilla — niitä ei ole tällä tasolla.
+  /* 3 · Neljä perhettä. Etusivun .serie-kortti kuvineen, sama copy, laajennettuna
+     PP:llä. Kortti kertoo mihin perhe on tarkoitettu; luvut ovat sen alla
+     vertailutaulukossa (3b). Kantavuusarvot ovat perhesivuilla.
 
      Rivin kolmas kenttä oli kuvapaikan teksti ("Kuva: AP-pilari"); 18.9.2026 se on
      perheen tunnus, jolla tuotekuva.js piirtää kortin kuvan. Etusivun sama lohko on
@@ -105,21 +120,68 @@ const C={
       ["PP-pilari — pylvään ja tolpan jalusta","Ei rakennuksen perustus. Jalusta yksittäiselle pylväälle tai tolpalle: lipputanko, pihavalaisin, aitatolppa.","PP","Katso PP","/bce-pilarit/pp-pilari/"]],
     cta:"Laske pilarien määrä",
     sub:"Vastaat muutamaan kysymykseen kohteestasi. Saat listan pilareista ja tarvikkeista.",
-    /* Kantavuusarvot ovat perhesivuilla. Nykysivustolla AP on newtoneina ja TP
-       sekä KP kiloina samalla sivulla; yksikkö on päätettävä ennen toteutusta. */
+    /* Yksikkö ratkaistiin 18.9.2026 (aineisto-taustamatskut luku 3.1): kuluttajasivu
+       käyttää kiloja asiakkaan omassa muodossa, ja kilonewtonit epäkeskisyyksineen
+       ovat suunnittelijan sivulla. Nykysivustolla AP on newtoneina ja TP sekä KP
+       kiloina samalla sivulla — se on se ristiriita, jota tämä ei toista. */
     },
 
-  /* 4 · Käyttökohteet perheiden jälkeen. 22.9.2026: perheet nostettiin heron alle,
-     joten tämä on toinen reitti samaan valintaan — sille joka tietää mitä rakentaa
-     mutta ei mikä pilari siihen kuuluu. Etusivun käyttökohdevalitsin sellaisenaan. */
-  use:{h2:"Mihin pilariperustusta käytetään",
-    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
-    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
-      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
-      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
-      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
-      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
-      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
+  /* 3b · Perheet rinnakkain. Kortit yläpuolella kertovat mihin perhe on tarkoitettu;
+     ne eivät kerro kuinka kaukana perheet ovat toisistaan. Kävijä, joka epäröi TP:n ja
+     KP:n välillä, epäröi juuri sitä — ja kortin kaksi lausetta eivät ratkaise sitä,
+     koska ne on kirjoitettu erikseen eikä toisiaan vasten.
+
+     Taulukko on tällä sivulla eikä etusivulla: PRODUCT.md:n etusivuperiaate 4 sanoo,
+     että taulukko on vertailuformaatti ihmiselle joka jo vertailee monella akselilla,
+     ja se kuuluu alasivulle. Pilarit-klikkaus on juuri se hetki, jossa vertailu alkaa.
+
+     Rivit ovat sitä, mikä päättää perheen — ei sitä, mitä tuotteesta voi kertoa.
+     Pois jätetyt: pilarin pään poikkileikkaus, rasitusluokka, CE ja EAN (perhesivun
+     tekniset tiedot), sekä kuormakestävyydet epäkeskisyyksineen (suunnittelijan sivu,
+     linkki taulukon alla).
+
+     Kaksi riviä lasketaan mittataulukosta eikä kirjoiteta tähän: korkeusalue ja
+     pohjalaatta tulevat tuotekuva.koot()/tuotekuva.mitat():n kautta mittakaavio.js:n
+     PERHEET-taulukosta, joten taulukko, tuotekuva ja mittakaavio eivät voi ajautua
+     erilleen. Loput ovat copya, koska ne eivät ole geometriaa.
+
+     Kuusi solua on [TÄYTETTÄVÄ], ja kaikki kuusi ovat AP:n ja PP:n sarakkeissa. Se ei
+     ole taulukon vika vaan sen löydös: AP ja PP puuttuvat molemmista asiakkaan omista
+     kuluttajajulkaisuista (esite 2023, opas 2025), eikä PP:lle ole julkaistu kantavuutta
+     missään lähteessä (pilarilaskuri/LASKENTA.md, vaihe 0). Neljän perheen taulukko on
+     ensimmäinen paikka, jossa aukko näkyy rinnakkain — ei arvattu. */
+  cmp:{h3:"Perheet rinnakkain",
+    p:"Sama tieto neljästä perheestä samassa muodossa. Kortin kuvaus kertoo mihin perhe on tarkoitettu, taulukko kertoo kuinka paljon ne eroavat toisistaan.",
+    kulma:"Ominaisuus",
+    perheet:["AP","TP","KP","PP"],
+    otsikot:["AP-pilari","TP-pilari","KP-pilari","PP-pilari"],
+    /* Rivi on [nimi, arvot] tai [nimi, "laskurin nimi"]. Merkkijono viittaa LASKE-olion
+       funktioon, joka lukee arvon mittataulukosta perheittäin. */
+    rows:[
+      /* Sama sanamuoto kuin korttien otsikoissa: yksi käsite ei saa kahta nimeä
+         samalla ruudulla. */
+      ["Mihin",["Kevyet piharakenteet","Terassit ja pienet rakennukset",
+        "Kantavat rakennukset","Pylvään tai tolpan jalusta"]],
+      ["Korkeudet","korkeudet"],
+      /* Lähde: pilariesite 2023 ja Rakentajan opas 2025, molemmat asiakkaan omia ja
+         yhtäpitäviä (aineisto-taustamatskut luku 3.1). Sana «suositeltu» on syy siihen,
+         miksi tämä luku ja A-601:n kilonewtonit eivät ole ristiriidassa. */
+      ["Suositeltu enimmäiskuormitus",["[TÄYTETTÄVÄ]","1 600 kg","5 000 kg","[TÄYTETTÄVÄ]"]],
+      /* Kokokohtaiset painot ovat esitteessä 2023; tässä perheen vaihteluväli. */
+      ["Paino",["[TÄYTETTÄVÄ]","43–67 kg","126–187 kg","[TÄYTETTÄVÄ]"]],
+      /* Painon seuraus sanottuna ääneen. Tämä on kuluttajan kysymys «onnistuuko tämä
+         minulta», eikä 126–187 kg vastaa siihen ilman tätä riviä. AP:n arvo on
+         korttien hyväksyttyä copya, KP:n tämän sivun aiempaa tarvikecopya. */
+      ["Nostaminen",["Yhden ihmisen työ","Kahden ihmisen työ, ei konetta",
+        "Koneella, nostokorvasta","[TÄYTETTÄVÄ]"]],
+      ["Pohjalaatta","laatta"],
+      /* PP:n pää on istukka eikä kierre, ja se on koko perheen ero muihin: siihen ei
+         kiinnitetä BCE:n tarvikkeita vaan siihen pujotetaan pylväs. Halkaisija on
+         tuotekoodista PP-60-600 ja kiristysrenkaan mitasta (tuotekuva.js). */
+      ["Kiinnitys pilarin päässä",["M20-sisäkierre","M20-sisäkierre","M20-sisäkierre",
+        "Istukka 60 mm:n putkelle"]]],
+    note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa.",
+    link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_dwg"]},
 
   /* 2 · Tuotekoodihaku. Nostettu 23.9.2026 Ollin pyynnöstä perhekorttien yläpuolelle
      ja omaksi lohkokseen: se on oikotie sille, joka tietää jo mitä hakee, eikä
@@ -138,15 +200,44 @@ const C={
     eiloydy:"ei ole tuntemamme koodi. Tarkista kirjoitusasu tai valitse perhe alta.",
     perhe:"pilariperheen sivu", tarvike:"kiinnitystarvikkeet"},
 
+  /* 4 · Käyttökohteet. 22.9.2026: lohko on nyt perheiden jälkeen, ei ennen niitä.
+     Peruste oli aiemmin, että enemmistö tietää projektinsa eikä tuotettaan — se
+     pätee etusivulla, mutta tänne on tultu klikkaamalla Pilarit. Se klikkaus on jo
+     tuotevalinta, ja käyttökohdevalitsin veisi kävijän heti pois tuotesivulta.
+     Perheet vastaavat ensin siihen mitä tältä sivulta haettiin; käyttökohde jää
+     reitiksi sille, joka ei perheistä tunnistanut omaansa. Lohko on etusivun
+     käyttökohdevalitsin sellaisenaan. */
+  use:{h2:"Mihin pilariperustusta käytetään",
+    ing:"Helpoin tapa valita on aloittaa siitä mitä rakennat.",
+    picks:[["Terassi","/kayttokohde/terassin-pilariperustus/"],
+      ["Autokatos","/kayttokohde/autokatoksen-pilariperustukset/"],
+      ["Sauna","/kayttokohde/saunan-pilariperustus/"],
+      ["Mökki","/kayttokohde/mokkien-pilariperustukset/"],
+      ["Piharakennus","/kayttokohde/piharakennuksen-pilariperustus/"],
+      ["Parakki","/kayttokohde/parakkien-pilariperustukset/"]]},
+
   /* 5 · Tarvikkeet. Jokaisesta on kerrottava mitä se tekee ja missä yhteydessä —
      nimilista ei kerro kumpaakaan, ja tarvikkeiden jääminen tilaamatta on yleisin
      virhe.
 
-     23.9.2026: neljä tyhjää kenttää täytetty. Auditin havainto oli, että 3/4
-     kontekstiriviä on tyhjä ja teräslaatan tehtävä `[TÄYTETTÄVÄ]`, vaikka lohkon
-     koko peruste on kertoa mitä tarvike tekee. Tekstejä ei kirjoitettu tähän
-     uusiksi eikä arvattu: **jokainen on lyhennys tarvikesivun omasta tekstistä**,
-     joka taas on peräisin asiakkaan esitteestä 2023 (`../aineisto-taustamatskut-2026-09-18.md`
+     23.9.2026, kaksi muutosta samaan lohkoon kahdesta haarasta. **Kuvat:** rivin
+     toinen kenttä oli kuvapaikan teksti ("Detaljikuva: pilarikenkä pilarin päässä…");
+     nyt se on generaattorin tunnus, jolla kuva piirretään. Sama ratkaisu kuin
+     perhekorteissa ja TP-perhesivun samassa lohkossa. `pari` piirtää tarvikkeen ja
+     siihen kuuluvan puun, `osa` pelkän tarvikkeen — ja molemmissa on pilarin pää
+     mukana, koska lohkon kysymys on nimenomaan *miten rakenne kiinnittyy
+     perustukseen* (asennuskuva.js, TUOTEKUVAT.md luku 15). Pari valitaan rivin oman
+     copyn mukaan, ei TP-sivun mukaan: tämä rivi on **tuoteryhmä** eikä yksittäinen
+     nimike, joten «Liittää pystyrakenteen pilarin päähän» on PIK 90-140:n tehtävä,
+     kun taas TP-sivun rivi on PIK 50-70 yhdelle lankulle. Väärä pari olisi kuva, joka
+     sanoo eri asian kuin sen alla oleva lause — sama virhe, joka korjattiin
+     TP-sivulta 21.9.2026.
+
+     **Tekstit:** neljä tyhjää kenttää täytetty. Auditin havainto oli, että 3/4
+     kontekstiriviä on tyhjä ja teräslaatan tehtävä `[TÄYTETTÄVÄ]`, vaikka lohkon koko
+     peruste on kertoa mitä tarvike tekee. Tekstejä ei kirjoitettu tähän uusiksi eikä
+     arvattu: **jokainen on lyhennys tarvikesivun omasta tekstistä**, joka taas on
+     peräisin asiakkaan esitteestä 2023 (`../aineisto-taustamatskut-2026-09-18.md`
      luku 3). Hubi on tarvikesivun kärki, ei toinen lähde — jos tarvikesivun teksti
      muuttuu, tämä muuttuu sen mukana (`../jaettu-sisalto.md`).
 
@@ -157,16 +248,19 @@ const C={
   parts:{h2:"Perustus on pilarit ja tarvikkeet",
     ing:"Yleisin virhe on tilata pelkät pilarit. Kiinnitystarvikkeet ratkaisevat sen, miten rakenne kiinnittyy perustukseen, ja ne mitoitetaan yhdessä pilarin kanssa. Kaikki tarvikkeet ovat BCE:n omaa valmistusta ja yhteensopivia keskenään. Tarvike ruuvataan pilarin valmiiseen kierteeseen, joten poraamista ei tarvita, ja säätövara korkeus- ja sivusuunnassa korjaa pienet heitot.",
     items:[
-      ["Pilarikenkä","Detaljikuva: pilarikenkä pilarin päässä ja pystyrakenne kiinni siinä",
+      ["Pilarikenkä",{pari:"pik-90-140"},
        "Liittää pystyrakenteen pilarin päähän.",
        "Terassin runkolankut (50–70 mm) ja katoksen kannatintolpat (90–140 mm). Korkeutta säädetään kiertämällä."],
-      ["Palkkikenkä PAK","Detaljikuva: palkkikenkä ja vaakapalkki kiinnitettynä",
+      ["Palkkikenkä PAK",{pari:"pak-100x150"},
        "Liittää vaakapalkin pilariin.",
        "Välipohjan ja rungon kannatinpalkit. Kaksi kokoa: 100 × 150 ja 100 × 200 mm."],
-      ["Teräslaatta","Detaljikuva: teräslaatta pilarin päällä",
+      /* tl-150x150 on ainoa räjäytetty pari: paikalleen laskettuna lauta peittäisi
+         koko laatan (yhdistelmakuva.js). Räjäytys näyttää sen, mitä rivin teksti
+         sanoo — rakenne tulee suoraan laatan päälle. */
+      ["Teräslaatta",{pari:"tl-150x150"},
        "Antaa tasaisen tukipinnan pilarin päähän.",
        "Kun valmis rakenne asennetaan suoraan pilarin päälle. Kolme kokoa, ero on kiinnityspisteissä."],
-      ["Nostokorva","Detaljikuva: nostokorva kiinnitettynä, pilari nostossa",
+      ["Nostokorva",{osa:"nostokorva-m20"},
        "Pilarin nostamiseen paikalleen.","KP-perheen pilarit painavat 126–187 kg ja nostetaan koneella."]],
     /* Perhekohtaiset tarvikesuositukset ovat perhesivuilla. */
     cta:"Katso kaikki kiinnitystarvikkeet"},
@@ -228,6 +322,52 @@ const C={
   window.tuotekuva.rivi(window.tuotekuva.perheet,
     {korkeus:200, koriste:true, merkinta:false, id:"kortti"})
     .forEach(function(o){ KUVA[o.perhe]=o.svg; });
+  /* Tarvikelohkon asennuskuvat: pilarin pää, siihen kierretty tarvike ja siihen
+     tuleva puu. Yhteinen kangas ja yhteinen skaala, kuten perhekorteissa ja
+     TP-perhesivun samassa lohkossa — muuten jokainen kuva skaalautuu CSS:ssä omalla
+     kertoimellaan heti kun laatikko on kuvaa kapeampi, ja nostokorva olisi
+     moninkertaisessa mittakaavassa palkkikenkään nähden. Tasaus «ala» antaa neljälle
+     kuvalle saman pilarin rajauksen, eli pilarin pää on joka kortissa samalla tasolla.
+
+     koriste:true — kortin nimi on vieressä tekstinä, joten ruudunlukija ei toista
+     sitä kuvana. id on kuvakohtainen: neljä SVG:tä samassa dokumentissa, eikä
+     kahdella saa olla samaa sisäistä id:tä. */
+  const DET_KORKEUS=150;
+  const DET_SKAALA=DET_KORKEUS/Math.max.apply(null,
+    C.parts.items.map(p=>window.asennuskuva.laajuus(p[1])));
+  const DETALJI=window.tuotekuva.kangas(
+    C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
+      {skaala:DET_SKAALA, koriste:true, id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
+
+  /* Vertailutaulukon lasketut rivit. Molemmat lukevat saman mittataulukon kuin
+     kortin tuotekuva, joten taulukko ei voi kertoa muuta kuin mitä kuva piirtää. */
+  const LASKE={
+    /* Korkeusalue ja kokojen määrä yhdellä rivillä: ne vastaavat samaan kysymykseen
+       («kuinka paljon varaa perheessä on»), ja erillisinä riveinä taulukko kasvaisi
+       rivin ilman omaa sisältöä. PP:llä on yksi koko, joten väliviivaa ei tule. */
+    korkeudet:function(perhe){
+      const k=window.tuotekuva.koot(perhe);
+      const vali=k.length>1 ? k[0]+"–"+k[k.length-1]+" mm" : k[0]+" mm";
+      return vali+" · "+k.length+(k.length===1 ? " koko" : " kokoa");
+    },
+    /* D1 on pohjalaatan sivu, ja laatta on neliö. Se ei ole perheen vakio kaikkialla:
+       AP-300:n laatta on 450 ja perheen muiden 330. Poikkeusta ei keskiarvoisteta pois
+       vaan se kirjoitetaan näkyviin — juuri se on syy, miksi AP:n kokoasteikko on
+       epätasainen (aineisto-taustamatskut luku 3.7). */
+    laatta:function(perhe){
+      const ryhmat={};
+      window.tuotekuva.koot(perhe).forEach(function(koko){
+        const d=window.tuotekuva.mitat(perhe,koko).D1;
+        (ryhmat[d]=ryhmat[d]||[]).push(koko);
+      });
+      const nelio=d=>d+" × "+d+" mm";
+      const arvot=Object.keys(ryhmat).sort((a,b)=>ryhmat[b].length-ryhmat[a].length);
+      if(arvot.length===1) return nelio(arvot[0]);
+      return nelio(arvot[0])+" ("+arvot.slice(1).map(function(d){
+        return ryhmat[d].map(koko=>window.tuotekuva.koodi(perhe,koko)).join(", ")+
+          ": "+nelio(d);
+      }).join("; ")+")";
+    }};
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
   const arrow=t=>E(t)+" →";
@@ -253,17 +393,33 @@ const C={
     '<div class="series series-4">'+C.fam.series.map(s=>'<div class="serie"><div class="im piirros">'+KUVA[s[2]]+
       "</div><h3>"+E(s[0])+"</h3><p>"+E(s[1])+"</p>"+
       '<a class="more lk" href="'+E(SPECLINK(s[4]))+'" data-event="cta_pilariperhe" data-perhe="'+E(s[0])+'">'+arrow(s[3])+"</a></div>").join("")+"</div>"+
+    /* 3c · Vertailutaulukko korttien ja lohkon toiminnon väliin: se on korttien
+       jatke eikä oma kysymyksensä, ja «Laske pilarien määrä» on molempien jälkeen.
+       th[scope=row] on ominaisuuden nimi ja data-lbl kantaa perheen nimen kapealle
+       ruudulle, jossa .stack piilottaa otsikkorivin ja pinoaa rivit lohkoiksi. */
+    '<div class="vertailu"><h3>'+E(C.cmp.h3)+"</h3><p>"+E(C.cmp.p)+"</p>"+
+      '<div class="tw"><table class="data stack"><thead><tr><th>'+E(C.cmp.kulma)+"</th>"+
+        C.cmp.otsikot.map(c=>"<th>"+E(c)+"</th>").join("")+"</tr></thead><tbody>"+
+        C.cmp.rows.map(function(r){
+          const arvot=typeof r[1]==="string" ? C.cmp.perheet.map(p=>LASKE[r[1]](p)) : r[1];
+          return '<tr><th scope="row">'+E(r[0])+"</th>"+
+            arvot.map((v,i)=>'<td data-lbl="'+E(C.cmp.otsikot[i])+'">'+T(v)+"</td>").join("")+
+            "</tr>";
+        }).join("")+"</tbody></table></div>"+
+      '<p class="fine">'+E(C.cmp.note)+"</p>"+
+      '<p class="next"><a class="more" href="'+E(SPECLINK(C.cmp.link[1]))+'" data-event="'+
+        E(C.cmp.link[2])+'">'+arrow(C.cmp.link[0])+"</a></p></div>"+
     '<div class="cta-block"><a class="btn btn-1" href="'+E(SPECLINK(C.url.konf))+'" data-event="cta_konfiguraattori" data-sijainti="perheet">'+
       E(C.fam.cta)+'</a><p class="sub">'+E(C.fam.sub)+"</p></div>","perheet")+
 
-  /* 4 · Käyttökohteet — etusivun .pick */
+  /* 4 · Käyttökohteet — etusivun .pick, perheiden jälkeen */
   sect(head(C.use.h2,C.use.ing)+
     '<div class="pick pick-tight">'+C.use.picks.map(p=>'<a href="'+E(SPECLINK(p[1]))+'" data-event="valinta_kayttokohde" data-kohde="'+E(p[0])+'">'+
       '<span class="im">Kuva: '+E(p[0])+'</span><span class="nm">'+E(p[0])+"</span></a>").join("")+"</div>")+
 
   /* 5 · Tarvikkeet — etusivun .pick-kortti kahdella tietorivillä: tehtävä ja käyttöyhteys */
   sect(head(C.parts.h2,C.parts.ing)+
-    '<div class="pick pick-parts">'+C.parts.items.map(p=>'<a href="'+E(SPECLINK(C.url.tarvikkeet))+'" data-event="cta_tarvikkeet" data-tarvike="'+E(p[0])+'"><span class="im">'+E(p[1])+'</span><span class="nm">'+E(p[0])+"</span>"+
+    '<div class="pick pick-parts">'+C.parts.items.map((p,i)=>'<a href="'+E(SPECLINK(C.url.tarvikkeet))+'" data-event="cta_tarvikkeet" data-tarvike="'+E(p[0])+'"><span class="im piirros">'+DETALJI[i]+'</span><span class="nm">'+E(p[0])+"</span>"+
       '<span class="fn">'+T(p[2])+"</span>"+
       '<span class="cx">'+(p[3]?T(p[3]):"")+"</span></a>").join("")+"</div>"+
     '<p class="next"><a class="more" href="'+E(SPECLINK(C.url.tarvikkeet))+'" data-event="cta_tarvikkeet" data-tarvike="kaikki">'+

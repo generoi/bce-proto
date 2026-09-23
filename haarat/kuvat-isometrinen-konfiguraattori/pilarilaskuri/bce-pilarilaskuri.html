@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BCE-pilarilaskuri – työpajaprototyyppi v0.2</title>
+<title>Laske pilarien määrä — BCE Pilarimaailma</title>
+<meta name="robots" content="noindex, nofollow">
+<!-- Sivuston tyylit ENNEN laskurin omia: laskurin <style> on saman design systemin
+     osajoukko samoilla luokkanimillä (.btn, .lbl, .lede, .fine), joten se saa jäädä
+     päälle siellä missä se poikkeaa. Toisin päin sivuston sivupohja ylikirjoittaisi
+     laskurin paneelin. -->
+<link rel="stylesheet" href="../wireframes/bce-v4.css">
+<script src="../wireframes/bce-spec-shell.js"></script>
 <style>
 /* ---------------------------------------------------------------------------
    BCE-pilarilaskuri v0.2 – työpajaprototyyppi.
@@ -62,6 +69,20 @@ body{
   -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
 }
 button,input,select,textarea{font:inherit;color:inherit}
+/* Tuplanapautus ei saa zoomata säädintä.
+
+   Mittaruudun + ja − napautetaan peräkkäin samaan kohtaan, ja selain lukee kaksi
+   nopeaa napautusta tuplanapautukseksi: luku kasvaa kerran ja sivu loikkaa
+   lähemmäs. Sama osuu valintakortteihin, koska ruutu vaihtuu itsestään ja
+   seuraavan ruudun ensimmäinen kortti on samassa kohdassa — kaksi peräkkäistä
+   valintaa on kaksi napautusta samaan pisteeseen.
+
+   touch-action:manipulation poistaa nimenomaan tuplanapautuksen. Nipistyszoomi ja
+   vieritys jäävät, joten sivu on yhä suurennettavissa eikä WCAG 1.4.4 rikkoudu.
+   Viewportin user-scalable=no korjaisi saman oireen, mutta veisi zoomin kokonaan —
+   sitä ei tähän lisätä. Sääntö on säätimillä eikä bodylla samasta syystä: vain
+   napautuskohteissa tuplanapautus on virhe, tekstissä se on suurennus. */
+button,a,input,select,textarea,label,summary{touch-action:manipulation}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:var(--r-ctl)}
 h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:600;text-transform:uppercase;line-height:1.1}
 h2{font-size:var(--fs-h2);margin:0 0 var(--s3)}
@@ -80,9 +101,7 @@ code{background:var(--paper-2);padding:0 4px;border-radius:2px;font-size:.92em}
 }
 a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydellä */
 .btn-1{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
-.btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
 .btn-2{background:var(--surface);color:var(--ink);border-color:var(--rule-2)}
-.btn-2:hover{border-color:var(--ink)}
 .btn-s{font-size:16px;padding:11px 18px}
 .btn.wide{width:100%;margin:0 0 var(--s2)}
 .btn[disabled],.btn[disabled]:hover{background:var(--paper-2);color:var(--ink-3);
@@ -94,7 +113,6 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
   font-weight:600;font-size:var(--fs-body);color:var(--ink);
   text-decoration:none;border-bottom:2px solid var(--rule-2);
 }
-.more:hover{border-color:var(--ink)}
 .lbl{
   font-family:var(--ff);font-size:var(--fs-fine);font-weight:600;letter-spacing:.06em;
   text-transform:uppercase;color:var(--ink-3);margin:0 0 10px;display:block;
@@ -119,19 +137,17 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .wordmark{font-family:var(--ff-d);text-transform:uppercase;font-weight:600;font-size:var(--fs-h3);letter-spacing:.02em;margin:0 auto 0 0;line-height:1.2}
 .wordmark small{display:block;font-family:var(--ff);font-weight:400;text-transform:none;font-size:var(--fs-fine);color:var(--ink-3);letter-spacing:0}
 .langs{display:flex;gap:var(--s1)}
-.lang{
+.langs .lang{
   background:var(--surface);border:1px solid var(--rule-2);border-radius:var(--r-ctl);
   padding:0 var(--s3);min-height:var(--tap);min-width:var(--tap);cursor:pointer;
   font-size:var(--fs-small);font-weight:600;text-transform:uppercase;
 }
-.lang:hover{border-color:var(--ink)}
-.lang[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.langs .lang[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .wsbtn{
   font-family:var(--ff-d);text-transform:uppercase;font-weight:600;font-size:16px;letter-spacing:.02em;
   background:var(--surface);color:var(--ink);border:2px solid var(--rule-2);
   border-radius:var(--r-ctl);padding:11px 18px;min-height:var(--tap);cursor:pointer;
 }
-.wsbtn:hover{border-color:var(--ink)}
 .wsbtn[aria-pressed="true"]{border-color:var(--ink);background:var(--paper-2)}
 
 /* --- näyttämö ------------------------------------------------------------- */
@@ -139,6 +155,56 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .stage.ws-on{justify-content:flex-start}
 @media (max-width:980px){ .stage{flex-direction:column;align-items:center;gap:var(--s6);padding:var(--s5) var(--s4) var(--s7)} }
 @media (min-width:981px){ .panel{min-height:720px} }
+
+/* --- kaksi tilaa ----------------------------------------------------------
+   Sama laskuri sivuston sivuna ja työpajan työkaluna. Vain kuori vaihtuu:
+   paneelin sisus on molemmissa sama, jotta työpajassa katsottu ruutu on se
+   ruutu joka on julkaistu. */
+[data-tila="tuotanto"] .top{display:none}
+[data-tila="tyopaja"] .urow,
+[data-tila="tyopaja"] header.site,
+[data-tila="tyopaja"] .crumb,
+[data-tila="tyopaja"] .kf-yla,
+[data-tila="tyopaja"] footer{display:none}
+/* Kiinteä 720 px on puhelinmallin korkeus: se on koriste, joka näyttää
+   laitteelta erillisen työkalun näyttämöllä. Sivun sisällä se on aukko —
+   aloitusruudun välike työntäisi painikkeen kortin pohjalle ja jättäisi
+   väliin tyhjän, joka lukee keskeneräisyytenä. Sivulla kortti on sisältönsä
+   korkuinen. */
+[data-tila="tuotanto"] .panel{min-height:0}
+[data-tila="tuotanto"] .stage{padding:var(--s5) var(--s5) var(--s7)}
+/* Kuoren «Laske pilarien määrä» osoittaisi tällä sivulla sivulle itselleen.
+   Umpikuja on pahempi kuin puuttuva painike: sivun toiminto on paneelissa. */
+[data-tila="tuotanto"] .hdr-cta{display:none}
+/* Konfiguraattorissa edetessä sivuston valikkoa ei tarvita, ja tarttuvana se
+   veisi ruudun ylälaidan juuri siltä palkilta, jolla laskurin oma askel ja
+   paluupainike ovat. Kuori vierii siis pois tieltä — ylös vierittämällä se
+   tulee takaisin, ja se on tie ulos konfiguraattorista. */
+[data-tila="tuotanto"] header.site{position:static}
+
+/* Otsikkolohko. Sivun oma ääni on tässä, laskurin ääni paneelissa: otsikko
+   lupaa lopputuloksen ja ingressi kertoo mitä siihen tarvitaan. */
+.kf-yla{padding-top:var(--s6)}   /* vaakapehmuste tulee .w:ltä, ei tästä */
+.kf-yla h1{font-size:var(--fs-h1);display:flex;align-items:center;
+  gap:var(--s3);flex-wrap:wrap;margin:0 0 var(--s3)}
+.kf-yla .lede{margin:0}
+/* Beta on tieto eikä koriste: se kertoo että laskenta on vielä tarkistettavana.
+   Siksi se on otsikon vieressä eikä alatunnisteessa, ja siksi se on harmaa
+   eikä oranssi — oranssi on toiminnon väri. */
+.kf-beta{font-family:var(--ff);font-size:var(--fs-fine);font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);
+  border:1px solid var(--rule-2);border-radius:var(--r-ctl);
+  padding:3px 9px;line-height:1.4}
+/* Mobiili on 80,9 % istunnoista, ja siellä otsikkolohko kilpailee suoraan
+   ensisijaisen toiminnon kanssa: jokainen rivi otsikkoa työntää «Laske
+   tarvitsemani pilarit» -painiketta alemmas. Siksi otsikko on täällä pienempi
+   kuin sisältösivuilla ja lohkon välit ovat tiukemmat — kortin luettelo kertoo
+   loput. */
+@media (max-width:980px){
+  .kf-yla{padding-top:var(--s4)}
+  .kf-yla h1{font-size:clamp(26px,7vw,34px);gap:var(--s2);margin-bottom:var(--s2)}
+  [data-tila="tuotanto"] .stage{padding:var(--s3) var(--s4) var(--s6)}
+}
 
 /* --- laskuripaneeli ------------------------------------------------------- */
 /* Kiinteä 720 px:n korkeus sai puhelimen näyttämään puhelimelta työpöydällä,
@@ -155,7 +221,6 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
   background:var(--surface);border:1px solid var(--rule-2);border-radius:var(--r-ctl);
   width:var(--tap);height:var(--tap);cursor:pointer;font-size:18px;line-height:1;
 }
-.back:hover{border-color:var(--ink)}
 .prog{flex:1;height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
 .prog span{display:block;height:100%;background:var(--ink)}
 .stepno{font-size:var(--fs-fine);color:var(--ink-3);font-variant-numeric:tabular-nums}
@@ -170,7 +235,6 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
   background:var(--surface);border:1px solid var(--rule-2);border-radius:var(--r-card);
   padding:13px var(--s4);min-height:56px;
 }
-.opt:hover{border-color:var(--ink)}
 .opt b{display:block;font-size:var(--fs-body);font-weight:600}
 .opt span{display:block;font-size:var(--fs-small);color:var(--ink-2);margin-top:2px}
 .opt[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
@@ -210,7 +274,6 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
   width:var(--boksi);height:var(--boksi);border-radius:var(--r-ctl);border:1px solid var(--rule-2);
   background:var(--surface);cursor:pointer;font-size:20px;line-height:1;
 }
-.step button:hover:not([disabled]){border-color:var(--ink)}
 .step button[disabled]{opacity:.35;cursor:not-allowed}
 /* Arvo on muokattava kenttä: 3 → 8 metriä olisi kymmenen napautusta steppereillä.
    ± jää hienosäätöön, kirjoittaminen hoitaa ison muutoksen. */
@@ -497,7 +560,59 @@ details > *:not(summary){margin-bottom:var(--s4)}
   background:var(--surface);border:1px solid var(--rule-2);border-radius:var(--r-ctl);
   padding:10px var(--s4);min-height:var(--tap);cursor:pointer;
 }
-.smallbtn:hover{border-color:var(--ink)}
+
+/* ===== liike =================================================================
+   Budjetti on design systemin luku 1: vain ease-out, alle 200 ms, ei
+   layout-ominaisuuksia. Siksi täällä liikkuvat vain transform ja opacity, ja
+   jokainen kesto on kirjoitettu siihen mitä se tekee — ei yhtään «transition:all».
+
+   Kolme asiaa liikkuu, ja jokaisella on tehtävä:
+
+     ruudunvaihto   kertoo suunnan. Eteenpäin ruutu tulee oikealta, takaisin
+                    vasemmalta, jolloin Takaisin tuntuu paluulta eikä uudelta
+                    ruudulta. Matka on 10 px: tarpeeksi että suunta näkyy,
+                    liian vähän että sitä ehtisi odottaa.
+     edistymispalkki näyttää askeleen kasvun. Ilman tätä palkki hyppää, ja hyppy
+                    on ainoa kohta jossa käyttäjä näkee montako ruutua on jäljellä.
+     painallus      kuittaa kosketuksen. Kortti on iso, joten se kutistuu vain
+                    1,5 %; painike on pienempi ja kestää 2 %.
+
+   Hover on kosketuslaitteella väärä tila: se jää päälle napautuksen jälkeen ja
+   kortti näyttää valitulta vaikkei ole. Siksi portti, ja siksi painallus on
+   erikseen — se on ainoa osoitinpalaute jonka puhelin saa. */
+@media (hover: hover) and (pointer: fine){
+  .btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+  .btn-2:hover{border-color:var(--ink)}
+  .more:hover{border-color:var(--ink)}
+  .langs .lang:hover{border-color:var(--ink)}
+  .wsbtn:hover{border-color:var(--ink)}
+  .back:hover{border-color:var(--ink)}
+  .opt:hover{border-color:var(--ink)}
+  .step button:hover:not([disabled]){border-color:var(--ink)}
+  .smallbtn:hover{border-color:var(--ink)}
+}
+
+.opt,.back,.step button,.smallbtn,.btn,.more{
+  transition:transform 140ms var(--ease),border-color 140ms ease,background-color 140ms ease}
+.opt:active,.back:active,.smallbtn:active,.step button:active:not([disabled]){transform:scale(.985)}
+.btn:active:not([disabled]){transform:scale(.98)}
+
+/* Ruutu on joka kerta uusi elementti, joten keyframe kelpaa: mitään ei ole
+   keskeytettävänä, ja nopeakin napautussarja saa aina puhtaan alun. Pelkkä
+   from-lohko animoi elementin omaan lopputilaansa, jolloin lopputila on yhdessä
+   paikassa eikä kahdessa. */
+.scr[data-suunta="eteen"]{animation:ruutu-eteen 180ms var(--ease)}
+.scr[data-suunta="taakse"]{animation:ruutu-taakse 180ms var(--ease)}
+@keyframes ruutu-eteen{from{opacity:0;transform:translateX(10px)}}
+@keyframes ruutu-taakse{from{opacity:0;transform:translateX(-10px)}}
+
+/* Palkki skaalataan eikä levennetä: leveys on layout-ominaisuus, transform ei.
+   --alku on edellisen ruudun osuus ja --osuus tämän, joten kasvu piirtyy siitä
+   mihin se viimeksi jäi. Ilman animaatiota (reduced motion) jäljelle jää
+   transform-rivi, joka on jo oikea lopputila. */
+.prog span{width:100%;transform-origin:left center;transform:scaleX(var(--osuus,0))}
+.prog[data-liiku] span{animation:prog-tayty 220ms var(--ease)}
+@keyframes prog-tayty{from{transform:scaleX(var(--alku,0))}}
 
 @media (prefers-reduced-motion: reduce){ *{transition:none !important;animation:none !important} }
 </style>
@@ -515,15 +630,66 @@ details > *:not(summary){margin-bottom:var(--s4)}
   document.head.appendChild(l);
 })();
 </script>
+<!-- =========================================================================
+     Kaksi tilaa, yksi laskuri.
+
+       tuotanto (oletus)   Sivuston sivu /konfiguraattori/. Sivuston kuori,
+                           murupolku ja alatunniste; työpajan yläpalkki piilossa.
+                           Tämä on se, minkä «Laske pilarien määrä» avaa.
+       tyopaja (?tyopaja=1) Työpajaprototyypin oma näkymä: säätöpaneelin kytkin,
+                           kielivalinta ja versiotunnus. Sivuston kuori piilossa.
+
+     Tila valitaan ennen kuoren piirtoa, jotta sivu ei välähdä väärässä asussa.
+     Työpajan yläpalkki jää DOMiin molemmissa tiloissa: laskurin skripti kiinnittää
+     kuuntelijat #langs- ja #wstoggle-elementteihin, ja puuttuva elementti kaataisi
+     sen. Piilotus on siis CSS:ää eikä poistoa.
+     ========================================================================= -->
+<script>
+(function(){
+  var tyopaja = /(^|[?&])tyopaja=1(&|$)/.test(location.search);
+  document.documentElement.setAttribute('data-tila', tyopaja ? 'tyopaja' : 'tuotanto');
+  if (tyopaja) document.title = 'BCE-pilarilaskuri \u2013 ty\u00f6pajaprototyyppi v0.2';
+})();
+</script>
+
+<a class="skip" href="#main">Siirry sisältöön</a>
+
 <div class="top">
   <h1 class="wordmark">BCE-pilarilaskuri<small>Työpajaprototyyppi v0.2 · ei tuotantokoodia</small></h1>
   <div class="langs" id="langs" role="group" aria-label="Kieli"></div>
   <button class="wsbtn" id="wstoggle" type="button" aria-pressed="false">Työpajanäkymä</button>
 </div>
-<div class="stage" id="stage">
-  <div class="panel" id="phone"></div>
-  <aside class="ws" id="ws" hidden aria-label="Työpajanäkymä"></aside>
-</div>
+
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main">
+  <div class="w kf-yla">
+    <h1>Laske pilarien määrä<span class="kf-beta">beta</span></h1>
+    <p class="lede">Kerro mitä rakennat ja kohteen mitat.</p>
+  </div>
+  <div class="stage" id="stage">
+    <div class="panel" id="phone"></div>
+    <aside class="ws" id="ws" hidden aria-label="Työpajanäkymä"></aside>
+  </div>
+</main>
+<footer><div class="w"></div></footer>
+
+<script>
+/* Sivuston kuori vain tuotantotilassa. Kuoren alapalkkia ei pyydetä (bar:false):
+   sen ensisijainen toiminto on «Laske pilarien määrä», ja tällä sivulla se osoittaisi
+   sivulle itselleen. Mobiilissa palkki veisi myös sen pystytilan, jossa laskuri
+   tekee työnsä. */
+(function(){
+  if (document.documentElement.getAttribute('data-tila') !== 'tuotanto') return;
+  if (!window.SPECSHELL) return;
+  var E = function(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  };
+  SPECSHELL(E, { crumb:[['Etusivu','/'], ['Laske pilarien määrä']], bar:false });
+})();
+</script>
 
 <!-- =========================================================================
      SÄÄNTÖMOOTTORI. Tämä skripti on irrallinen UI:sta ja ajettavissa Nodessa
@@ -1325,6 +1491,11 @@ if (typeof module !== 'undefined' && module.exports){
 <script id="ui">
 (function(){
 'use strict';
+var TYOPAJA = document.documentElement.getAttribute('data-tila') === 'tyopaja';
+/* Ruudunvaihdon tila. VIIME_RUUTU erottaa ruudunvaihdon uudelleenpiirrosta:
+   render() ajetaan myös jokaisesta säätimen napautuksesta, eikä siirtymä saa
+   toistua silloin — se olisi välähdys jokaisesta plussasta. */
+var VIIME_RUUTU = null, SUUNTA = 'eteen', EDELLINEN_OSUUS = 0, NYKY_OSUUS = 0;
 var LANG = 'fi', WS = false, SCREEN = 'start', RESULT = null, HIST = [], SENT = null, SNOWDELTA = null;
 var state = freshState();
 window.dataLayer = window.dataLayer || [];
@@ -1397,9 +1568,8 @@ function go(scr, noHist){
   /* Puhelimen paluuele hävitti viisi vastausta. Yksi historiamerkintä per ruutu
      tekee siitä askeleen taaksepäin. file://-osoitteessa pushState voi heittää. */
   try { history.pushState({ scr:scr }, ''); } catch (err){}
-  render();
-  if (phone.scrollIntoView) phone.scrollIntoView({ block:'nearest' });
-  var h = phone.querySelector('h2'); if (h) h.setAttribute('tabindex','-1'), h.focus();
+  SUUNTA = 'eteen';
+  naytaRuutu();
 }
 function next(){
   var o = order(), i = o.indexOf(SCREEN);
@@ -1410,7 +1580,8 @@ function next(){
 function back(){
   if (!HIST.length) return;
   SCREEN = HIST.pop();
-  render();
+  SUUNTA = 'taakse';
+  naytaRuutu();
 }
 function toResult(){
   RESULT = compute(state, RULES, LANG);
@@ -1438,9 +1609,14 @@ function nav(scr){
   var out = '<div class="nav"><button class="back" type="button" data-act="back" aria-label="' + esc(t('ui.back')) + '">&#8592;</button>';
   if (s){
     var osuus = tuntematon ? 12 : Math.round(s / total * 100);
+    /* Osuus kulkee CSS-muuttujana, koska palkki skaalataan eikä levennetä.
+       --alku on se, mihin palkki edellisellä ruudulla jäi: kasvu piirtyy siitä
+       eikä nollasta. */
+    NYKY_OSUUS = osuus / 100;
     out += '<div class="prog" role="progressbar" aria-label="' + esc(t('ui.progress')) + '"'
         +  (tuntematon ? '' : ' aria-valuemin="1" aria-valuemax="' + total + '" aria-valuenow="' + s + '"')
-        +  '><span style="width:' + osuus + '%"></span></div>'
+        +  ' style="--osuus:' + NYKY_OSUUS + ';--alku:' + EDELLINEN_OSUUS + '"'
+        +  '><span></span></div>'
         +  (tuntematon ? '' : '<div class="stepno">' + esc(t('ui.step', { n:s, total:total })) + '</div>');
   }
   return out + '</div>';
@@ -2549,9 +2725,44 @@ function renderPhone(){
             maapohja:rMaapohja, liitos:rLiitos, palkki:rPalkki, paksuus:rPaksuus,
             massa:rMassa, mitat:rMitat,
             result:rResult, lead:rLead, sent:rSent, handoff:rHandoff };
+  var vaihtui = SCREEN !== VIIME_RUUTU;
   phone.innerHTML = (m[SCREEN] || rStart)();
+  if (vaihtui){
+    var scr = phone.querySelector('.scr');
+    if (scr) scr.setAttribute('data-suunta', SUUNTA);
+    var pr = phone.querySelector('.prog');
+    if (pr) pr.setAttribute('data-liiku', '');
+    VIIME_RUUTU = SCREEN;
+  }
+  EDELLINEN_OSUUS = NYKY_OSUUS;
 }
 function render(){ renderPhone(); renderWS(); }
+
+/* --- ruudun paikka ---------------------------------------------------------
+   Jokainen ruutu alkaa samasta kohdasta. Aiemmin vieritys oli scrollIntoView
+   block:'nearest', joka jättää sivun paikalleen jos paneeli on edes osittain
+   näkyvissä — silloin lyhyt ruutu alkoi keskeltä ja pitkä ylhäältä, ja askel ja
+   paluupainike olivat joka kerta eri kohdassa.
+
+   Aloitusruutu on poikkeus: sinne tullaan sivun ylälaidasta, eikä laskuri saa
+   viedä otsikkoa pois ennen kuin käyttäjä on aloittanut. */
+var RUUTU_MARGINAALI = 12;
+function asetaRuutuPaikalleen(){
+  if (SCREEN === 'start') return;
+  var y = window.scrollY + phone.getBoundingClientRect().top - RUUTU_MARGINAALI;
+  window.scrollTo(0, Math.max(0, y));
+}
+
+/* Yksi paikka, joka piirtää ruudun, asettaa sen paikalleen ja siirtää
+   kohdistuksen. Aiemmin go() teki kaikki kolme ja back() vain ensimmäisen,
+   joten paluu jätti kohdistuksen kadonneeseen painikkeeseen.
+   preventScroll, koska kohdistus ei saa kumota juuri asetettua paikkaa. */
+function naytaRuutu(){
+  render();
+  asetaRuutuPaikalleen();
+  var h = phone.querySelector('h2');
+  if (h){ h.setAttribute('tabindex', '-1'); h.focus({ preventScroll:true }); }
+}
 function recalc(){
   if (['result','lead','sent','handoff'].indexOf(SCREEN) < 0) return;
   RESULT = compute(state, RULES, LANG);
@@ -2768,18 +2979,62 @@ function renderLangs(){
   box.innerHTML = ['fi','sv','en'].map(function(l){
     return '<button class="lang" type="button" data-lang="' + l + '" aria-pressed="' + (LANG === l ? 'true' : 'false') + '">' + l + '</button>';
   }).join('');
+  merkitseKuorenKieli();
 }
-document.getElementById('langs').addEventListener('click', function(e){
-  var b = e.target.closest ? e.target.closest('[data-lang]') : null;
-  if (!b) return;
-  LANG = b.getAttribute('data-lang');
+
+/* Kuoren apurivillä on sivuston oma kielivalinta (FI · SV · EN). Prototyypissä se
+   on koriste kaikilla muilla sivuilla, mutta tällä sivulla kieli on olemassa:
+   laskuri on käännetty kolmelle kielelle. Kaksi kielivalitsinta samalla sivulla
+   olisi virhe, ja niistä väärä olisi se, joka ei tee mitään — siksi kuoren valinta
+   kytketään laskuriin eikä laskurin omaa valintaa näytetä tuotantotilassa. */
+function kuorenKielet(){
+  return [].slice.call(document.querySelectorAll('.urow .lang a'));
+}
+
+/* Kieli on valmis, kun sen sanakirja ei ole etuliitetty paikanpitäjä (prefixAll).
+   Ehto luetaan sanakirjasta eikä listasta, jotta valitsin kasvaa itsestään sinä
+   päivänä kun käännös tulee — eikä kukaan joudu muistamaan tätä kohtaa.
+
+   Tuotantotilassa keskeneräistä kieltä ei tarjota lainkaan. «[sv] Montako
+   pilaria» on oikea tieto työpajalle ja rikki asiakkaalle, ja tämä sivu on
+   asiakkaan. Työpajatilassa kaikki kolme ovat yhä omassa valitsimessaan. */
+function kieliValmis(koodi){
+  var d = I18N[koodi];
+  return !!d && String(d['start.h'] || '').charAt(0) !== '[';
+}
+function merkitseKuorenKieli(){
+  var tuotanto = document.documentElement.getAttribute('data-tila') === 'tuotanto';
+  kuorenKielet().forEach(function(a){
+    var koodi = (a.textContent || '').trim().toLowerCase();
+    if (tuotanto && !kieliValmis(koodi)){ a.remove(); return; }
+    if (koodi === LANG) a.setAttribute('aria-current', 'true');
+    else a.removeAttribute('aria-current');
+  });
+}
+document.addEventListener('click', function(e){
+  var a = e.target && e.target.closest ? e.target.closest('.urow .lang a') : null;
+  if (!a) return;
+  var koodi = (a.textContent || '').trim().toLowerCase();
+  if (['fi','sv','en'].indexOf(koodi) < 0) return;
+  e.preventDefault();
+  vaihdaKieli(koodi);
+});
+
+function vaihdaKieli(koodi){
+  if (koodi === LANG) return;
+  LANG = koodi;
   document.documentElement.setAttribute('lang', LANG);
   renderLangs();
   if (RESULT) RESULT = compute(state, RULES, LANG);
   render();
+}
+document.getElementById('langs').addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('[data-lang]') : null;
+  if (!b) return;
+  vaihdaKieli(b.getAttribute('data-lang'));
 });
 window.addEventListener('popstate', function(){
-  if (HIST.length){ SCREEN = HIST.pop(); render(); }
+  if (HIST.length){ SCREEN = HIST.pop(); SUUNTA = 'taakse'; naytaRuutu(); }
 });
 
 var wsBtn = document.getElementById('wstoggle');
@@ -2789,7 +3044,14 @@ wsBtn.addEventListener('click', function(){
   try { sessionStorage.setItem('bce-ws', WS ? '1' : '0'); } catch (err){}
   renderWS();
 });
-try { if (sessionStorage.getItem('bce-ws') === '1'){ WS = true; wsBtn.setAttribute('aria-pressed','true'); } } catch (err){}
+/* Säätöpaneelin tila muistetaan istunnon yli, mutta vain työpajatilassa. Ilman
+   ehtoa yksi työpajassa jäänyt kytkin seuraa mukana samassa istunnossa avattuun
+   sivuun ja avaa säätöpaneelin asiakkaan sivulle — se on työkalun sisus, ei sivu. */
+try {
+  if (TYOPAJA && sessionStorage.getItem('bce-ws') === '1'){
+    WS = true; wsBtn.setAttribute('aria-pressed','true');
+  }
+} catch (err){}
 
 renderLangs();
 render();
@@ -2834,7 +3096,7 @@ var OHJAUKSET = {
      43 kertaa on pelkkää kohinaa, eikä se kuulu polkukaavioon. */
   if (q.karsi){
     var tyyli = document.createElement('style');
-    tyyli.textContent = '.top,header,.wsbtn{display:none!important}'
+    tyyli.textContent = '.top,header,.wsbtn,.urow,.crumb,.kf-yla,footer,.bar{display:none!important}'
       + '.stage{padding-top:0!important}body{background:#fff}';
     document.head.appendChild(tyyli);
   }

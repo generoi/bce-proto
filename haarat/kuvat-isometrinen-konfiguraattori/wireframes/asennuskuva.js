@@ -81,10 +81,13 @@
      Mitattu ensimmäisestä vedoksesta 20.9.2026: PAK 270 mm:llä pilari peittyi
      palkin alle lähes kokonaan.
 
-     Pilarikengän luku on tolpan korkeus eikä palkin pituus — sama kenttä, eri
-     suunta, koska kenkä kantaa pystytolppaa. */
+     Pareilla «pik-50-70» ja «pik-90-140» luku on tolpan korkeus eikä palkin
+     pituus — sama kenttä, eri suunta. Niistä vain jälkimmäinen on käytössä:
+     PIK 50-70 on asiakkaan oman materiaalin mukaan lankulle, ja sen pari on
+     «pik-50-70-palkki». */
   var PITUUS = {
     "pik-50-70": 150, "pik-90-140": 190, "p-pik-50x70": 150,
+    "pik-50-70-palkki": 200,
     "pak-100x150": 200, "pak-100x200": 200, "tl-150x150": 210,
     "pik-50-70-terassi": 220, "pak-100x150-terassi": 220,
     "tl-150x150-terassi": 220
