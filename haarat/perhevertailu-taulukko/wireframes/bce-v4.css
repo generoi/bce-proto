@@ -1878,8 +1878,11 @@ html.vienti .cfg .shot{display:flex}
    Kapealla sääntö ei ole voimassa: .stack pinoaa solut lohkoksi, jossa rivin
    leveys on ruudun leveys ja nowrap työntäisi tekstin ulos. */
 @media(min-width:561px){
+  /* width:100% ei ole leveys vaan pyyntö: sarakejako antaa ylijäävän tilan sille
+     solulle, joka sitä pyytää. Ilman tätä ylijäämä jakautuu tasan ja se sarake,
+     jonka otsikko on pisin, saa tilaa jota sen arvot eivät tarvitse. */
   .vertailutaulu td{white-space:nowrap}
-  .vertailutaulu td.sanat{white-space:normal}
+  .vertailutaulu td.sanat{white-space:normal;width:100%}
 }
 /* Tasalevyiset numerot: sarake on lukusarake, ja vaihtelevalevyiset numerot
    tekevät 126–187 ja 43–67 eri mittaisiksi samalla merkkimäärällä. */
