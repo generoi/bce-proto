@@ -34,6 +34,25 @@
 
 .pp-kaavio{overflow-x:auto;margin:var(--s5) 0 0}
 .pp-kaavio svg{display:block;max-width:100%;height:auto}
+/* Lattia kaavion leveydelle (23.9.2026). Kehyksessä oli overflow-x:auto jo
+   ennestään, mutta max-width:100% kutisti SVG:n aina mahtumaan, joten se ei
+   vierittynyt koskaan — se vain pieneni. Mitattu 390 px:n ruudulla: kaavio
+   342 px, kerroin 0,30 ja selitteet 3,4–3,9 px. Sama vika kuin
+   käyttökohdesivun leikkauskuvassa, ja sama syy: SVG:n teksti skaalautuu
+   kankaan mukana.
+
+   Ratkaisu on sama kuin mittakaaviolla (bce-v4.css, .mitoitus .mk svg): kaavio
+   ei kutistu alle luettavan koon vaan kehys vierittyy vaakaan. max-width:none
+   palauttaa SVG:n omaan 1 140 pikseliin, eli kaavio renderöityy kapealla
+   ruudulla pikselilleen samoin kuin työpöydällä — selitteet 11,5–13 px.
+   min-width on lattia sen varalta että jokin kaavio on kapeampi kuin
+   tuhat pikseliä. Sivu itse ei vierity: vieritys on kehyksen sisällä
+   (mitattu 390 px, document.scrollWidth 390). Tämä on analyysidokumentti eikä
+   kuluttajasivu — vaakavieritys on täällä sallittu, kuten TP-sivun
+   mittataulukossa, mutta lukukelvoton teksti ei ole. */
+@media(max-width:1100px){
+  .pp-kaavio svg{max-width:none;min-width:1000px}
+}
 
 /* Avainluvut. Ei laatikoita, vain hiusviiva erottamassa — sivun lämmin pohja
    näkyy läpi, samoin kuin taulukoissa. */

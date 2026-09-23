@@ -181,9 +181,10 @@ const C={
        mittataulukosta perheittäin. Taulukossa näistä tulee sarakkeita. */
     rows:[
       /* Sama sanamuoto kuin korttien otsikoissa: yksi käsite ei saa kahta nimeä
-         samalla ruudulla. */
+         samalla ruudulla. Tämä on taulukon ainoa sarake, jossa on lause eikä arvoa,
+         ja siksi ainoa jonka solut rivittyvät — merkitty «sanat». */
       ["Mihin",["Kevyet piharakenteet","Terassit ja pienet rakennukset",
-        "Kantavat rakennukset","Pylvään tai tolpan jalusta"]],
+        "Kantavat rakennukset","Pylvään ja tolpan jalusta"],"sanat"],
       ["Korkeudet","korkeudet"],
       /* Lähde: pilariesite 2023 ja Rakentajan opas 2025, molemmat asiakkaan omia ja
          yhtäpitäviä (aineisto-taustamatskut luku 3.1). Sana «suositeltu» on syy siihen,
@@ -194,18 +195,27 @@ const C={
       /* Painon seuraus sanottuna ääneen. Tämä on kuluttajan kysymys «onnistuuko tämä
          minulta», eikä 126–187 kg vastaa siihen ilman tätä riviä. AP:n arvo on
          korttien hyväksyttyä copya, KP:n tämän sivun aiempaa tarvikecopya. */
-      ["Nostaminen",["Yhden ihmisen työ","Kahden ihmisen työ, ei konetta",
-        "Koneella, nostokorvasta","[TÄYTETTÄVÄ]"]],
+      /* Kaksi sanaa, ei lausetta: vertailusarakkeen tehtävä on olla vertailtavissa
+         yhdellä silmäyksellä, ja «Kahden ihmisen työ, ei konetta» rivittyi kahdelle
+         riville joka ruudulla. Varaumat («ei konetta», «nostokorvasta») ovat
+         perhesivun nostolohkon asia, ei tämän. */
+      ["Nostaminen",["Yksi ihminen","Kaksi ihmistä","Kone","[TÄYTETTÄVÄ]"]],
       ["Pohjalaatta","laatta"],
       /* PP:n pää on istukka eikä kierre, ja se on koko perheen ero muihin: siihen ei
          kiinnitetä BCE:n tarvikkeita vaan siihen pujotetaan pylväs. Halkaisija on
          tuotekoodista PP-60-600 ja kiristysrenkaan mitasta (tuotekuva.js). */
       /* Sarakeotsikko on «Kiinnitys» eikä «Kiinnitys pilarin päässä»: kahdeksan
          saraketta ei kestä kolmiriviaista otsikkoa, ja arvot sanovat itse missä
-         kiinnitys on. Kapealla pinottuna sama sana on rivin selitteenä. */
-      ["Kiinnitys",["M20-sisäkierre","M20-sisäkierre","M20-sisäkierre",
-        "Istukka 60 mm:n putkelle"]]],
-    note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa.",
+         kiinnitys on. Kapealla pinottuna sama sana on rivin selitteenä.
+
+         «M20-kierre» eikä «M20-sisäkierre», «Istukka Ø60 mm» eikä «Istukka 60 mm:n
+         putkelle»: molemmat rivittyivät, ja rivittynyt kahden sanan arvo maksaa
+         vertailutaulukossa enemmän kuin sisä-etuliite tuo. Täysi muoto on
+         perhesivun teknisissä tiedoissa. */
+      ["Kiinnitys",["M20-kierre","M20-kierre","M20-kierre","Istukka Ø60 mm"]]],
+    /* Alaviitteessä ovat ne kaksi asiaa, jotka ovat tosia mutta eivät mahdu soluun
+       rikkomatta sarakkeen rytmiä: AP:n poikkeava koko ja PP:n istukan mitta. */
+    note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa. AP-300:n pohjalaatta on 450 × 450 mm, perheen kahden muun koon 330 × 330 mm. PP:n istukka on tarkoitettu 60 mm:n putkelle, eikä siihen kierretä BCE:n tarvikkeita.",
     link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_dwg"]},
 
   /* 2 · Tuotekoodihaku. Nostettu 23.9.2026 Ollin pyynnöstä perhekorttien yläpuolelle
@@ -364,49 +374,37 @@ const C={
     C.parts.items.map(p=>window.asennuskuva(Object.assign({},p[1],
       {skaala:DET_SKAALA, koriste:true, id:"det-"+(p[1].pari||p[1].osa)}))),"ala");
 
-  /* Vertailutaulukon rivikuvat: jaettu mittakaava, **oma kangas kullekin**.
+  /* Vertailutaulukon rivikuvat: jaettu mittakaava ja **yhteinen kangas**, kuten
+     perhekorteissa. Kangas on kaikilla 85 × 96 px, joten neljä riviä ovat yhtä
+     korkeita ja taulukko on taulukko eikä porras.
 
-     Tämä on tarkoituksella eri kuin korttien `tuotekuva.rivi`, joka vie kuvat myös
-     yhteiselle kankaalle. Yhteinen kangas on siellä pakko: kortit ovat vierekkäin,
-     ja CSS skaalaisi eri kokoiset kankaat eri kertoimilla heti kun laatikko on kuvaa
-     kapeampi. Taulukossa kuvat ovat allekkain eikä niitä kutisteta, joten yhteisestä
-     kankaasta jäisi vain sen haitta: AP-400 seisoisi KP-1000:n korkuisen laatikon
-     pohjalla, ja kapealla ruudulla nimen ja pilarin väliin jäisi sata pikseliä
-     tyhjää. Omilla kankailla kuvan korkeus **on** vertailu — 46 px ja 110 px
-     nähdään suoraan, eikä lukijan tarvitse etsiä mistä hahmo alkaa.
+     Välissä kokeiltiin omaa kangasta kullekin — silloin kuvan korkeus olisi itse
+     vertailu (AP 88, KP 150 px) eikä AP:n yläpuolelle jäisi tyhjää. Se hylättiin
+     23.9.2026 Ollin pyynnöstä: rivien eri korkeudet maksoivat enemmän kuin tyhjä
+     voitti, koska silmä lukee taulukkoa riviväliä pitkin. **Tyhjä AP:n kuvan
+     yläpuolella on nyt tarkoitettu**: se on se, mitä AP:n lyhyys näyttää.
 
-     Mittakaava on silti jaettu, ja se on koko kuvan peruste: perhekohtaisesti
-     normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa. Laskenta on sama
-     kuin `tuotekuva.rivi`:n sisällä (korkeus × oma laajuus / suurin laajuus),
-     ilman viimeistä kangasvaihetta.
-
-     110 px on suurimman kuva; se tulee KP-1000:lle. Pienempi tekisi AP:stä
-     tunnistamattoman, isompi kasvattaisi rivin korkeutta ilman että kuva kertoo
-     enempää. */
+     56 px on suurimman pilarin korkeus ja tulee KP-1000:lle; kangas on aina 40 px
+     sitä korkeampi. Aiempi 110 teki KP:n rivistä 213 px:n korkuisen, mikä oli
+     lohkossa liikaa. Mittakaava on jaettu, ja se on koko kuvan peruste:
+     perhekohtaisesti normalisoituina neljä kuvaa olisivat sama muoto neljä kertaa
+     eivätkä kertoisi sitä ainoaa asiaa, jonka ne voivat kertoa yhdellä silmäyksellä. */
   const RIVIKUVA={};
-  (function(){
-    const osat=C.cmp.perheet.map(function(perhe){
-      const koot=window.tuotekuva.koot(perhe), koko=koot[koot.length-1];
-      return {perhe:perhe, koko:koko, kor:window.tuotekuva.laajuus(perhe,koko).kor};
-    });
-    const suurin=Math.max.apply(null,osat.map(s=>s.kor));
-    osat.forEach(function(s){
-      RIVIKUVA[s.perhe]=window.tuotekuva({perhe:s.perhe, koko:s.koko, kiintea:false,
-        korkeus:110*s.kor/suurin, koriste:true, merkinta:false,
-        id:"rivi-"+s.perhe.toLowerCase()});
-    });
-  })();
+  window.tuotekuva.rivi(C.cmp.perheet,
+    {korkeus:56, koriste:true, merkinta:false, id:"rivi"})
+    .forEach(function(o){ RIVIKUVA[o.perhe]=o.svg; });
 
   /* Vertailutaulukon lasketut rivit. Molemmat lukevat saman mittataulukon kuin
      kortin tuotekuva, joten taulukko ei voi kertoa muuta kuin mitä kuva piirtää. */
   const LASKE={
-    /* Korkeusalue ja kokojen määrä yhdellä rivillä: ne vastaavat samaan kysymykseen
-       («kuinka paljon varaa perheessä on»), ja erillisinä riveinä taulukko kasvaisi
-       rivin ilman omaa sisältöä. PP:llä on yksi koko, joten väliviivaa ei tule. */
+    /* Pelkkä korkeusalue. Kokojen määrä («· 3 kokoa») oli mukana 23.9. aamupäivän
+       version ja poistettiin Ollin pyynnöstä samana päivänä: se ei ratkaise perheen
+       valintaa — alue ratkaisee — ja se teki jokaisesta solusta kaksirivisen, mikä
+       oli sarake sarakkeelta se mikä sai taulukon näyttämään rikkonaiselta.
+       PP:llä on yksi koko, joten väliviivaa ei tule. */
     korkeudet:function(perhe){
       const k=window.tuotekuva.koot(perhe);
-      const vali=k.length>1 ? k[0]+"–"+k[k.length-1]+" mm" : k[0]+" mm";
-      return vali+" · "+k.length+(k.length===1 ? " koko" : " kokoa");
+      return k.length>1 ? k[0]+"–"+k[k.length-1]+" mm" : k[0]+" mm";
     },
     /* D1 on pohjalaatan sivu, ja laatta on neliö. Se ei ole perheen vakio kaikkialla:
        AP-300:n laatta on 450 ja perheen muiden 330. Poikkeusta ei keskiarvoisteta pois
@@ -418,15 +416,13 @@ const C={
         const d=window.tuotekuva.mitat(perhe,koko).D1;
         (ryhmat[d]=ryhmat[d]||[]).push(koko);
       });
-      const nelio=d=>d+" × "+d+" mm";
       const arvot=Object.keys(ryhmat).sort((a,b)=>ryhmat[b].length-ryhmat[a].length);
-      if(arvot.length===1) return nelio(arvot[0]);
-      /* Poikkeus ilman yksikköä: «(AP-300: 450 × 450)» eikä «450 × 450 mm».
-         Millimetrit on jo sanottu solun alussa, ja sarake on 140 pikseliä. */
-      return nelio(arvot[0])+" ("+arvot.slice(1).map(function(d){
-        return ryhmat[d].map(koko=>window.tuotekuva.koodi(perhe,koko)).join(", ")+
-          ": "+d+" × "+d;
-      }).join("; ")+")";
+      /* Vain perheen yleisin mitta soluun. Poikkeus — AP-300:n laatta on 450 ja
+         perheen kahden muun koon 330 — oli solussa sulkeissa ja vei sen kolmelle
+         riville, eli yhden perheen erikoistapaus rikkoi koko sarakkeen rytmin.
+         Se on nyt taulukon alaviitteessä (C.cmp.poikkeus), jossa sille on tilaa
+         tulla sanotuksi kokonaisena. Tieto ei siis katoa, se siirtyy. */
+      return arvot[0]+" × "+arvot[0]+" mm";
     }};
   const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
   const head=(h,p)=>'<div class="head"><h2>'+E(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
@@ -468,9 +464,10 @@ const C={
           E(C.cmp.kulma)+"</th>"+
           C.cmp.rows.map(r=>"<th>"+E(r[0])+"</th>").join("")+"</tr></thead><tbody>"+
           C.cmp.perheet.map((perhe,i)=>'<tr><th scope="row">'+
-            '<span class="pf"><b>'+E(C.cmp.otsikot[i])+"</b>"+
-            '<span class="pf-im">'+RIVIKUVA[perhe]+"</span></span></th>"+
-            arvot.map((a,j)=>'<td data-lbl="'+E(C.cmp.rows[j][0])+'">'+T(a[i])+"</td>").join("")+
+            '<span class="pf"><span class="pf-im">'+RIVIKUVA[perhe]+"</span>"+
+            "<b>"+E(C.cmp.otsikot[i])+"</b></span></th>"+
+            arvot.map((a,j)=>'<td'+(C.cmp.rows[j][2]?' class="'+C.cmp.rows[j][2]+'"':"")+
+              ' data-lbl="'+E(C.cmp.rows[j][0])+'">'+T(a[i])+"</td>").join("")+
             "</tr>").join("")+"</tbody></table></div>";
       })()+
       '<p class="fine">'+E(C.cmp.note)+"</p>"+
