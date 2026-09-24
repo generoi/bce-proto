@@ -216,7 +216,11 @@ const C={
     /* Alaviitteessä ovat ne kaksi asiaa, jotka ovat tosia mutta eivät mahdu soluun
        rikkomatta sarakkeen rytmiä: AP:n poikkeava koko ja PP:n istukan mitta. */
     note:"Suositeltu enimmäiskuormitus on valmistajan oma arvo, ei mitoitusarvo. Pystykuorma epäkeskisyyksineen ja vaadittava pohjapaine ovat suunnittelijan tiedoissa. AP-300:n pohjalaatta on 450 × 450 mm, perheen kahden muun koon 330 × 330 mm. PP:n istukka on tarkoitettu 60 mm:n putkelle, eikä siihen kierretä BCE:n tarvikkeita.",
-    link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_dwg"]},
+    /* Tapahtuma on `cta_suunnittelijalle` eikä `cta_dwg` (korjattu 24.9.2026):
+       linkki vie suunnittelija-aineiston sivulle eikä lataa tiedostoa, ja
+       `mittaus-tapahtumaspec.md`:n sääntö 4 yhdisti nämä kaksi jo 23.9. — nimi
+       oli jäänyt tälle sivulle. Lataus on `lataus_dokumentti` + `muoto`. */
+    link:["Kuormakestävyydet ja mitoitusarvot","/ohjeet/suunnittelijalle/","cta_suunnittelijalle"]},
 
   /* 2 · Tuotekoodihaku. Nostettu 23.9.2026 Ollin pyynnöstä perhekorttien yläpuolelle
      ja omaksi lohkokseen: se on oikotie sille, joka tietää jo mitä hakee, eikä
