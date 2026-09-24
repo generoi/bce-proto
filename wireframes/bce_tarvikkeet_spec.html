@@ -97,8 +97,31 @@ const C={
   /* lbl.tuotekuva ("Tuotekuva") poistettiin 18.9.2026: paikassa on kuva, eikä
      paikanpitäjän tekstiä jätetä kenttään jota ei renderöidä — asiakas luki kerran
      sivulta merkintöjä, joita siellä ei ollut tarkoitus olla. */
-  parts:{lbl:{fit:"Sopii pilariin",mitta:"Kiinnitettävä mitta",ean:"EAN",size:"Valitse koko"},
-    copy:"Kopioi", copied:"Kopioitu", failed:"Kopiointi ei onnistunut",
+  parts:{lbl:{fit:"Sopii pilariin",mitta:"Kiinnitettävä mitta",ean:"EAN",
+    koodi:"Tuotekoodi",size:"Valitse koko"},
+    /* Tuotekoodi ja EAN olivat 23.9.2026 asti omana harmaana palkkinaan (`.sku`)
+       Kopioi-painikkeineen. Nyt ne ovat kenttätaulukon riveinä muiden arvojen
+       kanssa: rivillä on neljä tietoa samasta tuotteesta, eikä kahta esitystapaa
+       tarvita. **Kopioi-painike poistui Ollin pyynnöstä**, ja sen mukana
+       tapahtuma `kopioi_koodit` — se on poistettava myös
+       `../mittarit-per-sivu.md`:stä, jossa se on yhä listattuna. */
+    /* Rivin jatkolinkki, sama kuvio kuin TP-perhesivun tarvikerivillä (`.plinks`):
+       tekstilinkki nuolella, ei painiketta. Kahdeksan `.btn-1`:tä samassa näkymässä
+       rikkoisi säännön «yksi ensisijainen toiminto per näkymä» (DESIGN-SYSTEM.md
+       luku 2, kohta 3), ja rivin oma tehtävä on tunnistaa tarvike — ei myydä sitä.
+
+       **Nimi on kanoninen, ei rivikohtainen.** Sama toiminto saa saman nimen joka
+       paikassa, ja kuoren painike lukee samalla ruudulla *Suunnittele perustus*;
+       rivikohtainen «Laske tarvikkeiden määrä» olisi kaksi nimeä yhdelle
+       osoitteelle samassa näkymässä. Tarvikelupaus on lohkon 5 otsikossa
+       («Montako tarviketta tarvitset?»), jossa se on sivun oma väite eikä
+       painikkeen teksti.
+
+       Mittaus: `cta_konfiguraattori` on jo käytössä, joten uutta tapahtumanimeä ei
+       synny. `data-sijainti="tuoterivi"` erottaa rivin kärjestä ja lopetuksesta, ja
+       `data-tarvike` kertoo mistä rivistä lähdettiin — se on se ulottuvuus, jolla
+       nähdään mikä tarvike vie laskuriin. */
+    cta:"Suunnittele perustus", cta2:"Mistä ostat",
     /* Yhteiset avoimet arvot kerran, ei joka rivillä. Speksin luku 8: ristiriidat 1, 2 ja 4. */
     open:"Säätövarat korkeus- ja sivusuunnassa [TÄYTETTÄVÄ]. Pintakäsittely kuumasinkitty.",
     /* `ik` on ankkuririvin tunnistekuva: se nimike, josta ryhmän tunnistaa.
@@ -343,7 +366,8 @@ const C={
 
      Kuvapaikat ovat kanoninen .ph, eivät oma .tim: DESIGN-SYSTEM.md luku 3. */
   function rivi(it){
-    const kentta=(l,v)=>'<div class="fr"><span>'+E(l)+"</span><b>"+T(v)+"</b></div>";
+    const kentta=(l,v,c)=>'<div class="fr"><span>'+E(l)+"</span><b"+
+      (c?' class="'+c+'"':"")+">"+T(v)+"</b></div>";
     return '<article class="tcard" id="'+E(it.id)+'" data-tags="'+E(it.tags.join(" "))+'">'+
       '<div class="timcol"><span class="ph piirros">'+ASENNUSKUVA(it)+"</span></div>"+
       "<div>"+
@@ -353,14 +377,49 @@ const C={
         '<div class="frs">'+
           kentta(C.parts.lbl.mitta,it.mitta||C.parts.none)+
           kentta(C.parts.lbl.fit,it.fit)+
+          /* Tuotekoodi on `.k`-luokalla eli tasalevyisellä kirjasimella, kuten se
+             oli harmaassa palkissakin: koodi luetaan merkki merkiltä eikä sanana,
+             ja O ja 0 on erotettava toisistaan myymälän tiskillä. */
+          kentta(C.parts.lbl.koodi,it.k,"k")+
+          kentta(C.parts.lbl.ean,it.ean)+
         "</div>"+
         (it.sizes?'<div class="sizes sizes-s" role="group" aria-label="'+E(C.parts.lbl.size)+'">'+
           it.sizes.map(v=>'<button type="button" aria-pressed="false" data-koodi="'+E(v[0])+
             '"><b>'+E(v[0])+"</b><span>"+E(v[1])+"</span></button>").join("")+"</div>":"")+
-        '<div class="sku"><span class="k">'+T(it.k)+"</span>"+
-          '<span class="e">'+E(C.parts.lbl.ean)+" "+E(it.ean)+"</span>"+
-          '<button class="cp" type="button" data-event="kopioi_koodit" data-koodi="'+E(it.k)+
-          '" data-ean="'+E(it.ean)+'">'+E(C.parts.copy)+"</button></div>"+
+        /* Rivin loppu on kaksi tekstilinkkiä, sama kuvio kuin TP-perhesivun
+           tarvikerivillä (`.plinks`). Tässä oli 23.9.2026 hetken aikaa TP:n
+           ostolaatikko kokonaisuudessaan — selite ja neljä jälleenmyyjälaatikkoa
+           joka rivillä — ja se **peruttiin mitattuna**: laatikot veivät sivun
+           390 px:llä 16 017 pikseliin (32 laatikkoa × 94 px), ja ne olivat joka
+           rivillä samat linkit, koska tarvikkeilla ei ole ketjukohtaisia
+           tuotesivuja niin kuin TP-koolla on (`SPEC.dealers[].tp`). Rivin oma
+           tieto on tuotekoodi ja EAN taulukossa; jälleenmyyjät ovat kerran,
+           lohkossa 7.
+
+           Sanasto on `DESIGN-SYSTEM.md`:n luvun 2 mukainen: linkki sivulle kantaa
+           sivun nimen, eli *Mistä ostat* eikä *Osta jälleenmyyjältä* — jälkimmäinen
+           on lohkon otsikko, ei linkki.
+
+           **Ensisijainen on painike eikä tekstilinkki 24.9.2026 alkaen** (Olli:
+           *samaan tyyliin kuin tuotesivulla*). Rivi on tämän sivun tuotenäkymä
+           samalla tavalla kuin ostolaatikko on TP:n, joten sen ensisijainen
+           toiminto näyttää samalta: painike. Hierarkia on sama kuin TP:llä —
+           painike vie laskuriin, ostopaikka on sen vieressä tekstilinkkinä.
+
+           **Pieni variantti `.btn-s`, ei täysikokoinen.** Kaksi syytä, molemmat
+           mitattuja. Kortti on työpöydällä 452 px, joten ruutuun mahtuu kaksi
+           riviä; täysikokoinen brändioranssi kahdesti samassa ruudussa kuoren
+           oranssin painikkeen alla on kolme ensisijaista toimintoa yhdellä
+           silmäyksellä. Ja `.btn-s.btn-1` on jo valmiiksi `--accent-dark`
+           (bce-v4.css), koska alle 19 px:n painikkeessa valkoinen brändioranssilla
+           on 3,6:1 — sama sääntö, joka kirjoitettiin kuoren pientä painiketta
+           varten, pätee tässä sellaisenaan. */
+        '<p class="plinks"><a class="btn btn-1 btn-s" href="'+L("/konfiguraattori/")+
+          '" data-event="cta_konfiguraattori" data-sijainti="tuoterivi" data-tarvike="'+
+          E(it.k)+'">'+E(C.parts.cta)+"</a>"+
+          '<a class="more" href="'+L("/mista-ostat/")+
+          '" data-event="cta_mista_ostat" data-sijainti="tuoterivi" data-tarvike="'+
+          E(it.k)+'">'+arrow(C.parts.cta2)+"</a></p>"+
       "</div></article>";
   }
 
@@ -430,7 +489,9 @@ const C={
     '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
     "</div>","mitoita")+
 
-  /* 7 · Mistä ostat */
+  /* 7 · Mistä ostat. Neljä jälleenmyyjää on sivulla tasan täällä: tuoteriveiltä
+     ne poistettiin 24.9.2026, koska kahdeksan identtistä sarjaa oli pituutta eikä
+     tietoa. Rivit ohjaavat tänne tekstilinkillä. */
   sect(head(C.buy.h2,C.buy.ing)+
     SPECDEALERS(E,{cls:"dealers-4",sijainti:"lopetus"})+
     '<p class="mt"><a class="more" href="'+L("/mista-ostat/")+
@@ -451,34 +512,19 @@ const C={
      ryhmään, joka on aina näkyvissä. */
   const rivit=[...document.querySelectorAll(".tcard")];
 
-  /* ---- Kuittaukset ja kopiointi: sama toteutus kuin perhesivulla ---- */
+  /* ---- Kuittaus ruudunlukijalle: kokovalinta kertoo valitun koodin ---- */
   const say=document.createElement("p");
   say.className="sr";say.setAttribute("role","status");say.setAttribute("aria-live","polite");
   document.body.appendChild(say);
-  function kopioi(btn,teksti,kuittaus){
-    const vanha=btn.textContent;
-    function ok(){btn.textContent=C.parts.copied;btn.setAttribute("data-copied","true");
-      say.textContent=kuittaus;
-      setTimeout(function(){btn.textContent=vanha;btn.removeAttribute("data-copied");},2200);}
-    function fail(){btn.textContent=C.parts.failed;btn.setAttribute("data-failed","true");
-      say.textContent=C.parts.failed;
-      setTimeout(function(){btn.textContent=vanha;btn.removeAttribute("data-failed");},2600);}
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(teksti).then(ok,fail);
-    } else { fail(); }
-  }
-  [...document.querySelectorAll(".tcard .cp")].forEach(function(b){
-    b.addEventListener("click",function(){
-      kopioi(b,b.dataset.koodi+"  "+b.dataset.ean,C.parts.copied+": "+b.dataset.koodi);
-    });
-  });
-
   /* Kokovalinta vaihtaa tuotekoodin samassa lohkossa ja kuittaa sen ruudunlukijalle.
      Ei esivalintaa, ei vieritystä. */
   rivit.forEach(function(lohko){
     const napit=[...lohko.querySelectorAll(".sizes button")];
     if(!napit.length)return;
-    const k=lohko.querySelector(".sku .k"), cp=lohko.querySelector(".sku .cp");
+    /* Koodi on 23.9.2026 alkaen kenttätaulukossa (.fr b.k) eikä harmaassa
+       palkissa, ja Kopioi-painiketta ei ole — valinta kirjoittaa siis yhden
+       solun eikä kolmea kohtaa. */
+    const k=lohko.querySelector(".frs b.k");
     const perus=k.textContent;
     /* Valinta vaihtaa myös kuvan. Koot ovat samassa mittakaavassa, joten
        PAK-100×150 piirtyy matalampana kuin PAK-100×200 — valinnan vaikutus näkyy
@@ -496,11 +542,11 @@ const C={
       b.addEventListener("click",function(){
         const oli=b.getAttribute("aria-pressed")==="true";
         napit.forEach(x=>x.setAttribute("aria-pressed","false"));
-        if(oli){k.textContent=perus;cp.dataset.koodi=perus;say.textContent=perus;
+        if(oli){k.textContent=perus;say.textContent=perus;
           if(kuva)kuva.innerHTML=peruskuva;
           if(akuva)akuva.innerHTML=aperus;return;}
         b.setAttribute("aria-pressed","true");
-        k.textContent=b.dataset.koodi;cp.dataset.koodi=b.dataset.koodi;say.textContent=b.dataset.koodi;
+        k.textContent=b.dataset.koodi;say.textContent=b.dataset.koodi;
         if(kuva&&TUOTE[KOKOAVAIN(b.dataset.koodi)])kuva.innerHTML=TUOTE[KOKOAVAIN(b.dataset.koodi)];
         if(akuva&&ASENNUS[KOKOAVAIN(b.dataset.koodi)])akuva.innerHTML=ASENNUS[KOKOAVAIN(b.dataset.koodi)];
       });
