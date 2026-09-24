@@ -1409,10 +1409,7 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kirjasin oli ennen sidottu .sku-palkkiin; koodi luetaan merkki merkiltä eikä
    sanana, joten side seuraa koodia eikä sitä laatikkoa jossa se sattuu olemaan. */
 .tcard .fr b.k{font-family:ui-monospace,monospace}
-/* Ostopaikka rivin sisällä: selite ja jälleenmyyjät kenttien jälkeen. Neljä
-   saraketta kaventuu kahteen samalla kohtaa kuin muuallakin sivustolla. */
-.tcard .lbl{margin:18px 0 8px}
-.tcard .dealers{margin-bottom:4px}
+
 
 /* Suodatin piilottaa sopimattomat (17.9.), ei vaimenna niitä. Vaimennettu kortti
    on yhä 400 px korkea rivi, joka pitää ohittaa vierittämällä — sivulla on

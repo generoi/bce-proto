@@ -98,7 +98,7 @@ const C={
      paikanpitäjän tekstiä jätetä kenttään jota ei renderöidä — asiakas luki kerran
      sivulta merkintöjä, joita siellä ei ollut tarkoitus olla. */
   parts:{lbl:{fit:"Sopii pilariin",mitta:"Kiinnitettävä mitta",ean:"EAN",
-    koodi:"Tuotekoodi",size:"Valitse koko",buy:"Osta jälleenmyyjältä"},
+    koodi:"Tuotekoodi",size:"Valitse koko"},
     /* Tuotekoodi ja EAN olivat 23.9.2026 asti omana harmaana palkkinaan (`.sku`)
        Kopioi-painikkeineen. Nyt ne ovat kenttätaulukon riveinä muiden arvojen
        kanssa: rivillä on neljä tietoa samasta tuotteesta, eikä kahta esitystapaa
@@ -121,7 +121,7 @@ const C={
        synny. `data-sijainti="tuoterivi"` erottaa rivin kärjestä ja lopetuksesta, ja
        `data-tarvike` kertoo mistä rivistä lähdettiin — se on se ulottuvuus, jolla
        nähdään mikä tarvike vie laskuriin. */
-    cta:"Suunnittele perustus",
+    cta:"Suunnittele perustus", cta2:"Mistä ostat",
     /* Yhteiset avoimet arvot kerran, ei joka rivillä. Speksin luku 8: ristiriidat 1, 2 ja 4. */
     open:"Säätövarat korkeus- ja sivusuunnassa [TÄYTETTÄVÄ]. Pintakäsittely kuumasinkitty.",
     /* `ik` on ankkuririvin tunnistekuva: se nimike, josta ryhmän tunnistaa.
@@ -386,22 +386,25 @@ const C={
         (it.sizes?'<div class="sizes sizes-s" role="group" aria-label="'+E(C.parts.lbl.size)+'">'+
           it.sizes.map(v=>'<button type="button" aria-pressed="false" data-koodi="'+E(v[0])+
             '"><b>'+E(v[0])+"</b><span>"+E(v[1])+"</span></button>").join("")+"</div>":"")+
-        /* Ostopaikka rivillä, sama kuvio kuin TP-perhesivun ostolaatikossa: selite
-           `.lbl` ja sen alla jälleenmyyjät. Linkit ovat samat joka rivillä, koska
-           tarvikkeilla ei ole ketjukohtaisia tuotesivuja niin kuin TP-koolla on
-           (`SPEC.dealers[].tp`) — rivin oma tieto on tuotekoodi ja EAN taulukossa,
-           ja juuri ne myyjä tarvitsee. */
-        '<p class="lbl">'+E(C.parts.lbl.buy)+"</p>"+
-        /* Kaksi saraketta, ei neljää: rivin oikea palsta on työpöydällä noin
-           480 px, jolloin neljä laatikkoa on 120 px ja «Osta verkkokaupasta»
-           taittuu jokaisessa kahdelle riville. `.dealers-4`:n oma katkaisukohta
-           on 700 px ruudun leveydeltä eikä auta, koska ahtaus tulee palstasta
-           eikä ruudusta. Oletus `.dealers` on 1fr 1fr — mitattu 235 px, mahtuu
-           yhdelle riville. */
-        SPECDEALERS(E,{sijainti:"tuoterivi",tarvike:it.k})+
+        /* Rivin loppu on kaksi tekstilinkkiä, sama kuvio kuin TP-perhesivun
+           tarvikerivillä (`.plinks`). Tässä oli 23.9.2026 hetken aikaa TP:n
+           ostolaatikko kokonaisuudessaan — selite ja neljä jälleenmyyjälaatikkoa
+           joka rivillä — ja se **peruttiin mitattuna**: laatikot veivät sivun
+           390 px:llä 16 017 pikseliin (32 laatikkoa × 94 px), ja ne olivat joka
+           rivillä samat linkit, koska tarvikkeilla ei ole ketjukohtaisia
+           tuotesivuja niin kuin TP-koolla on (`SPEC.dealers[].tp`). Rivin oma
+           tieto on tuotekoodi ja EAN taulukossa; jälleenmyyjät ovat kerran,
+           lohkossa 7.
+
+           Sanasto on `DESIGN-SYSTEM.md`:n luvun 2 mukainen: linkki sivulle kantaa
+           sivun nimen, eli *Mistä ostat* eikä *Osta jälleenmyyjältä* — jälkimmäinen
+           on lohkon otsikko, ei linkki. */
         '<p class="plinks"><a class="more" href="'+L("/konfiguraattori/")+
           '" data-event="cta_konfiguraattori" data-sijainti="tuoterivi" data-tarvike="'+
-          E(it.k)+'">'+arrow(C.parts.cta)+"</a></p>"+
+          E(it.k)+'">'+arrow(C.parts.cta)+"</a>"+
+          '<a class="more" href="'+L("/mista-ostat/")+
+          '" data-event="cta_mista_ostat" data-sijainti="tuoterivi" data-tarvike="'+
+          E(it.k)+'">'+arrow(C.parts.cta2)+"</a></p>"+
       "</div></article>";
   }
 
@@ -471,12 +474,11 @@ const C={
     '<div class="shot">'+terassikuva.cfg(C.cfg.alt)+'</div>'+
     "</div>","mitoita")+
 
-  /* 7 · Mistä ostat. **Ei neljää logoa 23.9.2026 alkaen**: jälleenmyyjät ovat nyt
-     jokaisella tuoterivillä, ja sama neljä nimeä yhdeksännen kerran olisi toistoa
-     eikä tietoa. Lohko jää, koska sen ingressi kertoo mitä myymälään otetaan mukaan,
-     ja se ohjaa eteenpäin ostopaikkasivulle. Sama ratkaisu ja sama perustelu kuin
-     TP-perhesivulla, jossa ostolaatikko on kärjessä eikä lopussa toisteta nimiä. */
+  /* 7 · Mistä ostat. Neljä jälleenmyyjää on sivulla tasan täällä: tuoteriveiltä
+     ne poistettiin 24.9.2026, koska kahdeksan identtistä sarjaa oli pituutta eikä
+     tietoa. Rivit ohjaavat tänne tekstilinkillä. */
   sect(head(C.buy.h2,C.buy.ing)+
+    SPECDEALERS(E,{cls:"dealers-4",sijainti:"lopetus"})+
     '<p class="mt"><a class="more" href="'+L("/mista-ostat/")+
       '" data-event="cta_mista_ostat" data-sijainti="lopetus">'+arrow(C.buy.all)+"</a></p>","ostat")+
 
