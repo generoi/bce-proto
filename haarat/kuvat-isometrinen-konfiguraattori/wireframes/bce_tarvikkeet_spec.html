@@ -398,10 +398,25 @@ const C={
 
            Sanasto on `DESIGN-SYSTEM.md`:n luvun 2 mukainen: linkki sivulle kantaa
            sivun nimen, eli *Mistä ostat* eikä *Osta jälleenmyyjältä* — jälkimmäinen
-           on lohkon otsikko, ei linkki. */
-        '<p class="plinks"><a class="more" href="'+L("/konfiguraattori/")+
+           on lohkon otsikko, ei linkki.
+
+           **Ensisijainen on painike eikä tekstilinkki 24.9.2026 alkaen** (Olli:
+           *samaan tyyliin kuin tuotesivulla*). Rivi on tämän sivun tuotenäkymä
+           samalla tavalla kuin ostolaatikko on TP:n, joten sen ensisijainen
+           toiminto näyttää samalta: painike. Hierarkia on sama kuin TP:llä —
+           painike vie laskuriin, ostopaikka on sen vieressä tekstilinkkinä.
+
+           **Pieni variantti `.btn-s`, ei täysikokoinen.** Kaksi syytä, molemmat
+           mitattuja. Kortti on työpöydällä 452 px, joten ruutuun mahtuu kaksi
+           riviä; täysikokoinen brändioranssi kahdesti samassa ruudussa kuoren
+           oranssin painikkeen alla on kolme ensisijaista toimintoa yhdellä
+           silmäyksellä. Ja `.btn-s.btn-1` on jo valmiiksi `--accent-dark`
+           (bce-v4.css), koska alle 19 px:n painikkeessa valkoinen brändioranssilla
+           on 3,6:1 — sama sääntö, joka kirjoitettiin kuoren pientä painiketta
+           varten, pätee tässä sellaisenaan. */
+        '<p class="plinks"><a class="btn btn-1 btn-s" href="'+L("/konfiguraattori/")+
           '" data-event="cta_konfiguraattori" data-sijainti="tuoterivi" data-tarvike="'+
-          E(it.k)+'">'+arrow(C.parts.cta)+"</a>"+
+          E(it.k)+'">'+E(C.parts.cta)+"</a>"+
           '<a class="more" href="'+L("/mista-ostat/")+
           '" data-event="cta_mista_ostat" data-sijainti="tuoterivi" data-tarvike="'+
           E(it.k)+'">'+arrow(C.parts.cta2)+"</a></p>"+

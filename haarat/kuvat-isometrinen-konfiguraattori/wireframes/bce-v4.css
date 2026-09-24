@@ -1409,6 +1409,10 @@ select.koko{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1px 
    kirjasin oli ennen sidottu .sku-palkkiin; koodi luetaan merkki merkiltä eikä
    sanana, joten side seuraa koodia eikä sitä laatikkoa jossa se sattuu olemaan. */
 .tcard .fr b.k{font-family:ui-monospace,monospace}
+/* Rivin loppu: painike ja tekstilinkki samalla rivillä. .plinks on oletuksena
+   baseline-tasattu (TP:n kaksi tekstilinkkiä), mutta painikkeen kanssa baseline
+   nostaisi linkin painikkeen tekstin tasalle ja jättäisi sen kellumaan. */
+.tcard .plinks{align-items:center;gap:10px 20px;margin-top:18px}
 
 
 /* Suodatin piilottaa sopimattomat (17.9.), ei vaimenna niitä. Vaimennettu kortti
