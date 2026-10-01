@@ -106,30 +106,35 @@ const RIVIT = (function(){
 
 /* Näkyvät nimet. Data puhuu moottorin tunnuksia; kaavio puhuu asiakkaan kieltä. */
 const NIMI = {
-  terassi:"Terassi", katos:"Autokatos", sauna:"Pihasauna", piha:"Piharakennus",
+  terassi:"Terassi", sauna:"Pihasauna", piha:"Piharakennus",
   mokki:"Mökki", tolppa:"Tolppa tai pylväs",
   TP:"TP-pilari", KP:"KP-pilari", PP:"PP-pilari", AP:"AP-pilari",
   nakyva:"Näkyvä kiinnike", piilo:"Piilotettu kiinnike",
   palkki:"Palkki satulaan", tasainen:"Tasainen alusta",
-  "90-140":"Tolppa 90–140 mm", yli140:"Tolppa yli 140 mm", eos:"En tiedä vielä",
-  korkeus:"Maasto yli 60 cm", area:"Pinta-ala yli rajan",
-  kuorma:"Kuorma yli kapasiteetin", mokki_savi:"Ympärivuotinen mökki + savi",
-  alle20:"Alle 20 cm", "20-40":"20–40 cm", "40-60":"40–60 cm", yli60:"Yli 60 cm",
-  kantava:"Kantava", pehmea:"Pehmeä tai routiva",
+  eos:"En tiedä vielä",
+  area:"Pinta-ala yli rajan", kuorma:"Kuorma yli kapasiteetin",
   kyllä:"Katos tai lasitus", ei:"Ei katosta", kesa:"Kesäkäyttö", ympari:"Ympärivuotinen",
-  pieni:"Pieni", keski:"Keskikokoinen", iso:"Iso",
-  "48":"48 mm", "96":"96 mm", "48x123":"48 × 123", "48x148":"48 × 148", "48x198":"48 × 198",
+  /* Terassin muodot laskurin omilla nimillä (k8.*), lyhennettyinä. */
+  vapaa:"Vapaasti seisova", seina:"Seinää vasten", nurkka:"L nurkan ympäri",
+  "l-vapaa":"L vapaasti seisova", "l-seina":"L seinää vasten",
+  "itse 3.5":"Määritä itse 3,5 kN/m²", "itse 10":"Määritä itse 10 kN/m²",
+  "48":"48 mm", "96":"96 mm", "98":"98 mm",
+  "48x123":"48 × 123", "48x148":"48 × 148", "48x198":"48 × 198",
   "PIK-50-70":"PIK 50–70", "PIK-90-140":"PIK 90–140", "P-PIK-50x70":"P-PIK 50×70",
   "TL-100x100":"TL 100×100", "TL-150x150":"TL 150×150", "TL-100x175":"TL 100×175",
   "PAK-100x150":"PAK 100×150", "PAK-100x200":"PAK 100×200", NOSTOKORVA:"Nostokorva"
 };
 const nimi = k => NIMI[k] !== undefined ? NIMI[k] : String(k);
+/* Kysymykset laskurin polun järjestyksessä: rakennus → lisäkysymys → muoto →
+   liitos → palkki → paksuus → paino → mitat. Numeroita ei ole, koska laskurikaan
+   ei enää numeroi ruutuja: polun pituus riippuu rakennuksesta (terassilla 8,
+   muilla 6, tolpalla 2), joten sama numero tarkoittaisi eri kysymystä.
+   BCE 1.10.2026: maasto, maapohja ja autokatoksen tolppakoko poistuivat. */
 const KYSYMYS = {
-  rakennus:"K1 Mitä rakennat", koko:"K2 Rakennuksen koko", katos:"K2 Katos tai lasitus",
-  lammitys:"K2 Ympärivuotinen käyttö", tolppia:"K2 Tolppien määrä",
-  maasto:"K3 Maaston korkeusero", maapohja:"K4 Maapohja",
-  palkki:"K5 Palkin koko", kiinnitys:"K5 Mitä pilarin päälle tulee", paksuus:"K6 Palkin paksuus",
-  massa:"K7 Rakenteen paino"
+  rakennus:"K1 Mitä rakennat", katos:"Lisäkysymys: katos tai lasitus",
+  lammitys:"Lisäkysymys: ympärivuotinen käyttö", muoto:"Terassin muoto",
+  kiinnitys:"Mitä pilarin päälle tulee", palkki:"Palkin koko", paksuus:"Palkin paksuus",
+  massa:"Rakenteen paino", koko:"Koko", tolppia:"Tolppien määrä"
 };
 const KYSYMYKSET = Object.keys(KYSYMYS);
 
@@ -188,10 +193,11 @@ const otsake = (x, y, s, ankkuri) => teksti(x, y, String(s).toUpperCase(),
    ========================================================================== */
 function kaavioPortit(){
   const jono = (P.estejono || []).filter(e => TULOSKPL.has("!" + e.koodi));
-  /* Tolppa ei käy porteilla lainkaan: siltä ei kysytä maastoa eikä maapohjaa.
-     Se luetaan datasta eikä oleteta — jos tolpalta joskus kysytään maasto,
-     tämä haara katoaa itsestään. */
-  const ohi = RIVIT.filter(r => r.maasto == null);
+  /* Tolppa ei käy porteilla lainkaan: siltä ei kysytä mittoja vaan tolppamäärä,
+     eikä moottori laske sille alaa eikä kuormaa. Se luetaan datasta eikä
+     oleteta — rivi, jolla on tolppamäärä, on tolpan polku. Jos tolpalta joskus
+     kysytään mitat, tolppamäärä katoaa riviltä ja tämä haara itsestään. */
+  const ohi = RIVIT.filter(r => r.tolppia != null);
   const ohiTulos = [...new Set(ohi.map(tulos))];
 
   const RIVIK = 92, MARG = 28, TRUNK = 250, HAARA = 700, LOPPU = 1108;
@@ -224,7 +230,7 @@ function kaavioPortit(){
       '" fill="none" stroke="var(--pp-tuote)" stroke-width="4"/>');
     o.push('<circle cx="' + HAARA + '" cy="' + y + '" r="5" fill="var(--pp-tuote)"/>');
     o.push(teksti(MARG, y + 1, "Tolppa tai pylväs", { koko:16, paino:600 }));
-    o.push(teksti(MARG, y + 19, "ei käy porteilla: maastoa ei kysytä",
+    o.push(teksti(MARG, y + 19, "ei portteja: vain tolppamäärä",
       { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
     o.push(teksti(HAARA + 14, y + 5, ohiTulos.map(tulosNimi).join(" · ") + ", " + luku(ohi.length) + " polkua",
       { koko:14, vari:"var(--pp-tuote-4)" }));
@@ -486,7 +492,7 @@ function kaavioTarvikkeet(){
   kork += 20;
   const o = [svgAlku(kork, "Mistä tarvike tulee: kiinnitysvastaus ja palkin koko")];
 
-  o.push(otsake(MARG, MARG + 10, "K5 · K6 vastaus"));
+  o.push(otsake(MARG, MARG + 10, "Liitos · paksuus tai palkki"));
   o.push(otsake(KOHDE, MARG + 10, "Tarvike, jonka laskuri ehdottaa"));
 
   let y = MARG + 40;
@@ -525,11 +531,11 @@ function kaavioTarvikkeet(){
 
 /* ==========================================================================
    5 · Missä pinta-alaraja kulkee
-   Lukusuora per rakennus + maasto. Väri kertoo kumpaa lajia lopputulos on,
+   Lukusuora per rakennus + lisävalinta + muoto. Väri kertoo kumpaa lajia lopputulos on,
    ei mitä tuotetta: yhdellä suoralla on korkeintaan kaksi merkitystä.
    ========================================================================== */
 function kaavioRajat(){
-  /* Sama raja toistuu yleensä kaikilla maastoluokilla ja usein monella
+  /* Sama raja toistuu yleensä kaikilla lisävalinnoilla ja usein monella
      rakennuksella. Rivit, joilla on täsmälleen sama rajakuvio, yhdistetään
      yhdeksi: viisitoista lähes identtistä palkkia ei kerro enempää kuin kolme,
      ja toisto peittää sen ainoan rivin, joka on erilainen. */
@@ -539,19 +545,26 @@ function kaavioRajat(){
     if (!yhdistetyt.has(avain)) yhdistetyt.set(avain, { nimet:[], rajat:r.rajat });
     yhdistetyt.get(avain).nimet.push(r.nimi);
   });
-  /* Nimi on muotoa "rakennus [· lisävalinta] · maasto" (paatospuu.js kokoaa sen
-     siinä järjestyksessä). Yhdistetyn rivin otsikoksi tulevat rakennukset, ja
-     alariville se mikä niitä erottaa — maastoluokka tai lisävalinta. */
-  const MAASTOT = ["alle20", "20-40", "40-60", "yli60"];
+  /* Nimi on muotoa "rakennus [· lisävalinta] [· muoto]" (paatospuu.js kokoaa sen
+     siinä järjestyksessä; muoto vain terassilla). Yhdistetyn rivin otsikoksi
+     tulevat rakennukset, ja alariville se mikä niitä erottaa — lisävalinta tai
+     muoto. Muodot tunnistetaan nimestä eikä paikasta, koska lisävalinta voi
+     puuttua välistä. */
+  const MUODOT = ["vapaa", "seina", "nurkka", "l-vapaa", "l-seina"];
   const rajat = [...yhdistetyt.values()].map(y => {
     const osat = y.nimet.map(n => n.split(" · "));
     const rakennukset = [...new Set(osat.map(o => o[0]))];
-    const maastot = [...new Set(osat.map(o => o[o.length - 1]))];
-    const lisat = [...new Set([].concat.apply([], osat.map(o => o.slice(1, -1))))];
+    const loput = [].concat.apply([], osat.map(o => o.slice(1)));
+    const muodot = [...new Set(loput.filter(x => MUODOT.includes(x)))];
+    const lisat = [...new Set(loput.filter(x => !MUODOT.includes(x)))];
     const ehdot = [];
-    if (maastot.length >= MAASTOT.length) ehdot.push("kaikki maastot");
-    else ehdot.push("maasto " + maastot.map(nimi).join(" tai ").toLowerCase());
-    if (lisat.length) ehdot.push(lisat.map(nimi).join(" ja "));
+    /* Kaksi lisävalintaa samalla rivillä tarkoittaa, ettei vastaus siirrä rajaa.
+       Niiden luettelo ("Kesäkäyttö ja Ympärivuotinen") luki kuin se koskisi
+       jokaista rivin rakennusta, vaikka lisävalinta on vain mökillä tai terassilla. */
+    if (lisat.length > 1) ehdot.push("lisävalinta ei siirrä rajaa");
+    else if (lisat.length) ehdot.push(nimi(lisat[0]));
+    if (muodot.length >= MUODOT.length) ehdot.push("kaikki muodot");
+    else if (muodot.length) ehdot.push(muodot.map(nimi).join(" tai "));
     return {
       nimi: rakennukset.map(nimi).join(", "),
       lisa: ehdot.join(" · "),
@@ -566,7 +579,7 @@ function kaavioRajat(){
   const kork = MARG + 60 + rajat.length * RIVIK + 40;
   const o = [svgAlku(kork, "Missä pinta-ala vaihtaa lopputuloksen")];
 
-  o.push(otsake(MARG, MARG + 10, "Rakennus ja maasto"));
+  o.push(otsake(MARG, MARG + 10, "Rakennus ja muoto"));
   o.push(otsake(X0, MARG + 10, "Pinta-ala, m²"));
   /* Asteikko. Viivat ovat taustaa, joten ne ovat hiusviivaa eivätkä kilpaile. */
   for (let a = 0; a <= maxAla; a += 10){
@@ -628,7 +641,7 @@ const vertailematta = P.esteetVertailematta || [];
    sääntötaulukossa on null, jota tämä sivu ei näe. */
 const rajaRakennukset = new Set((P.rajat || []).map(r => r.nimi.split(" · ")[0]));
 const eiRajaa = [...new Set(RIVIT.map(r => r.rakennus))]
-  .filter(b => !rajaRakennukset.has(b) && RIVIT.some(r => r.rakennus === b && r.maasto != null));
+  .filter(b => !rajaRakennukset.has(b) && RIVIT.some(r => r.rakennus === b && r.tolppia == null));
 
 const lehtiRivi = l => {
   const L = l.lehti;
@@ -671,7 +684,7 @@ document.getElementById("main").innerHTML =
 
  lohko("Portit järjestyksessä",
    "Kieltäytymiset eivät ole joukko vaan jono. Kun kaksi ehtoa pätee yhtä aikaa, asiakas näkee vain ensimmäisen — " +
-   "eli sama tontti voi olla “liian jyrkkä” tai “liian iso” sen mukaan, kumpi portti on edellä. Järjestys on kysytty moottorilta ajamalla tila, jossa molemmat ehdot pätevät; sitä ei ole luettu säännöistä." +
+   "eli sama rakennus voi olla “liian iso” tai “liian raskas” sen mukaan, kumpi portti on edellä. Järjestys on kysytty moottorilta ajamalla tila, jossa molemmat ehdot pätevät; sitä ei ole luettu säännöistä." +
    (vertailematta.length
      ? " " + (vertailematta.length === 1 ? "Yhtä paria" : vertailematta.length + " paria") +
        " ei voi asettaa järjestykseen, koska ehdot koskevat eri rakennusta tai samaa vastausta: " +
@@ -704,7 +717,7 @@ document.getElementById("main").innerHTML =
    '<div class="pp-loydos"><h3>Kaksi erillistä päätöstä, ei yhtä puuta</h3><p>' +
    "Yksikään kysymys ei vaihda molempia: " + eiVaikutaPerheeseen.length +
    " kysymystä ei vaihda pilariperhettä kertaakaan ja " + eiVaikutaTarvikkeeseen.length +
-   " ei vaihda tarviketta. Pilari valitaan tontista ja koosta, tarvike siitä mitä pilarin päälle tulee — " +
+   " ei vaihda tarviketta. Pilari valitaan rakennuksesta, koosta ja painosta, tarvike siitä mitä pilarin päälle tulee — " +
    "ne ovat kaksi erillistä päätöstä, jotka sattuvat kulkemaan samassa lomakkeessa. " +
    "Siksi niitä ei kannata piirtää samaan puuhun: se oli vanhan kaavion virhe, ei lukijan.</p></div>") +
 
