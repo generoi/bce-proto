@@ -629,6 +629,27 @@
        muutenkin samassa vaiheessa, joten niillä ei ollut eri viivettäkään. */
     S.palkit.forEach(function (p, i) {
       kerros(A.nostoKenka, i * o.porras, function () {
+        /* Palkki on kenkien urassa, ei niiden takana eikä edessä. Kengän oma
+           piirto tietää, mihin kohtaan puu kuuluu (`puu`-koukku etu- ja
+           takalevyn välissä), mutta yksi palkki kulkee usean kengän läpi.
+           Siksi jokainen kenkä piirretään erikseen ja katkaistaan koukun
+           kohdalta: ensin kaikkien kenkien takaosat (kierre, mutteri,
+           pohjalevy, takalevy), sitten palkki, sitten etulevyt. Ennen tätä
+           koko kenkä piirtyi palkin päälle, ja takalevy peitti palkin kyljen —
+           palkki näytti olevan kengän vieressä eikä sen sisällä. */
+        var takaosat = [], etulevyt = [];
+        S.solmut.forEach(function (q) {
+          if (Math.abs(q[0] - p.x) > 1) return;
+          var t = paikka(q[0], q[1], A.kenkaZ), pala = [], raja = null;
+          window.tarvikekuva.piirra(pala, {
+            osa: o.kenka, K: K, ox: t.ox, oy: t.oy, hid: hV, viiva: viiva,
+            puu: function () { raja = pala.length; }
+          });
+          if (raja == null) raja = pala.length;
+          takaosat.push.apply(takaosat, pala.slice(0, raja));
+          etulevyt.push.apply(etulevyt, pala.slice(raja));
+        });
+        out.push.apply(out, takaosat);
         window.palkkikuva.piirra(out, {
           koko: o.palkki, akselit: "yxz",
           siirto: [p.x, o.pituus / 2, A.palkkiZ], pituus: p.pituus,
@@ -637,15 +658,7 @@
           syyt: o.syyt !== false, oksat: o.oksat !== false,
           rakeisuus: o.rakeisuus !== false, merkinta: false
         });
-        /* Saman sarakkeen kengät, takaa eteen. Etulevy on palkin edessä, ks.
-           tarvikekuva.js:n uran geometria. */
-        S.solmut.forEach(function (q) {
-          if (Math.abs(q[0] - p.x) > 1) return;
-          var t = paikka(q[0], q[1], A.kenkaZ);
-          window.tarvikekuva.piirra(out, {
-            osa: o.kenka, K: K, ox: t.ox, oy: t.oy, hid: hV, viiva: viiva
-          });
-        });
+        out.push.apply(out, etulevyt);
       });
     });
 
