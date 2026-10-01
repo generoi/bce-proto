@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuotekuvat — BCE Pilarimaailma, wireframet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="mittakaavio.js"></script>
+<script src="tuotekuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="palkkikuva.js"></script>
+<script src="tarvikekuva.js"></script>
+<script src="yhdistelmakuva.js"></script>
+<script src="terassikuva.js"></script>
+<style>
+/* Katalogin oma kehys, kuten bce_design_system.html:ssä: nämä kuvaavat kuvia,
+   eivätkä ole sivuston komponentteja. Taustat ovat sivun lämmintä paperia —
+   kuva on läpinäkyvä, joten valkoinen levy sen alla olisi väärä lupaus siitä,
+   miltä kuva näyttää sivulla. */
+.tk-note{background:var(--dark);color:#fff;font-size:14px}
+.tk-note .w{padding-top:10px;padding-bottom:10px;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.tk-note b{font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em}
+.tk-note a{color:#e9e7e5}
+.tk-toc{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;font-weight:600;margin:0;padding:0;list-style:none}
+.tk-toc a{text-decoration:none;border-bottom:2px solid var(--rule-2);padding:10px 0}
+
+/* Säätörivi. Kuvassa on neljä valintaa, joista jokainen on esitettävä
+   asiakkaalle erikseen: varjo, rakeisuus, kaiverrus ja mittakaavan kiinteys. */
+.tk-ctl{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:15px;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 0;margin-bottom:var(--s7)}
+.tk-ctl label{display:inline-flex;align-items:center;gap:8px;min-height:var(--tap)}
+.tk-ctl input{width:18px;height:18px;accent-color:var(--accent-dark)}
+
+.tk-perhe{padding:var(--s7) 0;border-top:1px solid var(--rule)}
+.tk-perhe:first-of-type{border-top:0;padding-top:0}
+.tk-otsikko{display:grid;grid-template-columns:minmax(0,22ch) minmax(0,1fr);gap:8px 40px;align-items:start;margin-bottom:var(--s5)}
+.tk-otsikko h3{font-size:var(--fs-lede)}
+.tk-otsikko p{font-size:var(--fs-small);color:var(--ink-2);margin:0}
+.tk-otsikko dl{margin:var(--s3) 0 0;font-size:var(--fs-fine);color:var(--ink-3);
+  display:grid;grid-template-columns:auto auto;gap:2px 10px;justify-content:start}
+.tk-otsikko dt{font-weight:600}
+.tk-otsikko dd{margin:0}
+
+.tk-rivi{overflow-x:auto;padding-bottom:var(--s2)}
+.tk-rivi svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.tk-yhdessa{display:flex;align-items:flex-end;justify-content:center;gap:var(--s5)}
+.tk-yhdessa>div{text-align:center}
+.tk-yhdessa b{display:block;font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em;margin-top:var(--s2)}
+
+.tk-ruudukko{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:var(--s5) var(--s4);margin-top:var(--s6)}
+.tk-kortti{display:flex;flex-direction:column;align-items:center;gap:var(--s2);text-align:center}
+.tk-kortti svg{display:block;max-width:100%;height:auto}
+.tk-kortti b{font-family:var(--ff-d);text-transform:uppercase;font-size:16px;letter-spacing:.03em}
+.tk-kortti span{font-size:var(--fs-fine);color:var(--ink-3)}
+.tk-metalli{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));align-items:end}
+.tk-metalli .tk-kortti b{font-size:15px}
+
+.tk-iso{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s7);align-items:center}
+.tk-iso svg{display:block;max-width:100%;height:auto;margin:0 auto}
+.tk-iso h3{margin-bottom:var(--s3)}
+.tk-avoin{border-left:3px solid var(--accent);padding-left:var(--s4);margin-top:var(--s5)}
+.tk-avoin p{font-size:var(--fs-small);color:var(--ink-2);margin:0 0 .6em}
+.tk-avoin p:last-child{margin-bottom:0}
+code{font-family:ui-monospace,monospace;font-size:13px;background:var(--paper-2);padding:1px 6px;border-radius:2px}
+/* Palkkiosio. Sama kehys kuin pilareilla; lisänä pienen koon rivi, koska
+   palkkikuvan varsinainen käyttöpaikka on laskurin optiokortti eikä katalogi. */
+.tk-pieni{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s5)}
+/* Ikonirivi: sama ikoni kolmessa koossa ja tummalla, koska ikonin ainoa
+   kysymys on luetaanko se — ja se ratkeaa vasta pienimmässä koossa. */
+.tk-ikonit{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--s5) var(--s4)}
+.tk-ikonit figure{margin:0;display:flex;flex-direction:column;gap:var(--s2)}
+.tk-ikonit .koot{display:flex;align-items:flex-end;gap:var(--s4);min-height:76px;color:var(--ink)}
+.tk-ikonit .tumma{background:var(--dark);color:#fff;border-radius:var(--r-ctl);
+  padding:8px 12px;display:inline-flex;gap:12px;align-items:center;align-self:flex-start}
+.tk-ikonit b{font-family:var(--ff-d);text-transform:uppercase;font-size:15px;letter-spacing:.03em}
+.tk-ikonit span{font-size:var(--fs-fine);color:var(--ink-3)}
+.tk-optio{display:flex;align-items:center;gap:var(--s3);border:1px solid var(--rule-2);
+  border-radius:var(--r-card);padding:var(--s3) var(--s4);min-height:var(--tap);
+  background:var(--surface,#fdfcfa)}   /* sama kuin laskurin .opt, ei kova valkoinen */
+.tk-optio svg{display:block;flex:none}
+.tk-optio b{display:block;font-size:var(--fs-body);font-weight:600}
+.tk-optio span{display:block;font-size:var(--fs-small);color:var(--ink-2)}
+@media(max-width:820px){.tk-otsikko,.tk-iso{grid-template-columns:1fr}.tk-iso{gap:var(--s5)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="tk-note"><div class="w"><b>Tuotekuvat, wireframe-taso</b><span>Piirtäminen on <code style="color:#fff">tuotekuva.js</code>:ssä ja mitat <a href="mittakaavio.js">mittakaavio.js</a>:ssä — yksi lähde kummallekin. Vienti tiedostoiksi: <code style="color:#fff">python3 docs/kuvat/tuotekuva.py TP</code>. Kuvien vieminen sivuille: <a href="TUOTEKUVAT.md">TUOTEKUVAT.md</a></span></div></div>
+<main id="main"></main>
+<script>
+const E=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* Perhekohtainen saateteksti. Luvut ovat nykysivuston tuotekorteista 18.9.2026;
+   kuormat A-601:stä (Kronqvist 8.4.2026). Teksti kertoo sen mitä kuva ei voi
+   kertoa — kuva kertoo muodon. */
+const PERHEET=[
+ {p:"AP", n:"AP-pilari", t:"Keveämpiin rakennuksiin",
+  s:"Matalin perhe ja ainoa, jonka mitat vaihtelevat koon mukaan: AP-300:lla on 450 mm:n laatta, AP-200:lla ja AP-400:lla 330 mm:n. Kuvassa se näkyy siitä, että keskimmäinen pilari on leveäjalkaisin.",
+  d:[["Laatta","330 × 330 mm, AP-300 450 × 450"],["Paino","19–27 kg"],["Kuorma","10 kN"],["Pää","M20"]]},
+ {p:"TP", n:"TP-pilari", t:"Terassit, pienmökit ja saunat",
+  s:"Viisi korkeutta samalla 450 mm:n laatalla ja samalla rungolla. Perheen sisällä muuttuu vain korkeus, ja kuvarivi on tehty näyttämään juuri se.",
+  d:[["Laatta","450 × 450 mm"],["Paino","43–67 kg"],["Kuorma","30 kN"],["Pää","M20"]]},
+ {p:"KP", n:"KP-pilari", t:"Suurempaa kantavuutta vaativiin perustuksiin",
+  s:"Seitsemän korkeutta, 600 mm:n laatta ja selvästi paksumpi laattareuna (H2 120 mm). KP-1000 on kuvassa yli kaksi kertaa TP-400:n korkuinen — sama mittakaava kaikissa kuvissa tekee vertailun mahdolliseksi.",
+  d:[["Laatta","600 × 600 mm"],["Paino","126–187 kg"],["Kuorma","70 kN"],["Pää","M20"]]},
+ {p:"PP", n:"PP-pilari", t:"Vakaa jalusta erilaisille pylväille",
+  s:"Yksi koko ja eri tuote kuin muut kolme: pään M20-kierteen sijaan 83 mm:n istukka 60 mm:n putkelle, ja rungon kyljessä kaapeliaukot. Kumpikin näkyy kuvassa, koska kumpikin on se asia, josta PP:n tunnistaa.",
+  d:[["Laatta","450 × 450 mm"],["Paino","78 kg"],["Pää","istukka ⌀83, U 387 mm"],["Mukana","kiristysrengas 82 mm"]]}
+];
+
+const A={varjo:true,rakeisuus:true,merkinta:true,kiintea:true,animaatio:true};
+
+function perheLohko(o){
+  const koot=tuotekuva.koot(o.p);
+  return '<div class="tk-perhe" id="'+o.p.toLowerCase()+'">'+
+   '<div class="tk-otsikko"><div><h3>'+E(o.n)+'</h3><dl>'+
+     o.d.map(r=>"<dt>"+E(r[0])+"</dt><dd>"+E(r[1])+"</dd>").join("")+
+   '</dl></div><div><p><strong>'+E(o.t)+'</strong></p><p>'+E(o.s)+'</p></div></div>'+
+   '<div class="tk-rivi" data-perhe="'+o.p+'"></div>'+
+   '<div class="tk-ruudukko">'+koot.map(k=>
+     '<figure class="tk-kortti" data-perhe="'+o.p+'" data-koko="'+k+'" style="margin:0">'+
+     '<b>'+E(tuotekuva.koodi(o.p,k))+'</b><span>H1 '+k+' mm</span></figure>').join("")+
+   '</div></div>';
+}
+
+document.getElementById("main").innerHTML=
+ '<div class="w"><section style="padding-bottom:20px"><h1>Tuotekuvat</h1>'+
+ '<p class="lede" style="font-size:var(--fs-lede);color:var(--ink-2);max-width:62ch">Jokaisesta pilarista sama kuva samasta kulmasta: vinosti ylhäältä, niin että yläpinta, jalkaviiste ja kapeneva runko näkyvät yhtä aikaa. Kuva ei mitoita mitään — sen tehtävä on jättää muistijälki tuotteen muodosta. Mitoitus on <a href="mittakaavio.js">mittakaaviossa</a>.</p>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-3);max-width:62ch">Projektio on aksonometrinen: pystymitat 1:1, vaakamitat kahdella vakiokertoimella. Siksi saman perheen koot ovat keskenään vertailukelpoisia eikä mikään koko näytä todellista suuremmalta. Kuvat ovat läpinäkyviä, joten ne istuvat sille taustalle jolle ne asetetaan.</p>'+
+ '<ul class="tk-toc">'+PERHEET.map(o=>'<li><a href="#'+o.p.toLowerCase()+'">'+E(o.n)+'</a></li>').join("")+
+ '<li><a href="#vertailu">Perheet rinnakkain</a></li><li><a href="#palkit">Palkkikoot</a></li><li><a href="#terassi">Terassi kokonaisuutena</a></li><li><a href="#avoimet">Avoimet kysymykset</a></li></ul>'+
+ '</section></div>'+
+ '<div class="w"><section>'+
+ '<div class="tk-ctl">'+
+   '<label><input type="checkbox" id="c-varjo" checked> Varjo</label>'+
+   '<label><input type="checkbox" id="c-rakeisuus" checked> Betonin rakeisuus</label>'+
+   '<label><input type="checkbox" id="c-merkinta" checked> Kaiverrettu tuotekoodi</label>'+
+   '<label><input type="checkbox" id="c-kiintea" checked> Sama mittakaava perheen sisällä</label>'+
+   '<label><input type="checkbox" id="c-animaatio" checked> Terassin kerrokset laskeutuvat</label>'+
+ '</div>'+
+ PERHEET.map(perheLohko).join("")+
+ '</section></div>'+
+ '<div class="w"><section id="vertailu"><div class="head"><h2>Perheet rinnakkain</h2>'+
+ '<p>Yksi kuva, sama mittakaava, neljä perhettä suurimmassa koossaan. Tämä on se kuva, joka vastaa kysymykseen «mitä eroa niillä on» ennen kuin kukaan avaa taulukkoa.</p></div>'+
+ '<div class="tk-rivi tk-yhdessa" id="kaikki"></div></section></div>'+
+ '<div class="w"><section id="palkit"><div class="head"><h2>Palkkikoot</h2>'+
+ '<p>Sama kamera, eri tuote: laskuri kysyy palkin koon kolmena lukuparina, eikä lukupari kerro kenellekään miltä 48 × 198 näyttää 48 × 123:n rinnalla. Kuvat vastaavat siihen. Piirtäminen on <code>palkkikuva.js</code>:ssä, ja mitat ovat kokotunnuksessa — «48x148» on mitat, joten toista kopiota luvuista ei ole.</p></div>'+
+ '<div class="tk-rivi" id="palkkirivi"></div>'+
+ '<div class="tk-ruudukko" id="palkkikortit"></div>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-2);max-width:62ch;margin-top:var(--s6)">Varsinainen käyttöpaikka on laskurin valintakortti, ja siellä kuva on pieni. Näin se lukee 64 pikselissä — muoto ja korkeusero erottuvat, syykuvio ei, ja se riittää.</p>'+
+ '<div class="tk-pieni" id="palkkioptiot"></div>'+
+ '</section></div>'+
+ '<div class="w"><section id="tarvikkeet"><div class="head"><h2>Tarvikkeet</h2>'+ '<p>Kymmenen nimikettä, sama kamera kuin pilareilla. Materiaali on eri, ja siksi valo on eri: betoni luetaan pehmeistä sävyeroista, kuumasinkitty teräs kovista heijastuksista. Sävy tulee pinnan normaalista neljänä portaana, joten ohutlevyn jokainen taite erottuu ilman että sitä piirretään erikseen.</p>'+ '<p style="font-size:var(--fs-small);color:var(--ink-3)">Kaikki kymmenen ovat samassa mittakaavassa keskenään. PAK-100×200 on kuvassa kaksi kertaa PIK 50-70:n korkuinen, koska se on sitä.</p></div>'+ '<div class="tk-ruudukko tk-metalli" id="tarvikerivi"></div></section></div>'+ '<div class="w"><section id="yhdistelmat"><div class="head"><h2>Tarvike ja puu samassa kuvassa</h2>'+
+ '<p>Erillinen tarvikekuva kertoo miltä osa näyttää. Se ei kerro sitä, mikä asiakkaan kysymys oikeasti on: miten päin puu menee siihen kiinni. Puu on kengän <em>sisällä</em>, joten piirtojärjestys ratkaisee — <code>tarvikekuva.js</code> kutsuu koukkua siinä kohtaa, johon puu kuuluu, eikä puuta voi piirtää tarvikkeen päälle.</p></div>'+
+ '<div class="tk-ruudukko" id="yhdistelmakuvat"></div>'+
+ '</section></div>'+
+ '<div class="w"><section id="terassi"><div class="head"><h2>Terassi kokonaisuutena</h2>'+
+ '<p>Kaikki neljä generaattoria samassa näkymässä: pilari, pilarikenkä, palkki ja terassilauta. Kuva ei piirrä yhtään tuotetta uudelleen — se vain asettaa olemassa olevat kappaleet paikoilleen, ja siksi tuotekuvaston korjaus näkyy täällä ilman erillistä työtä. Pilariruudukko on laskurin oma sääntö: 4 × 3 m ja 48 × 148 antaa 12 pilaria.</p>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-3);max-width:62ch">Kerrosten laskeutuminen on yksi <code>translateY</code> per kappale, ei uudelleenpiirto: ruutupiste on <code>y = (X + Y)·CY − Z</code>, joten kappaleen laskeminen maailmassa on täsmälleen pystysuora siirto ruudulla. Pysähdyskuva on siksi geometrisesti sama kuin <code>rajahdys:0</code>, ei likiarvo siitä. <code>prefers-reduced-motion</code> pysäyttää liikkeen räjäytettyyn asentoon.</p>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-3);max-width:62ch">Räjäytysväli 2400 mm ei ole makuasia: pohjan oma kuvakorkeus on noin 2900 mm, ja sitä pienemmällä välillä ylempi kerros laskeutuu alemman päälle ruudulla vaikka ne ovat maailmassa erillään. Täyteen erilleen ei pääse, koska rakenne on leveä ja matala.</p></div>'+
+ '<div class="tk-rivi" id="terassikuva"></div>'+
+ '<div class="tk-rivi" id="terassikoottu" style="margin-top:var(--s6)"></div>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-2);max-width:62ch;margin-top:var(--s5)">Koottuna näkyy se, mikä räjäytyskuvasta ei näy: TP-400 nostaa terassin noin 55 cm maanpinnasta — mutta vain jos pilari seisoo maan päällä. A-601 olettaa 500 mm täyttöä pohjalaatan päällä, jolloin 400 mm:n pilarista ei jäisi näkyviin mitään. Kuva näyttää kokoonpanojärjestyksen, ei asennussyvyyttä.</p>'+
+ '</section></div>'+
+ '<div class="w"><section id="ikonit"><div class="head"><h2>Ikonit</h2>'+
+ '<p>Eri tehtävä kuin tuotekuvalla, ja siksi eri piirtotapa. Tuotekuva jättää muistijäljen muodosta 200 pikselissä; ikoni erottaa neljä ryhmää toisistaan 24 pikselissä. Kolmiulotteinen kuva ei tee sitä — mitattuna kahdeksan ikonia tuotekuvina olisi noin 82 kB merkkausta ja 68 kB generaattoria joka sivulle, eikä se lue siinä koossa. Siluetti on 250–410 tavua ja seuraa tekstin väriä.</p>'+
+ '<p style="font-size:var(--fs-small);color:var(--ink-3)">Mittasuhteet luetaan osan omista mitoista, paksuudet ruudukosta: 3 mm:n ohutlevy olisi 24 pikselissä 0,7 px eli näkymätön. Ikoni ei ole mitta. Reiät ovat aitoja aukkoja (<code>fill-rule evenodd</code>), joten ikoni toimii myös tummalla pohjalla.</p></div>'+
+ '<div class="tk-ikonit" id="ikonirivi"></div>'+
+ '</section></div>'+
+ '<div class="w"><section id="avoimet"><div class="head"><h2>Avoimet kysymykset</h2>'+
+ '<p>Kuva väittää enemmän kuin mittataulukko, koska se näyttää muodon kokonaan. Kolme kohtaa on tulkintaa, ja ne on varmistettava BCE:ltä ennen kuin kuvia käytetään myyntimateriaalina.</p></div>'+
+ '<div class="tk-avoin">'+
+ '<p><strong>W — rungon leveys viisteen yläpäässä.</strong> Ei ole missään lähteessä. Luettu tuotekuvista, ja sama luku on jo <code>mittakaavio.js</code>:n <code>PERHEET</code>-taulukossa. Korjaus on yksi luku, ja se muuttaa sekä mittakaavion että tuotekuvan.</p>'+
+ '<p><strong>Valuankkurin näkyvä teräsosa.</strong> <code>B1</code> kertoo kierteen (M20) muttei holkin halkaisijaa. Piirretty tuotekuvan mukaan, samankokoisena kaikissa perheissä — sama osa on sama osa, joten se näyttää KP-1000:ssa pieneltä ja AP-200:ssa isolta.</p>'+
+ '<p><strong>Palkin pituus, kyllästysväri ja syykuvio.</strong> Piirretty pala on 480 mm eikä tuotteen pituus: se on sama kaikissa kolmessa kuvassa, jotta ainoa ero on poikkileikkaus. Kyllästysväriä ei ole piirretty, koska laskuri ei kysy kumpaa kestopuuta käytetään — vihreä tai ruskea lauta väittäisi valinnan, jota ei ole tehty. Vuosirenkaiden väli ja ytimen paikka ovat tavanomaista havusahatavaraa, eivät mittaustulos.</p>'+
+ '<p><strong>Tarvikkeiden mitat nimen ulkopuolelta.</strong> Nimessä oleva mitta on aina tosi — PIK 50-70 on 50–70 mm:n lankulle ja TL 150×150×8 on sen kokoinen laatta. Kaikki muu on luettu tuotekuvasta: levyjen korkeudet, levyn paksuus, reikien määrä ja sijainti, mutterin koko. Piirros on oikean muotoinen ja oikeassa kokoluokassa, muttei mittapiirustus.</p>'+'<p><strong>Kierteen pituus on ristiriitainen kolmessa lähteessä.</strong> Asennusopas sanoo <code>M20×50</code>, jälleenmyyjät <code>M20×70</code> ja nykysivuston omat otsikot <code>M20×100</code> — kaikki samasta tuotteesta. Piirroksissa on 70 mm. Sama avoin kohta on jo tarvikesivun speksissä.</p>'+'<p><strong>Säätömutteri jää pilarikengissä piiloon.</strong> Se on piirretty oikeaan paikkaansa heti pohjalevyn alle, mutta 23 asteen katselukulmasta 90 mm:n levy peittää sen. Sitä ei siirretä näkyviin: kuva näyttää sen mikä tästä kulmasta näkyy. Sama koskee PIK 90-140:n pyöreää säätölaattaa.</p>'+'<p><strong>PP:n kaapeliaukot ja <code>B1 45 mm</code>.</strong> Sivusto sanoo vain että aukot ovat pilarin sivulla. Koko, määrä ja korkeus on luettu tuotekuvasta. <code>B1 45 mm</code> on mittataulukossa ilman selitystä, ja se on piirretty kapeampana jatkoreikänä 83 mm:n istukan pohjassa.</p>'+
+ '</div></section></div>';
+
+function piirra(){
+  document.querySelectorAll(".tk-rivi[data-perhe]").forEach(el=>{
+    el.innerHTML=tuotekuva.perhe(el.dataset.perhe,
+      {korkeus:340,varjo:A.varjo,rakeisuus:A.rakeisuus,merkinta:A.merkinta});
+  });
+  /* Vain pilarikortit: palkkikortit ovat samaa luokkaa mutta eri generaattori. */
+  document.querySelectorAll(".tk-kortti[data-perhe]").forEach(el=>{
+    const p=el.dataset.perhe,k=+el.dataset.koko;
+    el.innerHTML=tuotekuva({perhe:p,koko:k,korkeus:190,kiintea:A.kiintea,
+        varjo:A.varjo,rakeisuus:A.rakeisuus,merkinta:false,id:p+k})+
+      "<b>"+E(tuotekuva.koodi(p,k))+"</b><span>H1 "+k+" mm</span>";
+  });
+  /* Tarvikkeet: yhdeksän nimikettä, yksi yhteinen mittakaava. Sama laskutapa kuin
+     perheiden yhteiskuvassa — jokainen saa oman kankaansa, ja korkeus jaetaan
+     silhuettien suhteessa, jolloin kokoerot ovat tosia. */
+  const tkorkeus=230;
+  const tosat=tarvikekuva.osat().map(a=>({a:a,e:tarvikekuva.laajuus(a)}));
+  const tsuurin=Math.max.apply(null,tosat.map(o=>o.e));
+  document.getElementById("tarvikerivi").innerHTML=tosat.map(o=>{
+    const t=tarvikekuva.tieto(o.a);
+    return '<figure class="tk-kortti" style="margin:0">'+
+      tarvikekuva({osa:o.a,korkeus:tkorkeus*o.e/tsuurin,id:"kat-"+o.a,koriste:true})+
+      "<b>"+E(t.koodi)+"</b><span>"+E(t.ryhma)+"</span></figure>";
+  }).join("");
+
+  /* Neljä perhettä samaan kuvaan, suurin koko kustakin. Perheet ovat eri
+     taulukoissa, joten yhteinen mittakaava tehdään tässä: kunkin kuvan korkeus
+     on sen oma silhuetti suhteessa suurimpaan (KP-1000). Ilman tätä jokainen
+     kuva täyttäisi oman kankaansa ja AP näyttäisi KP:n kokoiselta. */
+  const KORKEUS=380;
+  const rivi=tuotekuva.perheet.map(p=>{
+    const kt=tuotekuva.koot(p),k=kt[kt.length-1];
+    return {p:p,k:k,e:tuotekuva.laajuus(p,k).kor};
+  });
+  const suurin=Math.max.apply(null,rivi.map(o=>o.e));
+  document.getElementById("kaikki").innerHTML=rivi.map(o=>
+    '<div>'+tuotekuva({perhe:o.p,koko:o.k,korkeus:KORKEUS*o.e/suurin,kiintea:false,
+      varjo:A.varjo,rakeisuus:A.rakeisuus,merkinta:A.merkinta,id:"yht"+o.p})+
+    '<b>'+E(tuotekuva.koodi(o.p,o.k))+'</b></div>').join("");
+  /* Palkit. Rivikuva antaa kaikille saman kertoimen ja saman kankaan; kortit
+     piirretään kiinteällä mittakaavalla, jotta 48 × 123 on kuvassakin matalampi. */
+  document.getElementById("palkkirivi").innerHTML=
+    palkkikuva.rivi({korkeus:280,varjo:A.varjo,rakeisuus:A.rakeisuus});
+  document.getElementById("palkkikortit").innerHTML=palkkikuva.koot().map(k=>
+    '<figure class="tk-kortti" style="margin:0">'+
+    palkkikuva({koko:k,korkeus:120,kiintea:A.kiintea,varjo:A.varjo,
+                rakeisuus:A.rakeisuus,koriste:true,id:"kortti-"+k})+
+    '<b>'+E(palkkikuva.nimi(k))+' mm</b><span>syrjällään, kuten asennetaan</span></figure>').join("");
+  document.getElementById("palkkioptiot").innerHTML=palkkikuva.koot().map(k=>
+    '<div class="tk-optio">'+
+    palkkikuva({koko:k,korkeus:64,kiintea:true,varjo:false,
+                rakeisuus:false,koriste:true,id:"optio-"+k})+
+    '<span><b>'+E(palkkikuva.nimi(k))+'</b>'+(k==="48x148"?"yleisin":"")+'</span></div>').join("");
+  /* Terassi. Kaksi kuvaa samasta kokoonpanosta: räjäytettynä ja koottuna.
+     Leveys pikseleinä eikä korkeus, koska lohko on sivun levyinen. */
+  document.getElementById("terassikuva").innerHTML=
+    terassikuva({leveysPx:1000,selitteet:true,animaatio:A.animaatio,
+                 /* Liikkeessä matalampi räjäytys riittää: liike erottaa
+                    kerrokset, joten lauta ei tarvitse karata kankaan laitaan.
+                    Pysäytettynä väli on isompi ja selitteet väljemmin. */
+                 rajahdys:A.animaatio?1500:2400,
+                 selitevali:A.animaatio?2.3:3.4,
+                 rakeisuus:A.rakeisuus,varjot:A.varjo,id:"kat-rajahdys"});
+  document.getElementById("terassikoottu").innerHTML=
+    terassikuva({leveysPx:820,rajahdys:0,
+                 rakeisuus:A.rakeisuus,varjot:A.varjo,id:"kat-koottu"});
+
+  /* Ikonit. Yksi per ryhmä, kolmessa koossa ja tummalla pohjalla. */
+  const IKONIT=[["pik-50-70","Pilarikengät"],["p-pik-50x70","Pilarikenkä, puolikas"],
+                ["pak-100x150","Palkkikengät"],["tl-150x150","Teräslaatat, neljä reikää"],
+                ["tl-100x100","Teräslaatta, kaksi reikää"],["nostokorva-m20","Nostokorva"],["sakkeli","Sakkeli"]];
+  document.getElementById("ikonirivi").innerHTML=IKONIT.map(o=>
+    '<figure><div class="koot">'+tarvikekuva.siluetti(o[0],64)+
+    tarvikekuva.siluetti(o[0],24)+tarvikekuva.siluetti(o[0],18)+'</div>'+
+    '<div class="tumma">'+tarvikekuva.siluetti(o[0],24)+tarvikekuva.siluetti(o[0],18)+'</div>'+
+    '<b>'+E(o[1])+'</b><span>64 · 24 · 18 px</span></figure>').join("");
+
+  /* Yhdistelmät. Sama mittakaava kaikille: kokoero PIK 50-70:n ja PIK 90-140:n
+     välillä on osa sanomaa. */
+  const YH=yhdistelmakuva.parit();
+  const ykor=Math.max.apply(null,YH.map(a=>yhdistelmakuva.laajuus(a)));
+  document.getElementById("yhdistelmakuvat").innerHTML=YH.map(a=>{
+    const o=yhdistelmakuva.tieto(a);
+    return '<figure class="tk-kortti" style="margin:0">'+
+      yhdistelmakuva({pari:a,korkeus:230*yhdistelmakuva.laajuus(a)/ykor,
+                      koriste:true,rakeisuus:A.rakeisuus,id:"kat-"+a})+
+      '<b>'+E(o.otsikko)+'</b><span>'+E(o.selite)+'</span>'+
+      (o.avoin ? '<span style="color:var(--accent-dark);font-weight:600">Varmistettava: '+E(o.avoin)+'</span>' : '')+
+      '</figure>';
+  }).join("");
+}
+["varjo","rakeisuus","merkinta","kiintea","animaatio"].forEach(k=>{
+  document.getElementById("c-"+k).addEventListener("change",e=>{
+    A[k]=e.target.checked;
+    document.querySelectorAll(".tk-kortti svg").forEach(s=>s.remove());
+    piirra();
+  });
+});
+piirra();
+</script>
+</body>
+</html>

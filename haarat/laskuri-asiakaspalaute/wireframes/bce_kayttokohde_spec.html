@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- seo_title ja seo_description ovat sivukohtaisia kenttiä ja asetetaan KOHTEET-
+     taulusta. Nämä ovat oletus sille tapaukselle, ettei skripti aja. -->
+<title>Autokatoksen perustukset: valmiit pilarit ilman valua | BCE</title>
+<meta name="description" content="Autokatoksen perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<script src="bce-spec-shell.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Siirry sisältöön</a>
+<div class="urow"><div class="w"></div></div>
+<header class="site"><div class="w"></div></header>
+<nav class="crumb"><div class="w"></div></nav>
+<main id="main"></main>
+<footer><div class="w"></div></footer>
+<script>
+/* ===========================================================================
+   KÄYTTÖKOHDESIVUN SIVUPOHJA
+   Toteuttaa speksin ../../../kayttokohdesivu-sivupohja.md, versio 2 (9/2026)
+   ===========================================================================
+
+   Yksi tiedosto renderöi kuusi sivua osoiteparametrista:
+
+       bce_kayttokohde_spec.html?kohde=autokatos   (oletus)
+       bce_kayttokohde_spec.html?kohde=terassi |sauna |mokki |piharakennus |parakki
+
+   `SPEC.map` ohjaa kaikki kuusi tuotanto-URLia tänne. URL-rakenne
+   /kayttokohde/{slug}/ säilyy muuttumattomana.
+
+   KENTTÄNIMET OVAT SPEKSIN NIMIÄ. `KOHTEET`-rivin kentät ovat speksin luvun
+   "Sivukohtaiset kentät" kenttiä samoilla nimillä, `JAETTU` on luvun "Jaetut kentät"
+   sisältö. Kun sivupohja rakennetaan julkaisujärjestelmään, kentät ovat jo nimetyt.
+
+   MODUULIT, speksin kiinteä järjestys. Ehdollisia ovat vain 9 ja 13.
+
+     1  Hero                        aina
+     2  Kuvanosto                   aina
+     3  Kohteen oma kysymys         aina
+     4  Näin perustus tehdään       aina    askeleet 1 ja 5 sivukohtaisia
+     5  Mikä pilari tähän           aina    alkaa selection_rule-kentästä
+     6  Maapohja ja olosuhteet      aina    kaivamattomuus, routa, kohde, talvi
+     7  Tarvikkeet tähän kohteeseen aina    enintään kolme, video per tarvike
+     8  Näin hinta muodostuu        aina    ei hintoja eikä lukuja
+     9  Luvat ja määräykset         jos requires_permit
+    10  Näin pääset alkuun          aina    kokonaan jaettu
+    11  Usein kysyttyä              aina    4 jaettua + sivukohtaiset
+    12  Referenssit ja kokemukset   aina    varareitti on oletus, ei reunatapaus
+    13  Koko videosarja             jos videoita 4 tai enemmän
+
+   VIDEOT RENDERÖITYVÄT KONTEKSTISSA. `videos`-rivin `slot` nimeää paikan: focus,
+   step_1…step_5, ground, accessory, reference, archive. Tyhjä slot on archive, joka
+   näkyy vain moduulissa 13. Tarvikevideot tulevat tuotedatasta accessory-slottiin
+   automaattisesti eikä niitä syötetä sivukohtaisesti.
+
+   PAIKKATEKSTIT. Speksin OHJE:-tekstit ovat `OHJE`-taulussa kenttämallin
+   määrittelynä. Ne eivät renderöidy sivulle: `wireframes/CLAUDE.md` kieltää
+   kuvausohjeet ja suunnitteluperustelut sivulla, koska asiakas luki niitä sivulta ja
+   pyysi ne pois. Sivulla tyhjä kenttä on `[TÄYTETTÄVÄ]`.
+
+   TILA 17.9.2026. Sisältöä on neljälle kohteelle. Autokatoksen copy on asiakkaalta.
+   Saunan valintasääntö, kohdekysymys ja lupateksti sekä mökin kustannusvertailu,
+   maapohjateksti ja referenssivideo on luettu nykysivustolta, koska speksi osoittaa
+   ne olemassa oleviksi. Ne on trimmattu copy-sääntöihin ja ne on luettava läpi ennen
+   julkaisua: nykysivuston markkinointisävy ei ole tämän sivutyypin sävy.
+   Moduulien 4 ja 6 jaettu sisältö on Rakentajan opas 2025 -PDF:n ohjearvoista, jotka
+   speksi määrää siirtyviksi sellaisenaan.
+
+   SEITSEMÄN KOHTAA, JOTKA SPEKSI JÄTTÄÄ AUKI JA JOTKA NÄKYVÄT TÄSSÄ TIEDOSTOSSA
+
+   1. Terassin videosarjan slot-jako nimeää 14 aihetta, mutta taulukko sanoo 12 jaksoa.
+      Aiheet on kirjattu sellaisenaan; jaksojen todellinen ryhmittely ratkeaa vasta
+      litteroinnissa, joka on speksin mukaan sopimatta.
+   2. Yhden videon kohde, jonka slot on täyttämättä, katoaa sivulta kokonaan: archive
+      näkyy vain moduulissa 13 ja se vaatii neljä videota. Saunan yksi video on tässä
+      tilassa. Slot on pakollinen tieto, ei valinnainen.
+   3. Moduulin 8 sääntö nimeää kolme osaa, joista jaettujen kenttien lista antaa vain
+      `shared_cost_intro`. Kolmas osa (hinnan kysyminen kauppiaalta) on tässä
+      `shared_cost_ask`.
+   4. `shared_response_promise` kuuluu speksin mukaan vain tarjouspyyntö-CTA:n
+      yhteyteen, mutta yksikään 13 moduulista ei sisällä tarjouspyyntö-CTA:ta.
+      Ristiinlinkityssääntö 7 vaatii silti puhelinnumeron ja vastausaikalupauksen
+      sivulle. Molemmat ovat moduulin 10 lopussa.
+   5. Speksi ei nimeä moduulien 6, 8, 9, 12 ja 13 otsikoita eikä heron toissijaisen
+      CTA:n tekstiä. Ne ovat `JAETTU.h2_speksista` ja `JAETTU.hero_cta2`: speksin
+      moduulinimiä, ei asiakkaan copya, ja vahvistettava ennen julkaisua.
+   6. Piharakennuksen `seo_title` on 62 merkkiä eli yli speksin 60 merkin rajan.
+      Merkitty kenttään, ei lyhennetty omin päin.
+   7. TP-pilarin korkeuksien määrä on nykysivustolla kolmella eri arvolla: saunasivu
+      sanoo neljä, mökkisivu seitsemän, piharakennussivu neljä. Speksi vahvistaa viisi
+      (200, 300, 400, 500, 600 mm) Rakentajan oppaasta. Luku tulee tuotedatasta, joten
+      virhe monistuu kuudelle sivulle kerralla.
+
+   NIMEÄMISRISTIRIITA RATKESI 23.9.2026. `JAETTU.cta_mitoita` ja `SPEC.navCta` sanovat molemmat *Suunnittele perustus*, eli samalla ruudulla ei ole enää
+   kahta nimeä samalle toiminnolle. Aiemmin sivu noudatti speksiä («Mitoita perustus»)
+   ja kuori 16.9. päätettyä nimeä («Laske pilarien määrä»). Uusi nimi ei ole kummankaan:
+   verbi valittiin sen mukaan, miltä askel tuntuu lukijalle joka ei ole rakentaja.
+   Avaimen nimi `cta_mitoita` jäi ennalleen eikä näy sivulla.
+   =========================================================================== */
+
+const TB="[TÄYTETTÄVÄ]";
+
+/* Kenttämallin paikkatekstit speksin luvusta "Paikkatekstit". Julkaisujärjestelmän
+   kenttien oletusarvoja: validointi estää julkaisun, jos arvo alkaa OHJE:-merkkijonolla.
+   Nämä eivät renderöidy sivulle. */
+const OHJE={
+  hero_intro:"OHJE: Virke 1 nimeää kuorman, virke 2 lupaa yhden päivän ilman valua.",
+  hero_value_prop:"OHJE: Mitä käyttäjä saa mitoituksesta. Yksi rivi.",
+  focus_heading:"OHJE: Kysymysmuoto. Se yksi asia, joka koskee vain tätä kohdetta.",
+  focus_body:"OHJE: 3 tai 5 virkettä. Ei tuotepuhetta.",
+  selection_rule:"OHJE: Mikä kohteessa ratkaisee mallin. Arkikieli, ei kuormalukuja.",
+  quantity_drivers:"OHJE: Mikä ratkaisee pilarien määrän. Koko, palkin vahvuus, jako.",
+  ground_challenge:"OHJE: Kohteen oma maapohjahaaste. Routa tulee automaattisesti.",
+  accessory_reason:"OHJE: Miksi juuri tässä kohteessa.",
+  cost_comparison:"OHJE: Kokonaiskustannus verrattuna valuun. Ei lukuja.",
+  faq_local_question:"OHJE: Kysymys asiakaspalvelusta, ei keksitty."
+};
+
+/* ===========================================================================
+   JAETUT KENTÄT — yksi lähde koko sivustolle.
+   {gen} {ill} {per} {nimi} korvautuvat kohteen taivutusmuodoilla.
+   =========================================================================== */
+const JAETTU={
+
+  /* Yksi nimi joka paikassa (23.9.2026): "Suunnittele perustus", ei "Konfiguraattori"
+     eikä speksin "Mitoita perustus". "Mistä ostat", ei "Jälleenmyyjät". */
+  cta_mitoita:"Suunnittele perustus",
+  cta_ostat:"Mistä ostat",
+
+  url:{mitoita:"/konfiguraattori/", ostat:"/mista-ostat/", pilarit:"/bce-pilarit/",
+       tarvikkeet:"/pilarien-kiinnitystarvikkeet/", asennus:"/ohjeet/asennus/",
+       referenssit:"/referenssit/", kayttokohteet:"/pilariperustus/",
+       tarjous:"/yhteystiedot/tarjouspyynto/"},
+
+  /* Heron toissijainen CTA on ankkuri moduuliin 4: vastaväite tässä kohtaa on
+     "voinko tehdä tämän itse", ei "mistä ostan". Teksti ei ole speksissä. */
+  hero_cta2:["Näin se tehdään","#tekeminen","cta_sivuankkuri"],
+
+  /* Heron kuvabrief on rakennetta, kuvateksti on sisältöä. Siksi tämä on jaettu ja
+     moduulin 2 kuvatekstit ovat sivukohtaisia. */
+  hero_image:"Hero-kuva: valmis {per}, pilariperustus näkyvissä",
+
+  h2_kuvanosto:"Miltä valmis näyttää",
+  h2_tekeminen:"Näin {gen} perustus tehdään",
+  h2_pilari:"Mikä pilari {ill}",
+  h2_tarvikkeet:"Mitä tarvikkeita {ill} kuuluu",
+  h2_ukk:"Usein kysyttyä {gen} perustuksista",
+
+  /* Speksi ei nimeä näiden moduulien otsikoita. Nämä ovat speksin moduulinimiä
+     eivätkä asiakkaan copya: vahvistettava ennen julkaisua. */
+  h2_speksista:{maapohja:"Maapohja ja olosuhteet", hinta:"Näin hinta muodostuu",
+                luvat:"Luvat ja määräykset", referenssit:"Referenssit ja kokemukset",
+                videosarja:"Koko videosarja"},
+
+  /* shared_no_digging, moduuli 6 ensimmäisenä. Kategoriaväite, ei kohdekohtainen. */
+  shared_no_digging:"Pilaria ei tarvitse kaivaa maahan. Leveä pohja asettuu sorapatjan päälle ja kantaa rakenteen siltä istumalta.",
+
+  /* shared_steps_2_3_4. Askeleet 1 ja 5 ovat sivukohtaisia (step_first, step_last).
+     Ohjearvot ovat Rakentajan opas 2025 -PDF:stä, jonka speksi määrää siirtyväksi
+     jaettuun sisältöön sellaisenaan. Askel 4 on kirjoitettu kenkätyypistä
+     riippumattomaksi, koska kenkä ei ole sama joka kohteessa. */
+  shared_steps_2_3_4:[
+    {h:"Kaiva ja salaojita", p:"Kaiva vähintään metri rakennuksen ulkoreunan ulkopuolelle häiriintymättömään moreenipohjaan asti. Pohjan kallistus on vähintään 5 prosenttia. Suodatinkangas ja salaojitus asennetaan samassa vaiheessa.",
+     img:"Kuva: kaivanto, suodatinkangas ja salaoja paikallaan"},
+    {h:"Tee sorapatja ja routaeristys", p:"Murskesoraa 20 ja 30 sentin väliltä, päälle tasoituskerros 5 ja 10 sentin väliltä. Routaeriste asennetaan patjan yhteydessä.",
+     img:"Kuva: murskesorapatja, tasoituskerros ja routaeriste"},
+    {h:"Nosta pilarit ja kiinnitä kengät", p:"Pilari lasketaan sorapatjan päälle ja suoristetaan. Kenkä ruuvataan pilarin valmiiseen kierteeseen, joten poraamista ei tarvita. Kenkä valitaan sen mukaan, tuleeko pilarin päälle vaakapalkki vai pystytolppa.",
+     img:"Kuva: pilari lasketaan patjalle, kenkä kiinnitetään päähän"}],
+
+  /* Ristiinlinkityssääntö 5: PDF-linkki osoittaa laskeutumissivulle, ei tiedostoon. */
+  ohje_linkki:["Lataa kirjallinen asennusohje","/ohjeet/asennus/","cta_asennusohjeet"],
+
+  /* Moduuli 5 päättyy mitoitus-CTA:han ja linkkiin tuoteperhesivulle. */
+  vertaa:["Vertaa kaikkia pilariperheitä","/bce-pilarit/","cta_tuotteet"],
+
+  /* Moduuli 6, järjestys: kaivamattomuus, routa, ground_challenge, talvi. */
+  shared_frost_text:TB,
+  shared_winter_text:TB,
+
+  shared_accessory_note:"Tarvikkeet unohtuvat useimmin, ja se huomataan vasta kun pilarit tulevat pihaan. Ne tulevat samaan listaan pilarien kanssa, kun suunnittelet perustuksen.",
+  tarvikkeet_linkki:["Katso kaikki tarvikkeet","/pilarien-kiinnitystarvikkeet/","cta_tarvikkeet"],
+
+  /* Moduuli 8. Ei hintoja eikä lukuja. Kolmas osa ei ole speksin kenttälistassa. */
+  shared_cost_intro:TB,
+  shared_cost_ask:TB,
+
+  /* Moduuli 10, kokonaan jaettu. Sisältää jakelumallin. Askeleen 1 otsikko on sivun
+     ensisijaisen toiminnon nimi. */
+  shared_getting_started:{h2:"Näin pääset alkuun",
+    steps:[
+      [null,"Saat listan: montako pilaria, mikä malli, millä jaolla ja mitkä tarvikkeet."],
+      ["Ota lista mukaan","Listassa on tuotekoodit, joilla tuotteet löytyvät suoraan."],
+      ["Osta rautakaupasta","BCE-tuotteet myydään rautakauppojen kautta. Hinnat saat kauppiaalta. Jos tilauksesi on iso, kauppias hoitaa toimituksen suoraan tehtaalta."]],
+    ostat_h3:"Osta lähimmältä jälleenmyyjältä",
+    iso_h3:"Isompi kohde tai kysyttävää"},
+
+  /* Ristiinlinkityssääntö 7: puhelinnumero ja vastausaikalupaus eivät saa jäädä vain
+     yhteystietosivulle. Speksi ei anna näille moduulia; ne ovat moduulin 10 lopussa
+     tarjouspyyntö-CTA:n yhteydessä, jonne shared_response_promise kuuluu. */
+  shared_phone:TB,
+  shared_response_promise:TB,
+  tarjous_linkki:["Pyydä tarjous","/yhteystiedot/tarjouspyynto/","cta_tarjouspyynto"],
+
+  /* shared_faq, neljä kysymystä. Speksi ei nimeä niitä. Nämä neljä ovat asiakkaan
+     autokatos-copysta ne, jotka eivät riipu kohteesta; kohde taipuu {gen}:llä. */
+  shared_faq:[
+    ["Pitääkö {gen} perustus kaivaa routarajaan?","Kyllä. Pilarin jalka tulee roudattoman syvyyden alapuolelle, muuten rakenne nousee ja laskee vuodenaikojen mukaan. Routaraja vaihtelee alueittain."],
+    ["Voiko {gen} perustaa talvella?","Voi. Valmis pilari ei tarvitse kuivumislämpötilaa eikä sulaa säätä, toisin kuin paikalla valettu perustus. Maa on kaivettava auki, mutta itse perustus valmistuu normaalisti."],
+    ["Käykö sama ratkaisu kalliolle tai rinteeseen?","Käy. Pilarin korkeus valitaan maanpinnan mukaan ja tarvikkeiden säätövara hoitaa loput, joten epätasainen tontti ei vaadi erikoiskalustoa."],
+    ["Mistä {gen} pilarit ostetaan?","Rautakaupasta."]],
+  ukk_ostat_linkki:["Mistä ostat","/mista-ostat/","cta_mista_ostat"],
+
+  /* Moduuli 12. Nykyisiä referenssejä on neljä ja ne kattavat vain mökin ja
+     omakotitalon, joten viidellä sivulla kuudesta suodatus palauttaa tyhjän.
+     Varareitti on siksi oletus: kokemuslinkki ja asiakaslainaus, ei tyhjää tilaa. */
+  shared_reference_quote:TB,
+  shared_reference_cite:TB,
+  referenssit_linkki:["Lue asiakkaiden kokemuksia","/referenssit/","cta_referenssit"]
+};
+
+/* ===========================================================================
+   SIVUKOHTAISET KENTÄT — kuusi riviä, speksin kenttänimillä.
+
+   nimi / gen / ill / per  murupolku ja taivutusmuodot jaettuun copyyn
+   slug                    /kayttokohde/{slug}/, ei muuteta
+   object_name             H1 hakijan sanoilla. Ei mallitunnusta, ei sanaa "pilari"
+   object_type             moduulin 12 referenssisuodatus
+   focus.aihe / ground.aihe  speksin taulukon brief, ei renderöidy
+   videos[].slot           focus | step_1…step_5 | ground | accessory | reference | archive
+   =========================================================================== */
+const KOHTEET={
+
+  autokatos:{
+    nimi:"Autokatos", gen:"autokatoksen", ill:"autokatokseen", per:"autokatos",
+    slug:"autokatoksen-pilariperustukset", object_type:"autokatos",
+    object_name:"Autokatoksen perustukset",
+    seo_title:"Autokatoksen perustukset: valmiit pilarit ilman valua | BCE",
+    seo_description:"Autokatoksen perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+
+    hero_intro:"Autokatos tarvitsee perustuksen, joka kantaa katon, lumen ja tuulen. Valmiilla betonipilareilla teet sen yhtenä päivänä: ei muotteja, ei betonin sekoitusta, ei kuivumisen odottamista.",
+    /* Sama lupaus kuin konfiguraattorilohkossa etusivulla, hubilla ja perhesivulla.
+       Ei vastausaikalupausta: se koskee tarjouspyyntöjä, ei mitoitusta. */
+    hero_value_prop:"Saat listan pilareista ja tarvikkeista kappalemäärineen.",
+
+    /* Kuvat ovat olemassa: nykysivuston autokatossivulla on viiden kuvan karuselli,
+       ammattikuvattu 2021, 1255 x 800 px (wp-content/uploads/2021/12/):
+       221702_esk_0281s valmis katos autoineen, 221702_esk_0223 katos ja varasto
+       samassa rakennuksessa, 221702_esk_0319s pilari lähikuvassa katoksen nurkassa,
+       221702_esk_0245s ja 221702_esk_0233s pilaririvi rakennuksen alla. Nämä ovat
+       omia tiedostoja, eivät hotlinkattuja. Puuttuvat ovat kuvatekstit. */
+    gallery:[
+      {image:"Kuva: valmis autokatos pilariperustuksella, auto katoksen alla",
+       caption:"Kaksipaikkainen autokatos, 6 x 7 m, 8 kpl KP-pilaria."},
+      {image:"Kuva: autokatos ja varasto samassa rakennuksessa", caption:TB},
+      {image:"Kuva: pilari lähikuvassa autokatoksen nurkassa", caption:TB}],
+
+    /* Moduuli 3. Speksin taulukko: focus = tuulikuorma. Asiakkaan copyn ensimmäinen
+       kappale lohkosta "Mikä pilari autokatokseen" on juuri tämä sisältö. Otsikko
+       puuttuu: speksi vaatii kysymysmuodon eikä asiakkaan copyssä ole otsikkoa. */
+    focus:{aihe:"tuulikuorma", heading:TB,
+      body:"Autokatos on kantava rakenne: sen päällä on katto, ja talvella katolla on lunta. Lisäksi autokatos on avoin rakenne, joten tuuli tarttuu siihen enemmän kuin umpinaiseen rakennukseen. Molemmat kuormat kohdistuvat perustukseen."},
+
+    step_first:{h:"Merkitse pilarien paikat", p:"Pilarien määrä ja jako riippuvat katoksen koosta ja käytetystä palkista. Saat molemmat valmiina, kun suunnittelet perustuksen.",
+      img:"Kuva: pilarien paikat merkittynä tontille"},
+    step_last:{h:"Jatka runkoon samana päivänä", p:"Perustus on valmis heti. Betonin kuivumista ei odoteta, eikä sää siirrä työtä.",
+      img:"Kuva: autokatoksen runko nousee valmiin perustuksen päälle"},
+
+    /* Moduuli 5 alkaa valintasäännöstä, ei mallitunnuksesta. Ei kuormalukuja: ne ovat
+       tuoteperhesivulla, ja 0 kyselyä 1 526:sta sisältää kN- tai kg-lukeman. */
+    selection_rule:TB,
+    primary_model:["KP-pilari","/bce-pilarit/kp-pilari/"],
+    exception_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
+    exception_condition:"Pieneen ja matalaan katokseen riittää joissain tapauksissa TP-pilari.",
+    quantity_drivers:"Sinun ei tarvitse laskea kuormia. Kerro katoksen mitat ja katemateriaali, niin saat mallin, määrän ja jaon valmiina.",
+    /* docs/kuvat/asennus-kp-b.png on ehdolla: A-601:n mukainen leikkaus KP-pilarista
+       maassa. Ei käytetä ennen kuin kuvat/README.md:n avoin kohta on kysytty. */
+    model_image:"Kuva: KP-pilari asennettuna autokatoksen nurkkaan, niskapalkki kengän varassa",
+
+    /* Speksin taulukko: ground_challenge = näkyviin jäävä perustus. Nykysivusto sanoo
+       saman, mutta markkinointisävyllä, joten teksti on kirjoitettava. */
+    ground:{aihe:"näkyviin jäävä perustus", body:TB},
+
+    /* Enintään kolme tarviketta, jokaisella syy juuri tähän kohteeseen. Tarvikevideo
+       tulee tuotedatasta, ei tältä sivulta. Speksi vaatii kaksisuuntaisen linkityksen:
+       tarvikesivun on listattava käyttökohteet, ja se lista puuttuu. */
+    accessories:[
+      {product:["Palkkikenkä PAK","/pilarien-kiinnitystarvikkeet/#palkkikengat",true],
+       reason:"Niskapalkki lepää sen varassa, yksi jokaiselle pilarille."},
+      {product:["Nostokorva","/pilarien-kiinnitystarvikkeet/#nostokorva",true],
+       reason:"KP-pilarit ovat painavia, ja nostokorva tarvitaan jos ne nostetaan koneella."},
+      {product:null, reason:"Kiinnitystarvikkeet palkin ja kengän liitokseen."}],
+
+    cost_comparison:TB,
+
+    videos:[],   /* speksin taulukko: autokatoksella nolla videota */
+
+    /* Speksi: autokatoksen lupavaatimus on tarkistettava. Tarkistamaton ei ole sama
+       kuin ei vaadita, joten moduuli on pois päältä ja asia on kirjattu. */
+    requires_permit:false, permit_body:null,
+
+    faq_local:[
+      ["Montako pilaria autokatokseen tarvitaan?","Määrä riippuu katoksen leveydestä, pituudesta ja käytetystä niskapalkista. Kuusi metriä leveä kaksipaikkainen katos vaatii tyypillisesti kahdeksan pilaria. Saat oman määräsi kohteesi mitoilla."]],
+
+    references:[]},
+
+  terassi:{
+    nimi:"Terassi", gen:"terassin", ill:"terassiin", per:"terassi",
+    slug:"terassin-pilariperustus", object_type:"terassi",
+    object_name:"Terassin perustukset",
+    seo_title:"Terassin perustukset: valmiit pilarit ilman valua | BCE",
+    seo_description:"Terassin perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+    hero_intro:TB, hero_value_prop:TB,
+    gallery:[{image:TB,caption:TB},{image:TB,caption:TB},{image:TB,caption:TB}],
+    focus:{aihe:"lasitus ja tuleva kuorma", heading:TB, body:TB},
+    step_first:{h:TB,p:TB,img:TB}, step_last:{h:TB,p:TB,img:TB},
+    selection_rule:TB,
+    primary_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
+    exception_model:["KP-pilari","/bce-pilarit/kp-pilari/"],
+    exception_condition:TB,   /* speksi: lasitettuna KP */
+    quantity_drivers:TB, model_image:TB,
+    ground:{aihe:"rinne ja kallio", body:TB},
+    accessories:[{product:null,reason:TB}],
+    cost_comparison:TB,
+    /* Speksin slot-jako terassin videosarjalle. Aiheet ovat speksistä sellaisenaan,
+       otsikot ja osoitteet puuttuvat. Aiheita on 14 vaikka taulukko sanoo 12 jaksoa:
+       ryhmittely ratkeaa litteroinnissa, joka on sopimatta. */
+    videos:[
+      {topic:"Sijoittaminen",      slot:"step_1"},
+      {topic:"Kaivuu",             slot:"step_2"},
+      {topic:"Täyttö",             slot:"step_2"},
+      {topic:"Suodatinkangas",     slot:"step_2"},
+      {topic:"Salaojitus",         slot:"step_2"},
+      {topic:"Routaeristys",       slot:"step_2"},
+      {topic:"Pilarien sijoitus",  slot:"step_3"},
+      {topic:"Kenkien valinta",    slot:"accessory"},
+      {topic:"Kengän asennus",     slot:"step_4"},
+      {topic:"Runkopalkit",        slot:"step_5"},
+      {topic:"Koolaus",            slot:"step_5"},
+      {topic:"Pintamateriaali",    slot:"step_5"},
+      {topic:"Intro",              slot:"reference"},
+      {topic:"Loppujakso",         slot:"reference"}].map(v=>({title:TB,url:null,topic:v.topic,slot:v.slot})),
+    requires_permit:false, permit_body:null,
+    faq_local:[[TB,TB]],
+    references:[]},
+
+  sauna:{
+    nimi:"Sauna", gen:"pihasaunan", ill:"pihasaunaan", per:"pihasauna",
+    slug:"saunan-pilariperustus", object_type:"sauna",
+    object_name:"Pihasaunan perustukset",
+    seo_title:"Pihasaunan perustukset: valmiit pilarit ilman valua | BCE",
+    seo_description:"Pihasaunan perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+    hero_intro:TB, hero_value_prop:TB,
+    gallery:[{image:TB,caption:TB},{image:TB,caption:TB},{image:TB,caption:TB}],
+    /* Nykysivustolta: "Pihasaunan alapohjan pitää tuulettua hyvin" ja "Saunan
+       perustukseksi suositellaan nimenomaan pilariperustusta, koska pohjan pitää
+       tuulettua hyvin". Otsikko puuttuu, ja teksti on nykysivuston sävyssä. */
+    focus:{aihe:"alapohjan tuuletus", heading:TB,
+      body:"Pihasaunan alapohjan pitää tuulettua hyvin. Sauna on Suomessa ahkerassa käytössä ja sen on kestettävä vuosikymmenten käyttöä, joten perustustavalla on merkitystä. Pilariperustus jättää alapohjan auki tuulettumaan."},
+    step_first:{h:TB,p:TB,img:TB}, step_last:{h:TB,p:TB,img:TB},
+    /* Speksi: vain saunasivulla on olemassa oleva valintasääntö. Nykysivustolta. */
+    selection_rule:"Saunan koolla on merkitystä perustusten valinnalle. Mitä isompi sauna, sitä suurempi kantavuus perustuspilareissa tulee olla.",
+    primary_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
+    exception_model:["KP-pilari","/bce-pilarit/kp-pilari/"],
+    exception_condition:TB,   /* speksi: iso sauna KP */
+    quantity_drivers:TB, model_image:TB,
+    ground:{aihe:"ranta ja kallio", body:TB},
+    accessories:[{product:null,reason:TB}],
+    cost_comparison:TB,
+    /* Speksin taulukko: saunalla yksi video. Slot on täyttämättä, jolloin video menee
+       archiveen eikä näy sivulla lainkaan, koska moduuli 13 vaatii neljä. Ks. avoin
+       kohta 2 tiedoston alussa. */
+    videos:[{title:TB,url:null,topic:TB,slot:null}],
+    /* Speksi: rakennuslupavaatimus on vahvistettu vain saunalle. Ei lakitekstiä,
+       ohjaus kunnan rakennusvalvontaan. Nykysivustolta. */
+    requires_permit:true,
+    permit_body:"Pihasauna vaatii rakennusluvan. Tutustu oman paikkakuntasi lupaprosessiin kunnan rakennusvalvonnan kautta ja varaa sille aikaa jo suunnittelun alussa.",
+    faq_local:[[TB,TB]],
+    references:[]},
+
+  mokki:{
+    nimi:"Mökki", gen:"mökin", ill:"mökkiin", per:"mökki",
+    slug:"mokkien-pilariperustukset", object_type:"mokki",
+    /* H1:ssä ei speksin mukaan saa olla sanaa "pilari". seo_title saa, ja siinä se on
+       asiakkaan antamassa muodossa. */
+    object_name:"Mökin perustukset",
+    seo_title:"Mökin pilariperustus: valmiit pilarit ilman valua | BCE",
+    seo_description:"Mökin perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+    hero_intro:TB, hero_value_prop:TB,
+    gallery:[{image:TB,caption:TB},{image:TB,caption:TB},{image:TB,caption:TB}],
+    focus:{aihe:"vaikea sijainti", heading:TB, body:TB},
+    step_first:{h:TB,p:TB,img:TB}, step_last:{h:TB,p:TB,img:TB},
+    selection_rule:TB,
+    primary_model:["KP-pilari","/bce-pilarit/kp-pilari/"],
+    exception_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
+    exception_condition:TB,   /* speksi: kevyt mökki TP */
+    quantity_drivers:TB, model_image:TB,
+    /* Nykysivustolta, speksin aihe "kallio ja kivikko, saaristo". */
+    ground:{aihe:"kallio ja kivikko, saaristo",
+      body:"Saaristossa ja kalliolla pohja on usein kivikkoinen ja epätasainen. Pilarin laaja pohja asettuu kallion päälle levitetyn sorapatjan varaan, ja tarvikkeiden säätövara hoitaa hienosäädön sivu- ja korkeussuunnassa."},
+    accessories:[{product:null,reason:TB}],
+    /* Speksi: mökkisivulla tämä sisältö on jo olemassa ilman sanaa hinta, ja se on
+       ainoa kohta koko sivustolla joka vastaa kysymykseen. Nykysivustolta. */
+    cost_comparison:"Usein kysytään, mikä on halvin tapa rakentaa mökki. Kun kustannuksiin lasketaan maa- ja perustustöihin menevä aika, ilman valuja asennettava pilariperustus kannattaa.",
+    /* Speksin taulukko: mökillä yksi video ja yksi referenssi. Nykysivuston teksti
+       kertoo, että video käsittelee mökin laajennusosan perustusta. */
+    videos:[{title:TB,url:null,topic:"Mökin laajennusosan perustus",slot:"reference"}],
+    requires_permit:false, permit_body:null,
+    faq_local:[[TB,TB]],
+    /* Speksi: nykyisiä referenssejä on neljä ja ne kattavat mökin ja omakotitalon.
+       Mökin referenssin sisältöä ei ole luettu, joten rivi on merkitty. */
+    references:[{image:TB,caption:TB}]},
+
+  piharakennus:{
+    nimi:"Piharakennus", gen:"piharakennuksen", ill:"piharakennukseen", per:"piharakennus",
+    slug:"piharakennuksen-pilariperustus", object_type:"piharakennus",
+    object_name:"Piharakennuksen perustukset",
+    /* 62 merkkiä, speksin raja on 60. Ei lyhennetty omin päin. */
+    seo_title:"Piharakennuksen perustukset: valmiit pilarit ilman valua | BCE",
+    seo_description:"Piharakennuksen perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+    hero_intro:TB, hero_value_prop:TB,
+    gallery:[{image:TB,caption:TB},{image:TB,caption:TB},{image:TB,caption:TB}],
+    focus:{aihe:"lämmittämätön rakennus", heading:TB, body:TB},
+    step_first:{h:TB,p:TB,img:TB}, step_last:{h:TB,p:TB,img:TB},
+    selection_rule:TB,
+    primary_model:["TP-pilari","/bce-pilarit/tp-pilari/"],
+    exception_model:null, exception_condition:null,
+    quantity_drivers:TB, model_image:TB,
+    ground:{aihe:"routiva maa vaihdetaan", body:TB},
+    accessories:[{product:null,reason:TB}],
+    cost_comparison:TB,
+    videos:[],
+    requires_permit:false, permit_body:null,
+    faq_local:[[TB,TB]],
+    references:[]},
+
+  /* Speksin avoin kohta: parakin matalampaa pilarimallia ei löydy tuoteperheistä eikä
+     tuotesivuilta, joten primary_model jää tyhjäksi kunnes malli on nimetty. Avoin on
+     myös se, onko parakki käyttökohdesivu lainkaan vai Ammattilaiselle-sisältöä: sen
+     lukija on organisaatio eikä kuluttaja, ja se on ohuin kuudesta. */
+  parakki:{
+    nimi:"Parakki", gen:"parakin", ill:"parakkiin", per:"parakki",
+    slug:"parakkien-pilariperustukset", object_type:"parakki",
+    object_name:"Parakin ja työmaatilan perustukset",
+    seo_title:"Parakin ja työmaatilan perustukset | BCE",
+    seo_description:"Parakin perustus valmiiksi yhtenä päivänä. Katso montako pilaria tarvitset, mitkä tarvikkeet kuuluvat mukaan ja mistä saat ne.",
+    hero_intro:TB, hero_value_prop:TB,
+    gallery:[{image:TB,caption:TB},{image:TB,caption:TB},{image:TB,caption:TB}],
+    focus:{aihe:"aikataulu ja siirrettävyys", heading:TB, body:TB},
+    step_first:{h:TB,p:TB,img:TB}, step_last:{h:TB,p:TB,img:TB},
+    selection_rule:TB,
+    primary_model:[TB,"/bce-pilarit/"],
+    exception_model:null, exception_condition:null,
+    quantity_drivers:TB, model_image:TB,
+    ground:{aihe:"asfaltti ja valmiit alustat", body:TB},
+    accessories:[{product:null,reason:TB}],
+    cost_comparison:TB,
+    videos:[],
+    requires_permit:false, permit_body:null,
+    faq_local:[[TB,TB]],
+    references:[]}
+};
+
+(function(){
+  "use strict";
+  const E=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const L=u=>E(SPECLINK(u));
+  const J=JAETTU;
+
+  const avain=(new URLSearchParams(location.search).get("kohde")||"").toLowerCase();
+  const K=KOHTEET[avain]||KOHTEET.autokatos;
+
+  const t=s=>String(s==null?"":s).replace(/\{(gen|ill|nimi|per)\}/g,(_,k)=>K[k]);
+  const T=s=>E(t(s)).replace(/\[([^\]]+)\]/g,m=>'<span class="tbd">'+m+"</span>");
+
+  document.title=K.seo_title;
+  document.querySelector('meta[name="description"]').setAttribute("content",K.seo_description);
+
+  /* Ristiinlinkityssääntö 6: murupolku on pakollinen, koska orgaaninen kävijä
+     laskeutuu suoraan tälle sivulle. */
+  SPECSHELL(E,{crumb:[["Etusivu","/"],["Perustuksen teko",J.url.kayttokohteet],[K.nimi,null]],
+               active:"Perustuksen teko"});
+
+  const sect=(inner,id)=>'<div class="w"'+(id?' id="'+id+'"':"")+"><section>"+inner+"</section></div>";
+  const head=(h,p)=>'<div class="head"><h2>'+T(h)+"</h2>"+(p?"<p>"+T(p)+"</p>":"")+"</div>";
+  const arrow=x=>T(x)+" →";
+  const mitoita=sijainti=>'<a class="btn btn-1" href="'+L(J.url.mitoita)+
+    '" data-event="cta_konfiguraattori" data-sijainti="'+E(sijainti)+'">'+T(J.cta_mitoita)+"</a>";
+  const more=(l,sij)=>'<a class="more" href="'+L(l[1])+'" data-event="'+E(l[2])+'"'+
+    (sij?' data-sijainti="'+E(sij)+'"':"")+">"+arrow(l[0])+"</a>";
+  const erotin='<span aria-hidden="true"> · </span>';
+
+  /* Videot slotin mukaan. Tyhjä slot on archive, joka näkyy vain moduulissa 13. */
+  const slot=s=>K.videos.filter(v=>(v.slot||"archive")===s);
+  const vidlist=vs=>vs.length?'<ul class="vidlist">'+vs.map(v=>"<li>"+
+    (v.url?'<a href="'+E(v.url)+'" data-event="cta_asennusvideo">'+T(v.title)+"</a>":T(v.title))+
+    (v.topic?' <span class="vt">'+T(v.topic)+"</span>":"")+"</li>").join("")+"</ul>":"";
+
+  /* Moduuli 4: aina viisi askelta, 1 ja 5 kentistä, 2–4 jaetusta sisällöstä. */
+  const askeleet=[K.step_first].concat(J.shared_steps_2_3_4,[K.step_last]);
+  /* Moduuli 11: neljä jaettua kysymystä ensin, sitten sivukohtaiset. */
+  const ukk=J.shared_faq.concat(K.faq_local);
+
+  document.getElementById("main").innerHTML=
+
+  /* 1 · Hero. H1 on object_name sellaisenaan. Ensisijaisen CTA:n vieressä
+        hero_value_prop, toissijainen on ankkuri moduuliin 4. */
+  '<div class="w"><section class="hero">'+
+    "<div><h1>"+T(K.object_name)+'</h1><p class="lede">'+T(K.hero_intro)+"</p>"+
+      '<div class="cta">'+mitoita("hero")+
+        '<span class="sub">'+T(K.hero_value_prop)+"</span></div>"+
+      '<div class="cta cta-2">'+more(J.hero_cta2,"hero")+"</div></div>"+
+    '<div class="hero-img">'+T(J.hero_image)+"</div></section></div>"+
+
+  /* 2 · Kuvanosto. Kuvateksti on pakollinen jokaisella kuvalla; ilman kuvatekstiä
+        kuvaa ei renderöidä. Merkitty kuvateksti on kuvateksti, ei puuttuva kenttä. */
+  sect(head(J.h2_kuvanosto)+
+    '<div class="cases cases-3">'+K.gallery.filter(g=>g.caption).map(g=>'<div class="case">'+
+      '<div class="ph ph-1610">'+T(g.image)+"</div><p>"+T(g.caption)+"</p></div>").join("")+"</div>")+
+
+  /* 3 · Kohteen oma kysymys. Ennen tuotepuhetta. Ainoa moduuli joka erottaa sivut
+        toisistaan hakutuloksessa, joten otsikko on H2 ja teksti indeksoituvaa. */
+  sect(head(K.focus.heading)+"<p>"+T(K.focus.body)+"</p>"+vidlist(slot("focus")),"kysymys")+
+
+  /* 4 · Näin perustus tehdään. Viisi askelta, jokaisella voi olla video. Moduulin
+        lopussa linkki kirjalliseen asennusohjeeseen. */
+  sect(head(J.h2_tekeminen)+'<div class="flow">'+
+    askeleet.map((s,i)=>'<div class="st"><div class="ph ph-1610">'+T(s.img)+"</div>"+
+      '<div class="tx"><span class="n" aria-hidden="true">'+(i+1)+"</span><b>"+T(s.h)+"</b>"+
+      "<p>"+T(s.p)+"</p>"+vidlist(slot("step_"+(i+1)))+"</div></div>").join("")+"</div>"+
+    '<p class="next">'+more(J.ohje_linkki)+"</p>","tekeminen")+
+
+  /* 5 · Mikä pilari tähän. Alkaa valintasäännöstä, ei mallitunnuksesta. Ei
+        kuormalukuja eikä taulukoita. Päättyy mitoitus-CTA:han ja perhelinkkiin. */
+  sect('<div class="side"><div>'+
+    head(J.h2_pilari,K.selection_rule)+
+    (K.exception_model?"<p>"+T(K.exception_condition)+"</p>":"")+
+    "<p>"+T(K.quantity_drivers)+"</p>"+
+    '<div class="cta-block">'+mitoita("pilari")+"</div>"+
+    '<p class="next">'+
+      '<a class="more" href="'+L(K.primary_model[1])+'" data-event="cta_pilariperhe" data-perhe="'+
+        E(t(K.primary_model[0]))+'">'+arrow("Katso "+K.primary_model[0])+"</a>"+
+      erotin+more(J.vertaa)+"</p></div>"+
+    '<div class="ph ph-43">'+T(K.model_image)+"</div></div>","pilari")+
+
+  /* 6 · Maapohja ja olosuhteet. Järjestys: kaivamattomuus jaetusta, routa jaetusta,
+        kohteen oma haaste, talviasennus jaetusta. */
+  sect(head(J.h2_speksista.maapohja)+
+    "<p>"+T(J.shared_no_digging)+"</p>"+
+    "<p>"+T(J.shared_frost_text)+"</p>"+
+    "<p>"+T(K.ground.body)+"</p>"+
+    "<p>"+T(J.shared_winter_text)+"</p>"+vidlist(slot("ground")),"maapohja")+
+
+  /* 7 · Tarvikkeet. Enintään kolme. Jokainen tuo mukanaan oman videonsa ja mittansa
+        tuotedatasta, ei tältä sivulta. */
+  sect(head(J.h2_tarvikkeet)+
+    '<ul class="uses">'+K.accessories.slice(0,3).map(a=>"<li>"+
+      (a.product?'<a href="'+L(a.product[1])+'" data-event="cta_tarvikkeet" data-tarvike="'+
+        E(t(a.product[0]))+'">'+T(a.product[0])+"</a> ":"")+
+      T(a.reason)+
+      (a.product&&a.product[2]?'<ul class="vidlist"><li>'+T("[TÄYTETTÄVÄ]")+
+        ' <span class="vt">Asennusvideo: '+T(a.product[0])+"</span></li></ul>":"")+
+      "</li>").join("")+"</ul>"+
+    vidlist(slot("accessory"))+
+    "<p>"+T(J.shared_accessory_note)+"</p>"+
+    '<p class="next">'+more(J.tarvikkeet_linkki)+"</p>","tarvikkeet")+
+
+  /* 8 · Näin hinta muodostuu. Ei hintoja eikä lukuja. Kolme osaa: mistä kustannus
+        koostuu (jaettu), kohteen vertailu, hinnan kysyminen kauppiaalta (jaettu). */
+  sect(head(J.h2_speksista.hinta)+
+    "<p>"+T(J.shared_cost_intro)+"</p>"+
+    "<p>"+T(K.cost_comparison)+"</p>"+
+    "<p>"+T(J.shared_cost_ask)+"</p>","hinta")+
+
+  /* 9 · Luvat ja määräykset, ehdollinen. Ei lakitekstiä, ohjaus kunnan
+        rakennusvalvontaan. */
+  (K.requires_permit?sect(head(J.h2_speksista.luvat)+
+    "<p>"+T(K.permit_body)+"</p>","luvat"):"")+
+
+  /* 10 · Näin pääset alkuun. Kokonaan jaettua. Jälleenmyyjälista tulee yhdestä
+         lähteestä (SPEC.dealers, SPECDEALERS). Lopussa tarjouspyyntö, puhelinnumero ja
+         vastausaikalupaus: ristiinlinkityssääntö 7. */
+  sect(head(J.shared_getting_started.h2)+
+    '<ol class="steps">'+J.shared_getting_started.steps.map(s=>
+      "<li><b>"+T(s[0]||J.cta_mitoita)+"</b><span>"+T(s[1])+"</span></li>").join("")+"</ol>"+
+    '<div class="cta-block">'+mitoita("aloitus")+"</div>"+
+    '<div class="buyrow"><h3 class="lbl">'+T(J.shared_getting_started.ostat_h3)+"</h3>"+
+      SPECDEALERS(E,{cls:"dealers-4",sijainti:"aloitus"})+"</div>"+
+    '<div class="buyrow"><h3 class="lbl">'+T(J.shared_getting_started.iso_h3)+"</h3>"+
+      '<p class="fine">'+T(J.shared_phone)+erotin+T(J.shared_response_promise)+"</p>"+
+      '<p class="next">'+more(J.tarjous_linkki,"aloitus")+"</p></div>","aloita")+
+
+  /* 11 · Usein kysyttyä. Neljä jaettua ensin, sitten sivukohtaiset. */
+  sect(head(J.h2_ukk)+'<div class="faq">'+ukk.map((f,i)=>
+    "<details><summary>"+T(f[0])+'<span class="c" aria-hidden="true">▾</span></summary>'+
+    '<div class="b"><p>'+T(f[1])+
+      (i===J.shared_faq.length-1?" "+more(J.ukk_ostat_linkki,"ukk"):"")+
+    "</p></div></details>").join("")+"</div>","ukk")+
+
+  /* 12 · Referenssit. Suodatus object_type-kentällä. Viidellä sivulla kuudesta
+         suodatus palauttaa tyhjän, joten varareitti on oletus: kokemuslinkki ja
+         asiakaslainaus, ei tyhjää tilaa. */
+  sect(head(J.h2_speksista.referenssit)+
+    (K.references.length
+      ? '<div class="cases cases-3">'+K.references.map(r=>'<div class="case">'+
+          '<div class="ph ph-1610">'+T(r.image)+"</div><p>"+T(r.caption)+"</p></div>").join("")+"</div>"
+      : '<div class="quote"><div class="ph ph-43">'+T(TB)+"</div>"+
+        "<div><blockquote>"+T(J.shared_reference_quote)+"</blockquote>"+
+        "<cite>"+T(J.shared_reference_cite)+"</cite></div></div>")+
+    vidlist(slot("reference"))+
+    '<p class="next">'+more(J.referenssit_linkki)+"</p>","referenssit")+
+
+  /* 13 · Koko videosarja, vain kun videoita on neljä tai enemmän. Arkisto, ei
+         ensisijainen tapa löytää jakso. Aiheet näkyvät tekstinä. */
+  (K.videos.length>=4?sect(head(J.h2_speksista.videosarja)+
+    vidlist(K.videos),"videosarja"):"");
+
+  /* FAQPage-schema, moduuli 11. Vain kysymykset joilla on oikea teksti: merkitty
+     kenttä ei kuulu rakenteiseen dataan. */
+  const kysymykset=ukk.filter(f=>f[0]&&f[0].indexOf("[")<0&&f[1]&&f[1].indexOf("[")<0);
+  if(kysymykset.length){
+    const ld=document.createElement("script");
+    ld.type="application/ld+json";
+    ld.textContent=JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
+      mainEntity:kysymykset.map(f=>({"@type":"Question",name:t(f[0]),
+        acceptedAnswer:{"@type":"Answer",text:t(f[1])}}))});
+    document.head.appendChild(ld);
+  }
+
+  /* Kuusi sivua, yksi tiedosto: sivun omat tapahtumat kantavat kohteen, jotta raportti
+     erottaa ne ilman että se nojaa osoitteeseen. Kuoren tapahtumat jäävät ulkopuolelle. */
+  [...document.querySelectorAll("#main [data-event]")].forEach(e=>{e.dataset.kohde=K.nimi;});
+
+  /* Harmonikan avaus on mitattava tapahtuma, sama toteutus kuin tarvikesivulla. */
+  [...document.querySelectorAll(".faq details")].forEach(function(d){
+    d.addEventListener("toggle",function(){
+      if(!d.open)return;
+      d.dataset.event="avaus_ukk";
+      d.dataset.kohde=K.nimi;
+      /* Tunnus, ei kysymysteksti: GA4 katkaisee parametriarvon 100 merkkiin, ja
+         suomenkieliset kysymykset eroavat toisistaan vasta lopussa — katkaistuna
+         kaksi eri kysymystä olisi datassa sama rivi. */
+      var q=d.querySelector("summary").textContent.replace("▾","").trim().toLowerCase()
+        .replace(/[äå]/g,"a").replace(/ö/g,"o").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+      d.dataset.kysymys=q.slice(0,60).replace(/-$/,"");
+    });
+  });
+})();
+</script>
+</body>
+</html>
