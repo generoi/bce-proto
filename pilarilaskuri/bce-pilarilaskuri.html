@@ -397,6 +397,12 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .plan .talo{fill:var(--rule)}
 .plan .talotx{fill:var(--ink-3);font-weight:400}
 .mitat-l{margin:0 0 var(--s3)}
+/* L:n suunta: neljä kuvaketta rivissä. Valittu saa saman reunuksen kuin valintakortti. */
+.suunta-h{margin:var(--s3) 0 var(--s2)}
+.suunnat{display:grid;grid-template-columns:repeat(4,minmax(0,64px));gap:var(--s2);margin:0 0 var(--s2)}
+.suunta{aspect-ratio:1;padding:4px;border:1px solid var(--rule-2);border-radius:var(--r-ctl);background:#fff;cursor:pointer}
+.suunta img{display:block;width:100%;height:auto}
+.suunta[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .group{margin:0 0 var(--s5)}
 /* Tuoterivi: kuva · nimi ja määrä samalla rivillä · tiedot alla.
    Määrä kuuluu nimen viereen, koska kysymys on "montako TÄTÄ" — erillisenä
@@ -883,7 +889,12 @@ var FI = {
   'k8.l-seina':'L-muoto rakennuksen seinää vasten', 'k8.l-seina.d':'pitkä sivu kiinni sokkelissa',
   'k8.l-vapaa':'L-muoto, vapaasti seisova', 'k8.l-vapaa.d':'pilarit joka sivulla',
   'k8.short':'terassin muoto',
-  'k2.la':'Alaosan syvyys', 'k2.lb':'Sivuosan leveys',
+  /* Vaaka- ja pystyosa eivätkä ala- ja sivuosa: L:ää voi peilata, jolloin "alaosa"
+     olisi ylhäällä. Vaakaosa kulkee koko leveydeltä, pystyosa koko pituudelta. */
+  'k2.la':'Vaakaosan syvyys', 'k2.lb':'Pystyosan leveys',
+  'k2.suunta':'Mihin kulmaan lovi tulee?', 'k2.suunta.nurkka':'Missä kulmassa talo on?',
+  'k2.suunta.yo':'oikealla ylhäällä', 'k2.suunta.yv':'vasemmalla ylhäällä',
+  'k2.suunta.ao':'oikealla alhaalla', 'k2.suunta.av':'vasemmalla alhaalla',
   'k2.wall':'Seinä', 'k2.house':'Talo',
   'k2.poles.tolppa.h':'Montako tolppaa asennat?',
   'k2.poles.tolppa.lead':'Jokainen tolppa saa oman pilarin.',
@@ -1019,7 +1030,7 @@ var FI = {
   'how.mokki.tp':'BCE ohjaa pienmökit TP:hen; raja päätetään.',
   'how.spacing':'Palkki {beam} → tukien väli {sp} m (Kestopuu, taulukon alaraja). Ruudukko {cols} × {rows} = {n} pilaria, väli {sw} × {sl} m.',
   'how.spacing.muoto':'Palkki {beam} → tukien väli enintään {sp} m (Kestopuu, taulukon alaraja). Jokainen sivu jaetaan omalla välillään, joten pisimmät välit ovat {sw} ja {sl} m ja pilareita tulee {n}.',
-  'how.shape.l':'L-muoto: alaosan syvyys {a} m ja sivuosan leveys {b} m, yhteensä {area} m². Sisänurkka saa aina oman pilarin.',
+  'how.shape.l':'L-muoto: vaakaosan syvyys {a} m ja pystyosan leveys {b} m, yhteensä {area} m². Sisänurkka saa aina oman pilarin.',
   'how.wall':'Terassi on kiinni rakennuksessa, joten seinän linjalle ei tule pilareita ({m} kpl vähemmän). Seinä kantaa puolet viereisestä pilarivälistä, joten pilareille jää {a} m² kokonaisalasta {area} m².',
   'how.routa':'Maapohjaa ei kysytä: pilarien alle tehdään aina routaeristys ja vakaa, tiivistetty pohja.',
   'how.height.range':'{family}-pilarin korkeusalue on {min}–{max} mm. Maaston korkeuseroa ei kysytä, joten korkeus valitaan lattiakorkeuden mukaan.',
@@ -1053,7 +1064,7 @@ var FI = {
   'f.h':'Kaavat',
   'f.v.area':'pinta-ala', 'f.v.w':'leveys', 'f.v.l':'pituus',
   'f.v.n':'pilareita', 'f.v.cols':'sarakkeita', 'f.v.rows':'rivejä',
-  'f.v.poles':'tolppia', 'f.v.la':'alaosan syvyys', 'f.v.lb':'sivuosan leveys',
+  'f.v.poles':'tolppia', 'f.v.la':'vaakaosan syvyys', 'f.v.lb':'pystyosan leveys',
   'f.v.areaP':'pilarien kantama ala', 'f.v.wallN':'seinän linjalta pois',
   'f.v.q':'kuorma neliölle', 'f.v.F':'kuorma per pilari', 'f.v.cap':'kantavuus',
   'f.v.gapw':'väli leveyssuunnassa', 'f.v.gapl':'väli pituussuunnassa',
@@ -1128,20 +1139,36 @@ function heightsOf(f, R){
    (syvyys a) ja sivuosa koko pituudelta (leveys b). Suorakaide on L, jolla
    a = pituus ja b = leveys, joten kaikki muodot kulkevat saman laskennan läpi.
 
-   Muoto kysytään vain terassilta. Rakennus on aina vapaasti seisova suorakaide. */
+   Muoto kysytään vain terassilta. Rakennus on aina vapaasti seisova suorakaide.
+
+   Suunta (6.10.2026): puuttuva kulma voi olla missä tahansa neljästä kulmasta.
+   Laskenta tehdään aina yllä kuvatussa perusasennossa ja tulos peilataan lopuksi
+   (fx: vasen–oikea, fy: ylä–ala). Peilaus ei muuta pilarimäärää eikä kuormaa,
+   vain sen, missä pilarit ja seinä kuvassa ovat. */
 var MUODOT = ['vapaa', 'seina', 'nurkka', 'l-vapaa', 'l-seina'];
+/* Puuttuvan kulman paikka: y = ylhäällä, a = alhaalla, o = oikealla, v = vasemmalla. */
+var LSUUNNAT = ['yo', 'yv', 'ao', 'av'];
 function shapeOf(state){
   var W = state.w, L = state.l;
   var s = (state.building === 'terassi' && state.shape) ? state.shape : 'vapaa';
   var isL = (s === 'nurkka' || s === 'l-vapaa' || s === 'l-seina');
   var a = isL ? Math.min(state.la, L) : L;
   var b = isL ? Math.min(state.lb, W) : W;
+  var suunta = isL && LSUUNNAT.indexOf(state.lsuunta) >= 0 ? state.lsuunta : 'yo';
   var walls = [];
   if (s === 'seina')   walls.push([[0, 0], [W, 0]]);
-  if (s === 'l-seina') walls.push([[0, 0], [0, L]]);
+  /* Seinää vasten olevan L:n seinä on pidempi kahdesta täyspitkästä ulkosivusta:
+     vaihtoehdon lupaus on "pitkä sivu kiinni sokkelissa". Ennen 6.10.2026 seinä oli
+     aina pystysivulla, jolloin 6 × 5 m L oli seinää vasten lyhyeltä sivultaan. */
+  if (s === 'l-seina') walls.push(W > L ? [[0, L], [W, L]] : [[0, 0], [0, L]]);
   if (s === 'nurkka')  walls.push([[b, 0], [b, L - a]], [[b, L - a], [W, L - a]]);
-  return { id:s, kind:isL ? 'L' : 'rect', w:W, l:L, a:a, b:b, walls:walls,
+  return { id:s, kind:isL ? 'L' : 'rect', w:W, l:L, a:a, b:b, walls:walls, suunta:suunta,
+           fx: suunta.charAt(1) === 'v', fy: suunta.charAt(0) === 'a',
            area: isL ? r6(W * a + b * (L - a)) : r6(W * L) };
+}
+/* Perusasennon piste peilattuna suuntaan. Käytetään sekä moottorissa että kuvassa. */
+function peilaa(sh, p){
+  return [sh.fx ? r6(sh.w - p[0]) : p[0], sh.fy ? r6(sh.l - p[1]) : p[1]];
 }
 /* Jakoväli yhdelle akselille. Jokainen osuus jaetaan erikseen, jotta L:n
    sisänurkka saa aina pilarin; suorakaiteella osuuksia on yksi ja tulos on sama
@@ -1189,6 +1216,12 @@ function layoutFor(sh, sp){
     if (tr > mx) mx = tr;
   }
   var maxGap = function(v){ var m = 0; for (k = 1; k < v.length; k++) m = Math.max(m, v[k] - v[k - 1]); return r6(m); };
+  /* Peilaus vasta lopuksi: välit ja alat ovat peilauksessa samat. */
+  if (sh.fx || sh.fy){
+    pts = pts.map(function(p){ return peilaa(sh, p); });
+    if (sh.fx) xs = xs.map(function(x){ return r6(sh.w - x); }).reverse();
+    if (sh.fy) ys = ys.map(function(y){ return r6(sh.l - y); }).reverse();
+  }
   return { pts:pts, tribs:tribs, n:pts.length, cols:xs.length, rows:ys.length, xs:xs, ys:ys,
            spacing_w:maxGap(xs), spacing_l:maxGap(ys), nominal_spacing:sp,
            kind:sh.kind, walls:sh.walls.length, wallN:wallN,
@@ -1244,7 +1277,8 @@ function compute(state, R, lang){
   var shape = shapeOf(state);
   var area = shape.area;
   out.area = area;
-  out.shape = { id:shape.id, kind:shape.kind, a:shape.a, b:shape.b, walls:shape.walls };
+  out.shape = { id:shape.id, kind:shape.kind, a:shape.a, b:shape.b, suunta:shape.suunta,
+                walls:shape.walls.map(function(w){ return [peilaa(shape, w[0]), peilaa(shape, w[1])]; }) };
   var bname = t('b.' + state.building);
 
   /* Vaihe 1 – kieltäytyminen ennen laskentaa. Korkeusero ja ympärivuotinen mökki
@@ -1507,7 +1541,7 @@ function freshState(){
      vastauksena, jota asiakas ei antanut. Nolla tarkoittaa "ei annettu". */
   /* la ja lb ovat L-muodon osien syvyys ja leveys. null = muotoa ei ole valittu,
      jolloin ne asetetaan vasta L:n valinnassa, ks. pick. */
-  return { building:null, w:4, l:3, cover:null, heated:null, poles:2, shape:null, la:null, lb:null,
+  return { building:null, w:4, l:3, cover:null, heated:null, poles:2, shape:null, la:null, lb:null, lsuunta:'yo',
            beam:null, thickness:null, fixing:null, mass:null, massValue:0,
            postcode:'', email:'', tips:false, contact:'', message:'' };
 }
@@ -1754,10 +1788,20 @@ var MUOTOKUVA = {
   nurkka:    { poly:[[15,15],[45,15],[45,55],[85,55],[85,85],[15,85]], talo:[45,6,94,55],
                walls:[[[45,15],[45,55]], [[45,55],[85,55]]] },
   'l-seina': { poly:[[30,15],[58,15],[58,55],[88,55],[88,85],[30,85]], talo:[6,8,30,92], walls:[[[30,15],[30,85]]] },
-  'l-vapaa': { poly:[[15,15],[45,15],[45,55],[85,55],[85,85],[15,85]], walls:[] }
+  'l-vapaa': { poly:[[15,15],[45,15],[45,55],[85,55],[85,85],[15,85]], walls:[] },
+  /* Vain suuntavalitsimeen: kun terassi on leveämpi kuin pitkä, seinä on vaakasivulla
+     (shapeOf), ja kuvakkeen on näytettävä sama. */
+  'l-seina-vaaka': { poly:[[12,10],[40,10],[40,50],[88,50],[88,78],[12,78]], talo:[6,78,94,96], walls:[[[12,78],[88,78]]] }
 };
-function muotoKuva(id){
-  var m = MUOTOKUVA[id], o = '';
+/* suunta peilaa kuvakkeen samoin kuin peilaa() pohjapiirroksen: mittaruudun
+   suuntavalitsin näyttää L:n jokaisessa neljässä asennossa. */
+function muotoKuva(id, suunta){
+  var m0 = MUOTOKUVA[id], o = '';
+  var fx = !!suunta && suunta.charAt(1) === 'v', fy = !!suunta && suunta.charAt(0) === 'a';
+  var pp = function(p){ return [fx ? 100 - p[0] : p[0], fy ? 100 - p[1] : p[1]]; };
+  var m = { poly:m0.poly.map(pp), walls:m0.walls.map(function(w){ return [pp(w[0]), pp(w[1])]; }),
+            talo: m0.talo ? (function(t){ var p1 = pp([t[0], t[1]]), p2 = pp([t[2], t[3]]);
+              return [Math.min(p1[0], p2[0]), Math.min(p1[1], p2[1]), Math.max(p1[0], p2[0]), Math.max(p1[1], p2[1])]; })(m0.talo) : null };
   var seinalla = function(p){
     return m.walls.some(function(w){
       return p[0] >= Math.min(w[0][0], w[1][0]) && p[0] <= Math.max(w[0][0], w[1][0])
@@ -1847,6 +1891,16 @@ function rMitat(){
        saman mitan omalla mittaviivallaan. */
     if (onL()){
       var la = numLimits('la'), lb = numLimits('lb');
+      /* Suunta ennen osien mittoja: ensin mihin päin L kääntyy, sitten kuinka leveä
+         kumpikin osa on. Nurkkamallissa lovi on talo, joten kysymys puhuu talosta. */
+      o += '<p class="slbl suunta-h">' + esc(t(state.shape === 'nurkka' ? 'k2.suunta.nurkka' : 'k2.suunta')) + '</p>'
+        +  '<div class="suunnat" role="group">' + LSUUNNAT.map(function(k){
+             return '<button type="button" class="suunta" data-act="lsuunta" data-val="' + k + '"'
+               + ' aria-pressed="' + (state.lsuunta === k ? 'true' : 'false') + '"'
+               + ' aria-label="' + esc(t('k2.suunta.' + k)) + '">'
+               + '<img src="' + muotoKuva(state.shape === 'l-seina' && state.w > state.l ? 'l-seina-vaaka' : state.shape, k)
+               + '" alt="" aria-hidden="true"></button>';
+           }).join('') + '</div>';
       o += '<div class="mitat-l">'
         +  stepper('la', t('k2.la'), state.la, la.min, la.max, 0.5, 'm')
         +  stepper('lb', t('k2.lb'), state.lb, lb.min, lb.max, 0.5, 'm') + '</div>';
@@ -1906,9 +1960,12 @@ function planSVG(o){
   var g = '', k;
   /* Muoto: suorakaide tai L, ja seinät. Ilman o.shape piirros on vapaa suorakaide. */
   var sh = o.shape || { kind:'rect', walls:[], a:L, b:W, id:'vapaa' };
-  var poly = sh.kind === 'L'
+  /* Kaikki muodon pisteet lasketaan perusasennossa ja peilataan suuntaan, samalla
+     funktiolla kuin moottori peilaa pilarit — kuva ja pilarit eivät voi erota. */
+  var P = function(p){ return peilaa(sh, p); };
+  var poly = (sh.kind === 'L'
     ? [[0, 0], [sh.b, 0], [sh.b, L - sh.a], [W, L - sh.a], [W, L], [0, L]]
-    : [[0, 0], [W, 0], [W, L], [0, L]];
+    : [[0, 0], [W, 0], [W, L], [0, L]]).map(P);
   var polyAttr = poly.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ');
 
   /* metriruudukko */
@@ -1929,30 +1986,40 @@ function planSVG(o){
      jotta terassin reuna jää sen päälle. Muilla seinällisillä muodoilla talo jää
      kuvan ulkopuolelle, ja seinä näkyy pelkkänä paksuna reunana. */
   if (sh.id === 'nurkka'){
-    g += '<rect class="talo" x="' + f1(X(sh.b)) + '" y="' + f1(Y(0)) + '" width="' + f1((W - sh.b) * sc)
-      +  '" height="' + f1((L - sh.a) * sc) + '"/>'
-      +  '<text class="dimtx talotx" x="' + f1(X((sh.b + W) / 2)) + '" y="' + f1(Y((L - sh.a) / 2) + 4)
+    var t1 = P([sh.b, 0]), t2 = P([W, L - sh.a]), tc = P([(sh.b + W) / 2, (L - sh.a) / 2]);
+    g += '<rect class="talo" x="' + f1(X(Math.min(t1[0], t2[0]))) + '" y="' + f1(Y(Math.min(t1[1], t2[1])))
+      +  '" width="' + f1((W - sh.b) * sc) + '" height="' + f1((L - sh.a) * sc) + '"/>'
+      +  '<text class="dimtx talotx" x="' + f1(X(tc[0])) + '" y="' + f1(Y(tc[1]) + 4)
       +  '" text-anchor="middle">' + esc(t('k2.house')) + '</text>';
   }
   /* rakennuksen ulkoreuna */
   g += '<polygon class="outline" points="' + polyAttr + '"/>';
   (sh.walls || []).forEach(function(w){
-    g += '<line class="wall" x1="' + f1(X(w[0][0])) + '" y1="' + f1(Y(w[0][1])) + '" x2="' + f1(X(w[1][0]))
-      +  '" y2="' + f1(Y(w[1][1])) + '"/>';
+    var w0 = P(w[0]), w1 = P(w[1]);
+    g += '<line class="wall" x1="' + f1(X(w0[0])) + '" y1="' + f1(Y(w0[1])) + '" x2="' + f1(X(w1[0]))
+      +  '" y2="' + f1(Y(w1[1])) + '"/>';
+    /* Nurkkamallissa talo nimeää seinät itse. Muuten nimi seinän viereen, terassin
+       puolelle: sisäänpäin on aina kohti kuvan keskustaa. */
+    if (sh.id === 'nurkka') return;
+    var mx = (w0[0] + w1[0]) / 2, my = (w0[1] + w1[1]) / 2;
+    if (Math.abs(w0[0] - w1[0]) < 1e-9)
+      g += '<text class="dimtx" transform="translate(' + f1(X(mx) + (mx < W / 2 ? 15 : -7)) + ',' + f1(Y(my))
+        +  ') rotate(-90)" text-anchor="middle">' + esc(t('k2.wall')) + '</text>';
+    else
+      g += '<text class="dimtx" x="' + f1(X(mx)) + '" y="' + f1(Y(my) + (my < L / 2 ? 15 : -7))
+        +  '" text-anchor="middle">' + esc(t('k2.wall')) + '</text>';
   });
-  if (sh.id === 'seina')
-    g += '<text class="dimtx" x="' + f1(X(W / 2)) + '" y="' + f1(Y(0) + 15) + '" text-anchor="middle">' + esc(t('k2.wall')) + '</text>';
-  if (sh.id === 'l-seina')
-    g += '<text class="dimtx" transform="translate(' + f1(X(0) + 15) + ',' + f1(Y(L / 2)) + ') rotate(-90)" text-anchor="middle">'
-      +  esc(t('k2.wall')) + '</text>';
   /* L:n osien mitat piirretään osien sisään, koska ulkoreunoilla kulkevat jo leveys
      ja pituus. Viiva on sillä reunalla, jota säädin muuttaa. */
   if (sh.kind === 'L' && !pts.length){
-    var ax = X(W) - 12, by = Y(0) + 12;
-    g += '<line class="dim" x1="' + f1(ax) + '" y1="' + f1(Y(L - sh.a)) + '" x2="' + f1(ax) + '" y2="' + f1(Y(L)) + '"/>'
-      +  '<text class="dimtx" x="' + f1(ax - 6) + '" y="' + f1(Y(L - sh.a / 2) + 4) + '" text-anchor="end">' + esc(num(sh.a)) + ' m</text>'
-      +  '<line class="dim" x1="' + f1(X(0)) + '" y1="' + f1(by) + '" x2="' + f1(X(sh.b)) + '" y2="' + f1(by) + '"/>'
-      +  '<text class="dimtx" x="' + f1(X(sh.b / 2)) + '" y="' + f1(by + 15) + '" text-anchor="middle">' + esc(num(sh.b)) + ' m</text>';
+    var a1 = P([W - 12 / sc, L - sh.a]), a2 = P([W - 12 / sc, L]), am = P([W - 12 / sc, L - sh.a / 2]);
+    var b1 = P([0, 12 / sc]), b2 = P([sh.b, 12 / sc]), bm = P([sh.b / 2, 12 / sc]);
+    g += '<line class="dim" x1="' + f1(X(a1[0])) + '" y1="' + f1(Y(a1[1])) + '" x2="' + f1(X(a2[0])) + '" y2="' + f1(Y(a2[1])) + '"/>'
+      +  '<text class="dimtx" x="' + f1(X(am[0]) + (sh.fx ? 6 : -6)) + '" y="' + f1(Y(am[1]) + 4) + '" text-anchor="'
+      +  (sh.fx ? 'start' : 'end') + '">' + esc(num(sh.a)) + ' m</text>'
+      +  '<line class="dim" x1="' + f1(X(b1[0])) + '" y1="' + f1(Y(b1[1])) + '" x2="' + f1(X(b2[0])) + '" y2="' + f1(Y(b2[1])) + '"/>'
+      +  '<text class="dimtx" x="' + f1(X(bm[0])) + '" y="' + f1(Y(bm[1]) + (sh.fy ? -6 : 15)) + '" text-anchor="middle">'
+      +  esc(num(sh.b)) + ' m</text>';
   }
 
   /* Pilarit. Säde seuraa pilarien väliä, jottei tiheä ruudukko mene puuroksi.
@@ -2846,6 +2913,12 @@ phone.addEventListener('click', function(e){
        ole vielä valmis, ja eteneminen jää painikkeen varaan. Ilman tätä lukukenttä
        ehti näkyä 150 millisekuntia eikä siihen päässyt koskaan kirjoittamaan. */
     if (!phone.querySelector('[data-act="next"]')) setTimeout(next, 150);
+    return;
+  }
+  if (a === 'lsuunta'){
+    state.lsuunta = b.getAttribute('data-val');
+    push('laskuri_lsuunta', { suunta:state.lsuunta, muoto:state.shape });
+    render();
     return;
   }
   if (a === 'bump'){
