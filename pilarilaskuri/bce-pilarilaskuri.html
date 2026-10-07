@@ -396,7 +396,18 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .plan .wall{stroke:var(--ink);stroke-width:4;stroke-linecap:square}
 .plan .talo{fill:var(--rule)}
 .plan .talotx{fill:var(--ink-3);font-weight:400}
-.mitat-l{margin:0 0 var(--s3)}
+.mitat-reunat{margin:0 0 var(--s3)}
+.mitat-reunat .m-kuva .plan svg{max-height:none;overflow:visible}
+.reuna-ohje{margin:var(--s1) 0 0}
+.reuna-mitta{display:block;font-weight:400;font-size:var(--fs-fine);color:var(--ink-3)}
+.plan .rchip{cursor:pointer;outline:none}
+.plan .reuna-hit{stroke:transparent;stroke-width:28;pointer-events:stroke}
+.plan .reuna-on{stroke:var(--accent);stroke-width:4;stroke-linecap:square}
+.plan .rchip rect{fill:var(--surface);stroke:var(--ink-3);stroke-width:1}
+.plan .rchip text{font-family:var(--ff);font-size:12px;font-weight:600;fill:var(--ink)}
+.plan .rchip.on rect{fill:var(--accent);stroke:var(--accent)}
+.plan .rchip.on text{fill:var(--on-accent)}
+.plan .rchip:focus-visible rect{stroke:var(--ink);stroke-width:2}
 /* L:n suunta: neljä kuvaketta rivissä. Valittu saa saman reunuksen kuin valintakortti. */
 .suunta-h{margin:var(--s3) 0 var(--s2)}
 .suunnat{display:grid;grid-template-columns:repeat(4,minmax(0,64px));gap:var(--s2);margin:0 0 var(--s2)}
@@ -892,6 +903,10 @@ var FI = {
   /* Vaaka- ja pystyosa eivätkä ala- ja sivuosa: L:ää voi peilata, jolloin "alaosa"
      olisi ylhäällä. Vaakaosa kulkee koko leveydeltä, pystyosa koko pituudelta. */
   'k2.la':'Vaakaosan syvyys', 'k2.lb':'Pystyosan leveys',
+  'k2.reuna.ohje':'Napauta reunaa, niin voit muuttaa sen mittaa.',
+  'k2.reuna.ala':'Alareuna', 'k2.reuna.yla':'Yläreuna', 'k2.reuna.vasen':'Vasen reuna', 'k2.reuna.oikea':'Oikea reuna',
+  'k2.reuna.mitta.w':'koko leveys', 'k2.reuna.mitta.l':'koko pituus',
+  'k2.reuna.mitta.la':'vaakaosan syvyys', 'k2.reuna.mitta.lb':'pystyosan leveys',
   'k2.suunta':'Mihin kulmaan lovi tulee?', 'k2.suunta.nurkka':'Missä kulmassa talo on?',
   'k2.suunta.yo':'oikealla ylhäällä', 'k2.suunta.yv':'vasemmalla ylhäällä',
   'k2.suunta.ao':'oikealla alhaalla', 'k2.suunta.av':'vasemmalla alhaalla',
@@ -1885,14 +1900,10 @@ function rMitat(){
       +  stepper('poles', t('k2.poles.lbl'), state.poles, 1, 20, 1, '');
   } else {
     o += '<h2>' + esc(t('k2.h', { building:t('b.' + b + '.k2') })) + '</h2><p class="lede">' + esc(t('k2.lead')) + '</p>'
-      +  mitatLohko();
-    /* L:n osat ovat tavallisia vaakasäätimiä nimilapun kanssa: niillä ei ole reunaa,
-       jolle ne voisi kohdistaa, joten nimi kertoo mitä ne mittaavat. Piirros näyttää
-       saman mitan omalla mittaviivallaan. */
+      +  (onL() ? mitatL() : mitatLohko());
+    /* Suunta mittojen jälkeen: kääntäminen ei muuta mittoja, ja säädin seuraa reunaa
+       kuvan mukana. Nurkkamallissa lovi on talo, joten kysymys puhuu talosta. */
     if (onL()){
-      var la = numLimits('la'), lb = numLimits('lb');
-      /* Suunta ennen osien mittoja: ensin mihin päin L kääntyy, sitten kuinka leveä
-         kumpikin osa on. Nurkkamallissa lovi on talo, joten kysymys puhuu talosta. */
       o += '<p class="slbl suunta-h">' + esc(t(state.shape === 'nurkka' ? 'k2.suunta.nurkka' : 'k2.suunta')) + '</p>'
         +  '<div class="suunnat" role="group">' + LSUUNNAT.map(function(k){
              return '<button type="button" class="suunta" data-act="lsuunta" data-val="' + k + '"'
@@ -1901,9 +1912,6 @@ function rMitat(){
                + '<img src="' + muotoKuva(state.shape === 'l-seina' && state.w > state.l ? 'l-seina-vaaka' : state.shape, k)
                + '" alt="" aria-hidden="true"></button>';
            }).join('') + '</div>';
-      o += '<div class="mitat-l">'
-        +  stepper('la', t('k2.la'), state.la, la.min, la.max, 0.5, 'm')
-        +  stepper('lb', t('k2.lb'), state.lb, lb.min, lb.max, 0.5, 'm') + '</div>';
     }
   }
   return '<div class="scr">' + nav('mitat') + o + '<div class="spacer"></div>'
@@ -1932,6 +1940,23 @@ function fieldFor(maxDim){
   for (i = 0; i < ladder.length; i++) if (maxDim <= ladder[i] + 1e-9) return ladder[i];
   return Math.ceil(maxDim);
 }
+/* L:n neljä mitattavaa ulkoreunaa perusasennossa. Kaksi täyspitkää (leveys, pituus) ja
+   kaksi lyhyttä, joiden pituus on osan syvyys tai leveys. Muut kaksi reunaa ovat
+   sisäkulman reunoja, ja niiden pituus seuraa näistä neljästä. */
+function reunatL(sh, W, L){
+  return [
+    { key:'w',  arvo:W,    seg:[[0, L], [W, L]] },
+    { key:'l',  arvo:L,    seg:[[0, 0], [0, L]] },
+    { key:'la', arvo:sh.a, seg:[[W, L - sh.a], [W, L]] },
+    { key:'lb', arvo:sh.b, seg:[[0, 0], [sh.b, 0]] }
+  ];
+}
+/* Reunan paikka peilauksen jälkeen. Säätimen otsikko on paikka, koska käyttäjä
+   napautti paikkaa eikä mitan nimeä. */
+function reunanPaikka(sh, p0, p1, W, L){
+  if (Math.abs(p0[0] - p1[0]) < 1e-9) return p0[0] < W / 2 ? 'vasen' : 'oikea';
+  return p0[1] < L / 2 ? 'yla' : 'ala';
+}
 function planSVG(o){
   var W = o.w, L = o.l, pts = o.pts || [];
   if (!(W > 0) || !(L > 0)) return '';
@@ -1951,6 +1976,9 @@ function planSVG(o){
      leveyssäätimen voi kohdistaa siihen ilman vakiota. Kehysviivan ulompi puolikas
      jäisi rajautumaan, ja siksi SVG saa overflow:visible (ks. .m-kuva CSS). */
   var padL = 42, padT = 14, padR = F ? 0 : 16, padB = F ? 40 : 62;
+  /* Reunatilassa (L:n mittaruutu) arvot istuvat reunoilla eikä mittaviivoilla, joten
+     marginaali tarvitaan joka puolelle puolikkaan arvolapun verran. */
+  if (o.reunat){ padL = 26; padT = 20; padR = 26; padB = 20; }
   var vw = Math.round(fw + padL + padR), vh = Math.round(fh + padT + padB);
   var oy = F ? F - L : 0;                     /* alue kiinni kentän alareunassa */
   var FX = function(m){ return padL + m * sc; }, FY = function(m){ return padT + m * sc; };
@@ -2009,17 +2037,23 @@ function planSVG(o){
       g += '<text class="dimtx" x="' + f1(X(mx)) + '" y="' + f1(Y(my) + (my < L / 2 ? 15 : -7))
         +  '" text-anchor="middle">' + esc(t('k2.wall')) + '</text>';
   });
-  /* L:n osien mitat piirretään osien sisään, koska ulkoreunoilla kulkevat jo leveys
-     ja pituus. Viiva on sillä reunalla, jota säädin muuttaa. */
-  if (sh.kind === 'L' && !pts.length){
-    var a1 = P([W - 12 / sc, L - sh.a]), a2 = P([W - 12 / sc, L]), am = P([W - 12 / sc, L - sh.a / 2]);
-    var b1 = P([0, 12 / sc]), b2 = P([sh.b, 12 / sc]), bm = P([sh.b / 2, 12 / sc]);
-    g += '<line class="dim" x1="' + f1(X(a1[0])) + '" y1="' + f1(Y(a1[1])) + '" x2="' + f1(X(a2[0])) + '" y2="' + f1(Y(a2[1])) + '"/>'
-      +  '<text class="dimtx" x="' + f1(X(am[0]) + (sh.fx ? 6 : -6)) + '" y="' + f1(Y(am[1]) + 4) + '" text-anchor="'
-      +  (sh.fx ? 'start' : 'end') + '">' + esc(num(sh.a)) + ' m</text>'
-      +  '<line class="dim" x1="' + f1(X(b1[0])) + '" y1="' + f1(Y(b1[1])) + '" x2="' + f1(X(b2[0])) + '" y2="' + f1(Y(b2[1])) + '"/>'
-      +  '<text class="dimtx" x="' + f1(X(bm[0])) + '" y="' + f1(Y(bm[1]) + (sh.fy ? -6 : 15)) + '" text-anchor="middle">'
-      +  esc(num(sh.b)) + ' m</text>';
+  /* Reunatila 7.10.2026: L:n kaikki neljä mittaa ovat ulkoreunojen pituuksia, joten
+     jokainen arvo on siinä reunassa, jota se mittaa. Reunaa napauttamalla sen arvo
+     tulee säädettäväksi kuvan alle. Ennen arvot olivat nimettöminä viivoina kuvion
+     sisällä ja säätimet erillisessä listassa, eikä kumpikaan kertonut kumpi on kumpi. */
+  if (o.reunat){
+    reunatL(sh, W, L).forEach(function(e){
+      var p0 = P(e.seg[0]), p1 = P(e.seg[1]);
+      var mx = X((p0[0] + p1[0]) / 2), my = Y((p0[1] + p1[1]) / 2);
+      var on = o.reunat === e.key, txt = num(e.arvo) + ' m', cw = txt.length * 7 + 14;
+      var nimi = t('k2.reuna.' + reunanPaikka(sh, p0, p1, W, L));
+      g += '<g class="rchip' + (on ? ' on' : '') + '" data-act="reuna" data-val="' + e.key + '" role="button" tabindex="0"'
+        +  ' aria-pressed="' + (on ? 'true' : 'false') + '" aria-label="' + esc(nimi + ' ' + txt) + '">'
+        +  '<line class="reuna-hit" x1="' + f1(X(p0[0])) + '" y1="' + f1(Y(p0[1])) + '" x2="' + f1(X(p1[0])) + '" y2="' + f1(Y(p1[1])) + '"/>'
+        +  (on ? '<line class="reuna-on" x1="' + f1(X(p0[0])) + '" y1="' + f1(Y(p0[1])) + '" x2="' + f1(X(p1[0])) + '" y2="' + f1(Y(p1[1])) + '"/>' : '')
+        +  '<rect x="' + f1(mx - cw / 2) + '" y="' + f1(my - 11) + '" width="' + cw + '" height="22" rx="11"/>'
+        +  '<text x="' + f1(mx) + '" y="' + f1(my + 4) + '" text-anchor="middle">' + esc(txt) + '</text></g>';
+    });
   }
 
   /* Pilarit. Säde seuraa pilarien väliä, jottei tiheä ruudukko mene puuroksi.
@@ -2033,7 +2067,9 @@ function planSVG(o){
     }).join('') + '</g>';
   }
 
-  /* mittaviivat: sana ja luku sillä reunalla, jota ne mittaavat */
+  /* mittaviivat: sana ja luku sillä reunalla, jota ne mittaavat. Reunatilassa
+     arvolaput tekevät saman työn, joten viivat jäävät pois. */
+  if (!o.reunat){
   var dy = Y(L) + 16;
   g += '<line class="dim" x1="' + f1(X(0)) + '" y1="' + dy + '" x2="' + f1(X(W)) + '" y2="' + dy + '"/>'
     +  '<line class="dim" x1="' + f1(X(0)) + '" y1="' + (dy - 4) + '" x2="' + f1(X(0)) + '" y2="' + (dy + 4) + '"/>'
@@ -2046,6 +2082,7 @@ function planSVG(o){
     +  '<line class="dim" x1="' + (dx - 4) + '" y1="' + f1(Y(L)) + '" x2="' + (dx + 4) + '" y2="' + f1(Y(L)) + '"/>'
     +  '<text class="dimtx" transform="translate(' + (dx - 8) + ',' + f1(Y(L / 2)) + ') rotate(-90)" text-anchor="middle">'
     +  esc(t('k2.l')) + ' ' + esc(num(L)) + ' m</text>';
+  }
 
   /* Mittakaavapalkki. Kokonaispituus pyöristetään tuttuun lukuun (1, 2, 5, 10, 20, 50 m),
      jottei palkissa lue 2,5 m silloin kun 2 m kertoo saman asian selvemmin. */
@@ -2100,8 +2137,27 @@ function mitatLohko(){
 }
 /* Kuva ja pinta-alarivi erikseen, koska ne ovat mittaruudussa eri ruudukkoriveillä. */
 function k2plan(){
+  if (onL()) return planSVG({ w:state.w, l:state.l, small:true, shape:shapeOf(state), reunat:state.reuna || 'w',
+      field:fieldFor(Math.max(state.w, state.l)), boxW:300, boxH:300 });
   return planSVG({ w:state.w, l:state.l, small:true, shape:shapeOf(state),
       field:fieldFor(Math.max(state.w, state.l)), boxW:232, boxH:232 });
+}
+/* L:n mittaruutu: kuva, jonka reunoilla arvot, ja yksi säädin valitulle reunalle. */
+function mitatL(){
+  var sh = shapeOf(state), key = state.reuna || 'w';
+  var e = reunatL(sh, state.w, state.l).filter(function(x){ return x.key === key; })[0];
+  var paikka = reunanPaikka(sh, peilaa(sh, e.seg[0]), peilaa(sh, e.seg[1]), state.w, state.l);
+  var lim = numLimits(key);
+  return '<div class="mitat-reunat">' + k2ala()
+    + '<div class="m-kuva" id="k2plan">' + k2plan() + '</div>'
+    + '<p class="fine reuna-ohje">' + esc(t('k2.reuna.ohje')) + '</p>'
+    /* Otsikko kahdessa osassa: paikka on se mitä napautettiin, mitan nimi kertoo mitä
+       se tarkoittaa. Kentän aria-label kantaa molemmat. */
+    + '<div id="k2reuna">' + stepper(key, t('k2.reuna.' + paikka) + ' · ' + t('k2.reuna.mitta.' + key), state[key],
+        lim.min, lim.max, 0.5, 'm').replace(
+          '>' + esc(t('k2.reuna.' + paikka) + ' · ' + t('k2.reuna.mitta.' + key)) + '</label>',
+          '>' + esc(t('k2.reuna.' + paikka)) + '<small class="reuna-mitta">' + esc(t('k2.reuna.mitta.' + key)) + '</small></label>')
+    + '</div></div>';
 }
 function k2ala(){
   return '<p class="derived" id="k2area" aria-live="polite">'
@@ -2915,6 +2971,14 @@ phone.addEventListener('click', function(e){
     if (!phone.querySelector('[data-act="next"]')) setTimeout(next, 150);
     return;
   }
+  if (a === 'reuna'){
+    state.reuna = b.getAttribute('data-val');
+    render();
+    /* Kohdistus valitun reunan säätimeen, jotta näppäimistöllä voi jatkaa suoraan. */
+    var f = phone.querySelector('#k2reuna input');
+    if (f) f.focus({ preventScroll:true });
+    return;
+  }
   if (a === 'lsuunta'){
     state.lsuunta = b.getAttribute('data-val');
     push('laskuri_lsuunta', { suunta:state.lsuunta, muoto:state.shape });
@@ -2969,6 +3033,15 @@ phone.addEventListener('click', function(e){
     go('start', true);
     return;
   }
+});
+/* Reunan arvolappu on SVG-ryhmä eikä painike, joten Enter ja välilyönti on
+   välitettävä klikiksi itse. */
+phone.addEventListener('keydown', function(e){
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  var r = e.target.closest ? e.target.closest('[data-act="reuna"]') : null;
+  if (!r) return;
+  e.preventDefault();
+  r.dispatchEvent(new MouseEvent('click', { bubbles:true }));
 });
 phone.addEventListener('input', function(e){
   var el = e.target;
