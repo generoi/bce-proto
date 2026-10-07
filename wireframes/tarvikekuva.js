@@ -342,11 +342,9 @@
        teräslaatat    laatan alapinta, 0
        nostokorva     kauluksen alapinta, 0
 
-     ⚠️ Palkkikengältä puuttuu kierretappi kokonaan, vaikka A-601 sanoo kaikista
-     tarvikkeista «ruuvataan min. 25 mm sisään valuankkuriin». Asennuskuvassa se
-     ei näy — tappi olisi pilarin sisällä — mutta pelkässä tarvikekuvassa näkyy,
-     ja siellä se on nyt piirtämättä. Kysyttävä BCE:ltä: onko PAK:ssa M20-tappi
-     ja onko sen alla säätömutteri kuten pilarikengässä. */
+     Palkkikengän kierretappi ratkesi 7.10.2026: BCE:n palautteen 3D-mallissa
+     satula nousee pilarin päästä tapin varassa, kuten pilarikenkä. Mutteri
+     piirretään samaksi kuin PIK:ssä, koska sen mittaa ei ole annettu. */
   var OSAT = {
     "pik-50-70": {
       nimi: "Pieni pilarikenkä PIK 50-70", koodi: "PIK 50-70", ryhma: "Pilarikengät",
@@ -375,16 +373,16 @@
     },
     "pak-100x150": {
       nimi: "Palkkikenkä PAK-100×150", koodi: "PAK-100×150", ryhma: "Palkkikengät",
-      palkki: 100, kork: 150, t: 3, syvyys: 70, laippa: 35, pilariZ: 0,
-      arvio: "levyn paksuus, syvyys, laipan pituus, reikäjako",
-      laatikko: {x: [-90, 90], y: [-50, 50], z: [0, 150]},
+      palkki: 100, kork: 150, t: 3, syvyys: 120, av: 30, pilariZ: -16,
+      arvio: "levyn paksuus, levyn leveys, reikäjako, mutterin koko",
+      laatikko: {x: [-60, 60], y: [-65, 65], z: [-KIERRE - 20, 150 + 3]},
       piirra: function (C, o) { pak(C, o); }
     },
     "pak-100x200": {
       nimi: "Palkkikenkä PAK-100×200", koodi: "PAK-100×200", ryhma: "Palkkikengät",
-      palkki: 100, kork: 200, t: 3, syvyys: 70, laippa: 35, pilariZ: 0,
-      arvio: "levyn paksuus, syvyys, laipan pituus, reikäjako",
-      laatikko: {x: [-90, 90], y: [-50, 50], z: [0, 200]},
+      palkki: 100, kork: 200, t: 3, syvyys: 120, av: 30, pilariZ: -16,
+      arvio: "levyn paksuus, levyn leveys, reikäjako, mutterin koko",
+      laatikko: {x: [-60, 60], y: [-65, 65], z: [-KIERRE - 20, 200 + 3]},
       piirra: function (C, o) { pak(C, o); }
     },
     "tl-100x100": {
@@ -527,30 +525,38 @@
     reiat(C, px + t, sy, h);
   }
 
-  /* Palkkikenkä: U-satula palkille, kaksi korkeaa selkälevyä ja niiden yläpäässä
-     ulospäin taittuvat laipat. Ohutlevyä, joten t on pieni ja särmiä on paljon —
-     juuri siitä osan tunnistaa. */
-  function pak(C, o) {
-    var pb = o.palkki / 2, h = o.kork, t = o.t, sy = o.syvyys / 2, la = o.laippa;
+  /* Palkkikenkä: U-satula pilarin päällä. Pohjalevy, kaksi pystylevyä ja niiden
+     välissä palkki — ei laippoja.
 
-    /* pohja on alimpana ja siksi kauimpana kamerasta */
-    C.levy([[-pb, -sy], [pb, -sy], [pb, sy], [-pb, sy]], "xy", 0, t);
+     Muoto korjattiin 7.10.2026 BCE:n palautteesta («palkkikengän visualisointi on
+     virheellinen»), jonka mallina oli BCE:n 3D-tuloste. Aiempi piirros oli
+     palkkiripustin: kapeat selkälevyt ja yläpäästä ulospäin taittuvat laipat, jotka
+     koukkasivat palkin yläpinnan yli. Mallissa satula on matala ja leveä, levyjen
+     molemmat yläkulmat on viistetty, ylärivissä on isot reiät kulmissa ja pienet
+     niiden välissä, alarivissä neljä pientä — sama reikäkuvio kuin PIK:n levyssä
+     BCE:n valokuvassa. Satula nousee pilarin päästä kierretapin varassa.
+
+     Mitat ovat yhä arvioita (ks. `arvio`): 3D-tuloste kertoo muodon, ei millejä.
+     Levyn leveys 120 on luettu mallin mittasuhteesta. */
+  function pak(C, o) {
+    var pb = o.palkki / 2, h = o.kork, t = o.t, sy = o.syvyys / 2, v = 16;
+
+    /* Alhaalta ylös, kuten kenka():ssa: tappi kauimpana, levyt lähimpänä. */
+    C.kierre(0, 0, o.pilariZ - KIERRE, o.pilariZ, TAPPI);
+    C.mutteri(0, 0, o.pilariZ, o.av, 16);
+    C.levy([[-pb - t, -sy], [pb + t, -sy], [pb + t, sy], [-pb - t, sy]], "xy", 0, t);
 
     [-1, 1].forEach(function (s2) {
-      /* Palkki satulaan takalevyn ja sen laipan jälkeen. Palkki työntyy ulos
-         satulasta y:n suuntaan, mutta ulostyöntyvä pää ei osu näytöllä
-         etulevyn kanssa päällekkäin, joten yksi piirtojärjestys riittää. */
+      /* Palkki satulaan takalevyn jälkeen, jotta etulevy jää sen eteen. */
       if (s2 === 1) C.puu();
       var x = s2 > 0 ? pb : -pb - t;
-      C.levy([[-sy, 0], [sy, 0], [sy, h], [-sy, h]], "yz", x, t);
-      /* naulareiät: kaksi saraketta koko korkeudelle, kuten tuotekuvassa */
-      for (var r = 0; r < 4; r++) for (var c = 0; c < 2; c++) {
-        C.reika("yz", [x + t, -sy / 2 + c * sy, 24 + r * (h - 52) / 3], 4);
-      }
-      /* yläpään laippa taittuu ulospäin */
-      var x0 = s2 > 0 ? pb : -pb - t - la;
-      C.levy([[x0, -sy], [x0 + la + t, -sy], [x0 + la + t, sy], [x0, sy]], "xy", h, t);
-      C.reika("xy", [s2 * (pb + la * 0.62), 0, h + t], 5);
+      C.levy([[-sy, 0], [sy, 0], [sy, h - v], [sy - v, h], [-sy + v, h], [-sy, h - v]], "yz", x, t);
+      var yla = h - 22, xx = x + t;
+      [-1, 1].forEach(function (k) {
+        C.reika("yz", [xx, k * (sy - 16), yla], 6);
+        C.reika("yz", [xx, k * sy * 0.2, yla], 3.5);
+      });
+      for (var c = 0; c < 4; c++) C.reika("yz", [xx, (c - 1.5) * sy * 0.36, 26], 3.5);
     });
   }
 
