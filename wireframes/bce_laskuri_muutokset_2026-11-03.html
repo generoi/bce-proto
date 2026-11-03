@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suunnittele perustus: mitä uutta 3.11.2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="bce-v4.css">
+<!--
+  Muutostiedote BCE:lle laskurin päivityksestä 3.11.2026. Sama sisältö kuin
+  sähköpostissa, jotta kuvat voi katsoa myöhemminkin. Kuvat ovat kaappauksia
+  julkaistusta laskurista 390 px:n leveydellä (2x), docs/kuvat/laskuri-2026-11-03-*.
+  Sivua ei ole linkitetty navigaatiosta: se on tiedote eikä sivuston sivu.
+-->
+<style>
+  body{background:var(--paper);color:var(--ink);font-family:var(--ff);margin:0}
+  .tiedote{max-width:760px;margin:0 auto;padding:40px 16px 64px}
+  .tiedote h1{font-family:var(--ff-d);text-transform:uppercase;font-size:32px;line-height:1.15;margin:0 0 8px}
+  .tiedote h2{font-family:var(--ff-d);text-transform:uppercase;font-size:20px;margin:40px 0 8px}
+  .tiedote p,.tiedote li{font-size:17px;line-height:1.6}
+  .tiedote .kuvat{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0 0}
+  .tiedote figure{margin:0;flex:0 1 300px}
+  .tiedote figure img{display:block;width:100%;height:auto;border:1px solid var(--rule)}
+  .tiedote figcaption{font-size:14px;color:var(--ink-3);margin-top:6px}
+  .tiedote .avoin{background:var(--paper-2);padding:16px 20px;margin-top:40px}
+</style>
+</head>
+<body>
+<main class="tiedote">
+  <h1>Suunnittele perustus: mitä uutta</h1>
+  <p>Päivitys 3.11.2026. Tämä versio toteuttaa BCE:n palautteen (25.9.) ja vastaukset avoimiin kysymyksiin.
+     Laskuri: <a href="../pilarilaskuri/bce-pilarilaskuri.html">Suunnittele perustus</a>.</p>
+
+  <h2>1. Terassi seinää vasten ja L-muoto</h2>
+  <p>Terassille on uusi kysymys <i>Millainen terassi on?</i> Vaihtoehtoja on viisi: vapaasti seisova,
+     rakennuksen seinää vasten, L-muoto rakennuksen nurkan ympäri, L-muoto seinää vasten ja vapaasti
+     seisova L. Seinää vasten olevalle sivulle ei tule pilareita, vaan terassi kiinnitetään sokkeliin.</p>
+  <p>L-muodon mitat säädetään suoraan piirroksen reunoista: reunaa napauttamalla saa säädettäväksi juuri
+     sen mitan. L:n voi kääntää mihin tahansa neljästä suunnasta.</p>
+  <div class="kuvat">
+    <figure><img src="../kuvat/laskuri-2026-11-03-1-muoto.png" alt="Laskurin kysymys Millainen terassi on, viisi muotovaihtoehtoa kuvakkeineen"><figcaption>Uusi muotokysymys</figcaption></figure>
+    <figure><img src="../kuvat/laskuri-2026-11-03-2-l-mitat.png" alt="L-terassin mittaruutu: mitat reunoilla, valitun reunan säädin ja suunnan valinta"><figcaption>L-muodon mitat ja suunta</figcaption></figure>
+  </div>
+
+  <h2>2. PIK palkin kylkeen, PAK uutena kuvana</h2>
+  <p>Kysymys on nyt <i>Miten palkki kiinnitetään pilariin?</i>, ja PIK-vaihtoehdon kuvassa kenkä on
+     vaakapalkin kyljessä. Aiemmin vaihtoehto puhui pystyrakenteesta ja kuvassa oli tolppa, mikä ohjasi
+     terassin rakentajan valitsemaan PAK-mallin. Palkkikenkä PAK on piirretty uudelleen 3D-mallinne
+     mukaan: U-satula, jonka levyjen yläkulmat on viistetty ja joka nousee pilarista kierretapin varassa.</p>
+  <div class="kuvat">
+    <figure><img src="../kuvat/laskuri-2026-11-03-3-kiinnitys.png" alt="Kiinnityskysymys neljällä kuvallisella vaihtoehdolla"><figcaption>Kiinnityskysymys</figcaption></figure>
+    <figure><img src="../kuvat/laskuri-2026-11-03-7-pak.png" alt="Palkkikenkä PAK U-satulana kierretapin päällä"><figcaption>Uusi PAK-kuva</figcaption></figure>
+  </div>
+
+  <h2>3. Rakenteen paino BCE:n luvuilla</h2>
+  <p>Painokysymyksessä on kolme luokkaa antamillanne luvuilla: avoin terassi 0,6, terassi kevyellä katolla
+     1,2 ja kevyt puurakennus 2,0 kN/m². Luku lisätään hyötykuormaan.</p>
+  <div class="kuvat">
+    <figure><img src="../kuvat/laskuri-2026-11-03-4-paino.png" alt="Painokysymys kolmella luokalla ja Määritä itse -vaihtoehdolla"><figcaption>Painokysymys</figcaption></figure>
+  </div>
+
+  <h2>4. Tulos: väli vähintään 1,5 m, välin mitta ja AP:n vaihto</h2>
+  <ul>
+    <li><b>Pilarien väli on aina vähintään 1,5 m</b>, kuten valitsitte. Jos väli ylittää palkin taulukkoarvon,
+        tulos kertoo sen ja kehottaa varmistamaan palkin kestävyyden.</li>
+    <li><b>Pohjapiirroksessa on yhden välin mitta</b> kumpaankin suuntaan, jotta pilarit osaa sijoittaa.</li>
+    <li><b>TP on suositus ja AP vaihtoehto.</b> AP:n nimi on linkki tuotesivulle, ja <i>Vaihda</i>-painike
+        vaihtaa sen listan pilariksi. Rivillä näkyy myös korkeusalue, josta näkee mitä kevyemmässä menettää.</li>
+    <li>Jokaisessa tuloksessa on ohje routaeristyksestä ja vakaasta, tiivistetystä pohjasta.</li>
+  </ul>
+  <div class="kuvat">
+    <figure><img src="../kuvat/laskuri-2026-11-03-5-tulos-seina.png" alt="Tulos: terassi 4 × 5 m seinää vasten, 9 pilaria, välin mitat ja AP-vaihtoehto"><figcaption>Terassi 4 × 5 m seinää vasten: 9 pilaria</figcaption></figure>
+    <figure><img src="../kuvat/laskuri-2026-11-03-6-tulos-l.png" alt="Tulos: L-terassi talon nurkan ympäri, 6 pilaria"><figcaption>L-terassi 6 × 5 m talon nurkan ympäri: 6 pilaria</figcaption></figure>
+  </div>
+
+  <h2>5. Poistettu</h2>
+  <p>Maapohjakysymys, kaltevan alustan kysymys ja autokatos. Terassin polussa on nyt 8 vaihetta, ennen 9.</p>
+
+  <div class="avoin">
+    <h2 style="margin-top:0">Avoinna</h2>
+    <p><b>Palkkikengän mitat.</b> Kuva on piirretty 3D-mallin mittasuhteista. Tarvitsisimme levyn leveyden ja
+       paksuuden, reikäjaon ja mutterin koon. Tarkoittaako 100 × 200 satulan korkeutta 200 mm?</p>
+    <p><b>Vähimmäisvälin vaikutus.</b> 1,5 m:n sääntö vähentää pilareita selvästi: 4 × 5 m terassi 48 × 148
+       -palkilla saa nyt 12 pilaria, kun ennen 20. Väli ylittää palkin taulukkoarvon (1,6 m) noin puolessa
+       mitoista, ja L-muodossa suurin väli voi olla 2,5 m. Onko tämä hyväksyttävää, vai halutaanko välille
+       myös yläraja?</p>
+  </div>
+</main>
+</body>
+</html>

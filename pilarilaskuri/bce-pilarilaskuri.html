@@ -991,7 +991,7 @@ var FI = {
   'r.heights':'Pilarin korkeus valitaan lattian korkeudesta maasta: siitä vähennetään palkin korkeus ja kiinnikkeen osuus. Kiinnikkeen säätövara hoitaa loppuerot. Sinä valitset lattiakorkeuden, me tarkistamme jaon.',
   'r.height.fixed':'Korkeus {h} mm',
   'r.alt':'Kevyempi vaihtoehto: {n} × {family}-pilari, nostettavissa yksin.',
-  /* Vaihtorivi 6.11.2026: perhe on linkki tuotesivulle, ja painike vaihtaa sen listan
+  /* Vaihtorivi 3.11.2026: perhe on linkki tuotesivulle, ja painike vaihtaa sen listan
      pilariksi. Korkeusalue kertoo, mitä kevyemmässä menettää. */
   'r.alt.ap':'Kevyempi vaihtoehto: {link}, korkeus {min}-{max} mm, nostettavissa yksin.',
   'r.alt.tp':'Suositeltu: {link}, korkeus {min}-{max} mm.',
@@ -2035,7 +2035,7 @@ function planSVG(o){
      marginaali tarvitaan joka puolelle puolikkaan arvolapun verran. */
   if (o.reunat){ padL = 26; padT = 20; padR = 26; padB = 20; }
   /* Tuloksessa yhden välin mitta yläreunaan ja oikeaan reunaan, ja mittakaavapalkki
-     pois: välin mitta kertoo saman asian käyttökelpoisemmin (Olli 6.11.2026). */
+     pois: välin mitta kertoo saman asian käyttökelpoisemmin (Olli 3.11.2026). */
   if (o.valit){ padT = 34; padR = 52; padB = 40; }
   var vw = Math.round(fw + padL + padR), vh = Math.round(fh + padT + padB);
   var oy = F ? F - L : 0;                     /* alue kiinni kentän alareunassa */
