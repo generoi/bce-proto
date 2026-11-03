@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Päätöspuu — BCE-pilarilaskuri</title>
+<title>Päätöspuu: BCE-pilarilaskuri</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap">
@@ -11,9 +11,9 @@
 <script src="../pilarilaskuri/paatospuu.data.js"></script>
 <style>
 /* Kaavion oma kehys. Tämä ei ole sivustokomponentti vaan työkalu, kuten
-   bce_tuotekuvat.html — siksi omat luokat eivätkä design systemin lohkot. */
+   bce_tuotekuvat.html: siksi omat luokat eivätkä design systemin lohkot. */
 :root{
-  /* Kaavion paletti. Kaksi merkitystä, kaksi väriä — ei enempää: polku joko
+  /* Kaavion paletti. Kaksi merkitystä, kaksi väriä: ei enempää: polku joko
      päätyy tuotteeseen tai ihmiseen. Kaikki muu ero (sääntö puuttuu, ei
      saavutettavissa, vertailematta) on katkoviivaa ja tekstiä, ei väriä, koska
      kolmas ja neljäs väri eivät enää erotu toisistaan luotettavasti.
@@ -36,25 +36,25 @@
 .pp-kaavio svg{display:block;max-width:100%;height:auto}
 /* Lattia kaavion leveydelle (23.9.2026). Kehyksessä oli overflow-x:auto jo
    ennestään, mutta max-width:100% kutisti SVG:n aina mahtumaan, joten se ei
-   vierittynyt koskaan — se vain pieneni. Mitattu 390 px:n ruudulla: kaavio
-   342 px, kerroin 0,30 ja selitteet 3,4–3,9 px. Sama vika kuin
+   vierittynyt koskaan: se vain pieneni. Mitattu 390 px:n ruudulla: kaavio
+   342 px, kerroin 0,30 ja selitteet 3,4-3,9 px. Sama vika kuin
    käyttökohdesivun leikkauskuvassa, ja sama syy: SVG:n teksti skaalautuu
    kankaan mukana.
 
    Ratkaisu on sama kuin mittakaaviolla (bce-v4.css, .mitoitus .mk svg): kaavio
    ei kutistu alle luettavan koon vaan kehys vierittyy vaakaan. max-width:none
    palauttaa SVG:n omaan 1 140 pikseliin, eli kaavio renderöityy kapealla
-   ruudulla pikselilleen samoin kuin työpöydällä — selitteet 11,5–13 px.
+   ruudulla pikselilleen samoin kuin työpöydällä: selitteet 11,5-13 px.
    min-width on lattia sen varalta että jokin kaavio on kapeampi kuin
    tuhat pikseliä. Sivu itse ei vierity: vieritys on kehyksen sisällä
    (mitattu 390 px, document.scrollWidth 390). Tämä on analyysidokumentti eikä
-   kuluttajasivu — vaakavieritys on täällä sallittu, kuten TP-sivun
+   kuluttajasivu: vaakavieritys on täällä sallittu, kuten TP-sivun
    mittataulukossa, mutta lukukelvoton teksti ei ole. */
 @media(max-width:1100px){
   .pp-kaavio svg{max-width:none;min-width:1000px}
 }
 
-/* Avainluvut. Ei laatikoita, vain hiusviiva erottamassa — sivun lämmin pohja
+/* Avainluvut. Ei laatikoita, vain hiusviiva erottamassa: sivun lämmin pohja
    näkyy läpi, samoin kuin taulukoissa. */
 .pp-luvut{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
   gap:0;border-top:1px solid var(--rule);margin:var(--s5) 0}
@@ -85,7 +85,7 @@ section{padding-bottom:var(--s6)}
 </head>
 <body>
 <a class="skip" href="#main">Siirry sisältöön</a>
-<div class="pp-note"><div class="w"><b>Päätöspuu, johdettu sääntömoottorista</b><span>Kaaviota ei ole piirretty käsin: <code>node docs/pilarilaskuri/paatospuu.js --js</code> ajaa laskurin moottorin läpi koko syöteavaruuden ja kirjoittaa <code>paatospuu.data.js</code>:n, josta tämä sivu piirtää. Kaaviossa ei siis voi olla kaarta, jota moottori ei tuota — eikä puuttua kaarta, jonka se tuottaa.</span></div></div>
+<div class="pp-note"><div class="w"><b>Päätöspuu, johdettu sääntömoottorista</b><span>Kaaviota ei ole piirretty käsin: <code>node docs/pilarilaskuri/paatospuu.js --js</code> ajaa laskurin moottorin läpi koko syöteavaruuden ja kirjoittaa <code>paatospuu.data.js</code>:n, josta tämä sivu piirtää. Kaaviossa ei siis voi olla kaarta, jota moottori ei tuota: eikä puuttua kaarta, jonka se tuottaa.</span></div></div>
 <main id="main"></main>
 <script>
 "use strict";
@@ -117,10 +117,12 @@ const NIMI = {
   /* Terassin muodot laskurin omilla nimillä (k8.*), lyhennettyinä. */
   vapaa:"Vapaasti seisova", seina:"Seinää vasten", nurkka:"L nurkan ympäri",
   "l-vapaa":"L vapaasti seisova", "l-seina":"L seinää vasten",
+  /* Omapainon luokat BCE:n sanoin 3.11.2026. */
+  katettu:"Terassi kevyellä katolla", rakennus:"Kevyt puurakennus",
   "itse 3.5":"Määritä itse 3,5 kN/m²", "itse 10":"Määritä itse 10 kN/m²",
   "48":"48 mm", "96":"96 mm", "98":"98 mm",
   "48x123":"48 × 123", "48x148":"48 × 148", "48x198":"48 × 198",
-  "PIK-50-70":"PIK 50–70", "PIK-90-140":"PIK 90–140", "P-PIK-50x70":"P-PIK 50×70",
+  "PIK-50-70":"PIK 50-70", "PIK-90-140":"PIK 90-140", "P-PIK-50x70":"P-PIK 50×70",
   "TL-100x100":"TL 100×100", "TL-150x150":"TL 150×150", "TL-100x175":"TL 100×175",
   "PAK-100x150":"PAK 100×150", "PAK-100x200":"PAK 100×200", NOSTOKORVA:"Nostokorva"
 };
@@ -195,7 +197,7 @@ function kaavioPortit(){
   const jono = (P.estejono || []).filter(e => TULOSKPL.has("!" + e.koodi));
   /* Tolppa ei käy porteilla lainkaan: siltä ei kysytä mittoja vaan tolppamäärä,
      eikä moottori laske sille alaa eikä kuormaa. Se luetaan datasta eikä
-     oleteta — rivi, jolla on tolppamäärä, on tolpan polku. Jos tolpalta joskus
+     oleteta: rivi, jolla on tolppamäärä, on tolpan polku. Jos tolpalta joskus
      kysytään mitat, tolppamäärä katoaa riviltä ja tämä haara itsestään. */
   const ohi = RIVIT.filter(r => r.tolppia != null);
   const ohiTulos = [...new Set(ohi.map(tulos))];
@@ -220,7 +222,7 @@ function kaavioPortit(){
   o.push(lukuRivi(y, jaljella, true));
   let edellinenY = y;
 
-  /* Tolppa ohittaa portit — oma, turkoosi haara oikealle. */
+  /* Tolppa ohittaa portit: oma, turkoosi haara oikealle. */
   if (ohi.length){
     y += RIVIK;
     o.push('<path d="M' + TRUNK + ' ' + edellinenY + ' L' + TRUNK + ' ' + y +
@@ -251,7 +253,7 @@ function kaavioPortit(){
       '" fill="none" stroke="var(--pp-ohjaus)" stroke-width="' + paksuus + '" opacity=".9"/>');
     o.push('<circle cx="' + HAARA + '" cy="' + y + '" r="5" fill="var(--pp-ohjaus)"/>');
     o.push(teksti(MARG, y + 1, nimi(e.koodi) + "?", { koko:16, paino:600 }));
-    o.push(teksti(MARG, y + 19, "laukaisin: " + (e.laukaisin || "—"),
+    o.push(teksti(MARG, y + 19, "laukaisin: " + (e.laukaisin || ":"),
       { koko:12.5, vari:"var(--ink-3,#6f6d6b)" }));
     o.push(teksti(HAARA + 14, y + 5, luku(n) + " polkua päättyy tähän",
       { koko:14, vari:"var(--pp-ohjaus-4)" }));
@@ -350,7 +352,7 @@ function kaavioMatriisi(){
       o.push('<rect x="' + x + '" y="' + (y + 13) + '" width="' + lev + '" height="18" rx="4" fill="' +
         tulosVari(k) + '"><title>' + E(nimi(rk) + " → " + tulosNimi(k) + ": " +
         luku(n) + " polkua, " + prosT(pros(n, rivit.length))) + '</title></rect>');
-      /* Prosentti heti radan perään, kiinteään kohtaan — ei palkin perään, jossa
+      /* Prosentti heti radan perään, kiinteään kohtaan: ei palkin perään, jossa
          se hyppisi rivistä toiseen, eikä sarakkeen oikeaan reunaan, jossa se
          näyttäisi kuuluvan seuraavalle sarakkeelle. */
       o.push(teksti(x + TRACK + 7, y + 27, prosT(pros(n, rivit.length)),
@@ -452,7 +454,7 @@ function kaavioTarvikkeet(){
   const kaistat = [];
   [...new Set(TULOSRIVIT.map(r => r.kiinnitys).filter(Boolean))].forEach(kii => {
     const rivit = TULOSRIVIT.filter(r => r.kiinnitys === kii);
-    /* Kumpi jatkokysymys ratkaisee tarvikkeen tällä vastauksella — paksuus vai
+    /* Kumpi jatkokysymys ratkaisee tarvikkeen tällä vastauksella: paksuus vai
        palkin koko? Se kysytään datalta eikä oleteta: piilokiinnike ei katso
        kumpaakaan, näkyvä katsoo paksuutta ja satula palkkia. Ilman tätä kaavio
        piirtäisi kolme samannäköistä kaistaa sinne, missä kysymys ei vaikuta. */
@@ -466,7 +468,7 @@ function kaavioTarvikkeet(){
         m.set(v, t);
       });
       /* Kenttä ratkaisee vain jos se tuottaa eri tarvikkeita. Piilokiinnikkeellä
-         paksuus vaihtelee mutta tarvike ei — silloin kenttä ei ratkaise mitään,
+         paksuus vaihtelee mutta tarvike ei: silloin kenttä ei ratkaise mitään,
          ja kolme samannäköistä kaistaa olisi kolme kertaa sama tieto. */
       return ok && new Set(m.values()).size > 1;
     }) || null;
@@ -519,7 +521,7 @@ function kaavioTarvikkeet(){
       o.push('<circle cx="' + KOHDE + '" cy="' + yy + '" r="4" fill="var(--pp-tuote)"/>');
       o.push(teksti(KOHDE + 14, yy + 5,
         koodit.map(c => nimi(c.replace("?", ""))).join(valinta ? "  tai  " : " + ") +
-        (valinta ? "   — sääntö puuttuu, laskuri näyttää kaikki" : ""),
+        (valinta ? "  : sääntö puuttuu, laskuri näyttää kaikki" : ""),
         { koko:14, vari: valinta ? "var(--ink-2,#515151)" : "var(--ink,#252425)" }));
     });
     y += kk + 16;
@@ -547,7 +549,7 @@ function kaavioRajat(){
   });
   /* Nimi on muotoa "rakennus [· lisävalinta] [· muoto]" (paatospuu.js kokoaa sen
      siinä järjestyksessä; muoto vain terassilla). Yhdistetyn rivin otsikoksi
-     tulevat rakennukset, ja alariville se mikä niitä erottaa — lisävalinta tai
+     tulevat rakennukset, ja alariville se mikä niitä erottaa: lisävalinta tai
      muoto. Muodot tunnistetaan nimestä eikä paikasta, koska lisävalinta voi
      puuttua välistä. */
   const MUODOT = ["vapaa", "seina", "nurkka", "l-vapaa", "l-seina"];
@@ -605,7 +607,7 @@ function kaavioRajat(){
       const lev = Math.max(2, x(j.b) - x(j.a) - 2);
       o.push('<rect x="' + x(j.a) + '" y="' + (y + 6) + '" width="' + lev +
         '" height="14" rx="3" fill="' + (ohjaus ? "var(--pp-ohjaus)" : "var(--pp-tuote)") +
-        '"><title>' + E(j.a + "–" + j.b + " m²: " + j.avain) + '</title></rect>');
+        '"><title>' + E(j.a + "-" + j.b + " m²: " + j.avain) + '</title></rect>');
       /* Viimeinen jakso jatkuu asteikon yli: pyyhkäisy menee 400 m²:iin asti,
          mutta se ei mahdu kuvaan. Nuoli kertoo, ettei palkki lopu tähän. */
       if (viimeinen)
@@ -637,7 +639,7 @@ const eiVaikutaTarvikkeeseen = VAIKUTUS.filter(v => v.tarvike && v.tarvike.verta
 const rakennusVaikutus = VAIKUTUS.find(v => v.kentta === "rakennus");
 const vertailematta = P.esteetVertailematta || [];
 /* Millä rakennuksilla pinta-alaraja ei tule vastaan? Se luetaan siitä, ettei
-   rakennus esiinny yhdessäkään pyyhkäisyn löytämässä rajassa — ei siitä, että
+   rakennus esiinny yhdessäkään pyyhkäisyn löytämässä rajassa: ei siitä, että
    sääntötaulukossa on null, jota tämä sivu ei näe. */
 const rajaRakennukset = new Set((P.rajat || []).map(r => r.nimi.split(" · ")[0]));
 const eiRajaa = [...new Set(RIVIT.map(r => r.rakennus))]
@@ -650,12 +652,12 @@ const lehtiRivi = l => {
       : "<strong>" + E(nimi(L.perhe)) + "</strong>" +
         (L.vaihtoehto ? " (tai " + E(nimi(L.vaihtoehto)) + ")" : "") +
         (L.haarukka ? " · määrä haarukkana" : "")) +
-    /* Kysymysmerkki datassa tarkoittaa, ettei laskuri osaa valita — silloin
+    /* Kysymysmerkki datassa tarkoittaa, ettei laskuri osaa valita: silloin
        tarvikkeet luetellaan "tai"-listana, muuten ne tulevat kaikki yhdessä. */
     "</td><td>" + (L.tarvikkeet && L.tarvikkeet.length
       ? L.tarvikkeet.map(c => E(nimi(c.replace("?", "")))).join(
           L.tarvikkeet.some(c => c.indexOf("?") >= 0) ? " tai " : " + ")
-      : "—") +
+      : ":") +
     '</td><td class="num">' + luku(l.kpl) + "</td><td class=\"pp-ei\">" + E(l.esimerkki) + "</td></tr>";
 };
 
@@ -666,9 +668,9 @@ const lohko = (otsikko, johdanto, sisalto) =>
 document.getElementById("main").innerHTML =
 
  '<div class="w"><section><h1>Päätöspuu</h1>' +
- '<p style="font-size:var(--fs-lede);color:var(--ink-2);max-width:66ch">Miten laskuri päätyy mihinkin tuotteeseen — ja missä kohtaa se luovuttaa ja ohjaa ihmiselle. ' +
+ '<p style="font-size:var(--fs-lede);color:var(--ink-2);max-width:66ch">Miten laskuri päätyy mihinkin tuotteeseen: ja missä kohtaa se luovuttaa ja ohjaa ihmiselle. ' +
    'Moottori on ajettu läpi ' + luku(P.ajoja) + ' kertaa ' + E(P.ajettu) + ', ja siitä syntyi ' +
-   luku(P.lehdet.length) + ' erilaista lopputulosta. Jokainen viiva on olemassa siksi, että moottori tuottaa sen — ei siksi, että joku piirsi sen.</p>' +
+   luku(P.lehdet.length) + ' erilaista lopputulosta. Jokainen viiva on olemassa siksi, että moottori tuottaa sen: ei siksi, että joku piirsi sen.</p>' +
  '<div class="pp-luvut">' +
    '<div><b>' + luku(RIVIT.length) + '</b><span>vastausyhdistelmää</span></div>' +
    '<div><b>' + luku(P.lehdet.length) + '</b><span>erilaista lopputulosta</span></div>' +
@@ -678,12 +680,12 @@ document.getElementById("main").innerHTML =
  '<div class="pp-selite">' +
    '<span><i style="border-color:var(--pp-tuote)"></i> polku päätyy tuotteeseen</span>' +
    '<span><i style="border-color:var(--pp-ohjaus)"></i> polku päätyy ihmiselle</span>' +
-   '<span><u style="border-top:4px dashed var(--pp-tuote)"></u> sääntö puuttuu — useampi vaihtoehto</span>' +
+   '<span><u style="border-top:4px dashed var(--pp-tuote)"></u> sääntö puuttuu: useampi vaihtoehto</span>' +
    '<span><i style="border-color:var(--rule-2);border-top-width:2px"></i> runko, ei vielä lopputulosta</span>' +
  '</div></section></div>' +
 
  lohko("Portit järjestyksessä",
-   "Kieltäytymiset eivät ole joukko vaan jono. Kun kaksi ehtoa pätee yhtä aikaa, asiakas näkee vain ensimmäisen — " +
+   "Kieltäytymiset eivät ole joukko vaan jono. Kun kaksi ehtoa pätee yhtä aikaa, asiakas näkee vain ensimmäisen: " +
    "eli sama rakennus voi olla “liian iso” tai “liian raskas” sen mukaan, kumpi portti on edellä. Järjestys on kysytty moottorilta ajamalla tila, jossa molemmat ehdot pätevät; sitä ei ole luettu säännöistä." +
    (vertailematta.length
      ? " " + (vertailematta.length === 1 ? "Yhtä paria" : vertailematta.length + " paria") +
@@ -699,7 +701,7 @@ document.getElementById("main").innerHTML =
    "Yksi rivi per rakennustyyppi, kiinteät sarakkeet. Palkin pituus on osuus sen rakennuksen omista poluista, joten rivejä voi verrata keskenään vaikka polkumäärät ovat eri. " +
    "Viiva sarakkeessa tarkoittaa nollaa: polkua ei ole." +
    (vaihtoehdot.length
-     ? " " + vaihtoehdot.map(nimi).join(" ja ") + " ei ole yhdenkään polun lopputulos — se esiintyy vain " +
+     ? " " + vaihtoehdot.map(nimi).join(" ja ") + " ei ole yhdenkään polun lopputulos: se esiintyy vain " +
        "rinnalla vaihtoehtona, eikä siksi saa omaa saraketta."
      : ""),
    '<div class="pp-kaavio">' + kaavioMatriisi() + "</div>" +
@@ -717,7 +719,7 @@ document.getElementById("main").innerHTML =
    '<div class="pp-loydos"><h3>Kaksi erillistä päätöstä, ei yhtä puuta</h3><p>' +
    "Yksikään kysymys ei vaihda molempia: " + eiVaikutaPerheeseen.length +
    " kysymystä ei vaihda pilariperhettä kertaakaan ja " + eiVaikutaTarvikkeeseen.length +
-   " ei vaihda tarviketta. Pilari valitaan rakennuksesta, koosta ja painosta, tarvike siitä mitä pilarin päälle tulee — " +
+   " ei vaihda tarviketta. Pilari valitaan rakennuksesta, koosta ja painosta, tarvike siitä mitä pilarin päälle tulee: " +
    "ne ovat kaksi erillistä päätöstä, jotka sattuvat kulkemaan samassa lomakkeessa. " +
    "Siksi niitä ei kannata piirtää samaan puuhun: se oli vanhan kaavion virhe, ei lukijan.</p></div>") +
 
@@ -726,7 +728,7 @@ document.getElementById("main").innerHTML =
    "Nostokorva ei ole tässä: se tulee aina, ei minkään vastauksen kautta." +
    (eiSaav.length
      ? " Ilman yhtään polkua jää " + eiSaav.length + " tarviketta: " + E(eiSaav.join(", ")) + "."
-     : " Jokainen tarvike, jonka laskuri tuntee, on jonkin polun päässä — yhtään saavuttamatonta tuotetta ei ole."),
+     : " Jokainen tarvike, jonka laskuri tuntee, on jonkin polun päässä: yhtään saavuttamatonta tuotetta ei ole."),
    '<div class="pp-kaavio">' + kaavioTarvikkeet() + "</div>") +
 
  lohko("Missä pinta-alaraja kulkee",
@@ -738,7 +740,7 @@ document.getElementById("main").innerHTML =
    '<div class="pp-kaavio">' + kaavioRajat() + "</div>") +
 
  lohko("Kaikki lopputulokset",
-   "Yksi rivi per erilainen lopputulos — sama tieto kuin kaavioissa, luettavana taulukkona. " +
+   "Yksi rivi per erilainen lopputulos: sama tieto kuin kaavioissa, luettavana taulukkona. " +
    "Polkumäärä kertoo, kuinka monella vastausyhdistelmällä siihen päädytään: se on kattavuuden mitta, ei todennäköisyys. " +
    "Käytössä olevat perheet: " + perheetKaytossa.join(", ") + ".",
    '<table class="pp-taulu"><thead><tr><th>Lopputulos</th><th>Tarvikkeet</th>' +

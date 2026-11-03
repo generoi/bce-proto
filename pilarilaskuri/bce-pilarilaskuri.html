@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suunnittele perustus — BCE Pilarimaailma</title>
+<title>Suunnittele perustus | BCE Pilarimaailma</title>
 <meta name="robots" content="noindex, nofollow">
 <!-- Sivuston tyylit ENNEN laskurin omia: laskurin <style> on saman design systemin
      osajoukko samoilla luokkanimillä (.btn, .lbl, .lede, .fine), joten se saa jäädä
@@ -13,11 +13,11 @@
 <script src="../wireframes/bce-spec-shell.js"></script>
 <style>
 /* ---------------------------------------------------------------------------
-   BCE-pilarilaskuri v0.2 – työpajaprototyyppi.
+   BCE-pilarilaskuri v0.2, työpajaprototyyppi.
    Tyylit ovat sivuston design systemistä (docs/wireframes/DESIGN-SYSTEM.md,
    bce-v4.css): samat tokenit, sama typografia, samat komponentit. Tämä tiedosto
    ei linkitä bce-v4.css:ää, koska laskurin on toimittava yksin file://-osoitteesta
-   ja Claude-artefaktina — tokenit ja säännöt on kopioitu, ei keksitty uudelleen.
+   ja Claude-artefaktina: tokenit ja säännöt on kopioitu, ei keksitty uudelleen.
    Kun laskuri upotetaan sivustolle, tämän lohkon voi korvata bce-v4.css:llä ja
    jättää jäljelle vain "laskurin omat" -osion lopusta.
    --------------------------------------------------------------------------- */
@@ -74,12 +74,12 @@ button,input,select,textarea{font:inherit;color:inherit}
    Mittaruudun + ja − napautetaan peräkkäin samaan kohtaan, ja selain lukee kaksi
    nopeaa napautusta tuplanapautukseksi: luku kasvaa kerran ja sivu loikkaa
    lähemmäs. Sama osuu valintakortteihin, koska ruutu vaihtuu itsestään ja
-   seuraavan ruudun ensimmäinen kortti on samassa kohdassa — kaksi peräkkäistä
+   seuraavan ruudun ensimmäinen kortti on samassa kohdassa: kaksi peräkkäistä
    valintaa on kaksi napautusta samaan pisteeseen.
 
    touch-action:manipulation poistaa nimenomaan tuplanapautuksen. Nipistyszoomi ja
    vieritys jäävät, joten sivu on yhä suurennettavissa eikä WCAG 1.4.4 rikkoudu.
-   Viewportin user-scalable=no korjaisi saman oireen, mutta veisi zoomin kokonaan —
+   Viewportin user-scalable=no korjaisi saman oireen, mutta veisi zoomin kokonaan:
    sitä ei tähän lisätä. Sääntö on säätimillä eikä bodylla samasta syystä: vain
    napautuskohteissa tuplanapautus on virhe, tekstissä se on suurennus. */
 button,a,input,select,textarea,label,summary{touch-action:manipulation}
@@ -167,7 +167,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 [data-tila="tyopaja"] .kf-yla,
 [data-tila="tyopaja"] footer{display:none}
 /* Kiinteä 720 px on puhelinmallin korkeus: se on koriste, joka näyttää
-   laitteelta erillisen työkalun näyttämöllä. Sivun sisällä se on aukko —
+   laitteelta erillisen työkalun näyttämöllä. Sivun sisällä se on aukko:
    aloitusruudun välike työntäisi painikkeen kortin pohjalle ja jättäisi
    väliin tyhjän, joka lukee keskeneräisyytenä. Sivulla kortti on sisältönsä
    korkuinen. */
@@ -178,7 +178,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 [data-tila="tuotanto"] .hdr-cta{display:none}
 /* Konfiguraattorissa edetessä sivuston valikkoa ei tarvita, ja tarttuvana se
    veisi ruudun ylälaidan juuri siltä palkilta, jolla laskurin oma askel ja
-   paluupainike ovat. Kuori vierii siis pois tieltä — ylös vierittämällä se
+   paluupainike ovat. Kuori vierii siis pois tieltä: ylös vierittämällä se
    tulee takaisin, ja se on tie ulos konfiguraattorista. */
 [data-tila="tuotanto"] header.site{position:static}
 
@@ -190,7 +190,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .kf-yla .lede{margin:0}
 /* Beta on tieto eikä koriste: se kertoo että laskenta on vielä tarkistettavana.
    Siksi se on otsikon vieressä eikä alatunnisteessa, ja siksi se on harmaa
-   eikä oranssi — oranssi on toiminnon väri. */
+   eikä oranssi: oranssi on toiminnon väri. */
 .kf-beta{font-family:var(--ff);font-size:var(--fs-fine);font-weight:600;
   text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);
   border:1px solid var(--rule-2);border-radius:var(--r-ctl);
@@ -198,7 +198,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 /* Mobiili on 80,9 % istunnoista, ja siellä otsikkolohko kilpailee suoraan
    ensisijaisen toiminnon kanssa: jokainen rivi otsikkoa työntää «Laske
    tarvitsemani pilarit» -painiketta alemmas. Siksi otsikko on täällä pienempi
-   kuin sisältösivuilla ja lohkon välit ovat tiukemmat — kortin luettelo kertoo
+   kuin sisältösivuilla ja lohkon välit ovat tiukemmat: kortin luettelo kertoo
    loput. */
 @media (max-width:980px){
   .kf-yla{padding-top:var(--s4)}
@@ -332,7 +332,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 /* Säädin keskitetään ruudukkoon, ei koko kuvaan: kuvan ylämarginaali on 14 px ja
    alamarginaali 40 px (leveysmitan teksti), joten SVG:n keskus on 13 px ruudukon
    keskuksen alapuolella. Alamarginaali nostaa keskitetyn palan puolikkaallaan.
-   Luku on likimääräinen, koska kuva skaalautuu leveyden mukaan — kapealla ruudulla
+   Luku on likimääräinen, koska kuva skaalautuu leveyden mukaan: kapealla ruudulla
    ero on muutaman pikselin pienempi, mikä ei erotu. */
 /* Pystysäädin venyy koordinaatiston korkuiseksi: + ylös, − alas, arvo väliin. Suhteet
    ovat piirroksen omat (padT 14 : kenttä 232 : padB 40 = 286), ja ne toteutetaan
@@ -348,7 +348,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .m-pituus .step.pysty .ctl{flex:1 1 auto;justify-content:space-between}
 /* Leveyssäädin on kuvan sarakkeessa eikä koko ruudukon levyinen, jotta +-painikkeen
    oikea reuna osuu koordinaatiston oikeaan reunaan: säädin mittaa sitä reunaa.
-   Vasen pehmuste 42/274 on piirroksen vasen marginaali, jossa kulkee pituusmitta —
+   Vasen pehmuste 42/274 on piirroksen vasen marginaali, jossa kulkee pituusmitta:
    sen jälkeen − osuu kentän vasempaan reunaan ja + oikeaan. */
 .m-leveys{grid-area:leveys;padding-left:15.328%}
 .m-leveys .ctl{flex:1 1 auto;justify-content:space-between}
@@ -416,7 +416,7 @@ a.btn{display:flex}          /* linkki käyttäytyy kuin painike .wide-leveydell
 .suunta[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .group{margin:0 0 var(--s5)}
 /* Tuoterivi: kuva · nimi ja määrä samalla rivillä · tiedot alla.
-   Määrä kuuluu nimen viereen, koska kysymys on "montako TÄTÄ" — erillisenä
+   Määrä kuuluu nimen viereen, koska kysymys on "montako TÄTÄ": erillisenä
    lukuna se jää irralleen ja jättää rivin oikean laidan tyhjäksi.
    Sivuston .tcard tekee saman työn leveässä sarakkeessa; tämä on sen 420 px:n muoto. */
 .prow{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:var(--s3);
@@ -585,7 +585,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 /* ===== liike =================================================================
    Budjetti on design systemin luku 1: vain ease-out, alle 200 ms, ei
    layout-ominaisuuksia. Siksi täällä liikkuvat vain transform ja opacity, ja
-   jokainen kesto on kirjoitettu siihen mitä se tekee — ei yhtään «transition:all».
+   jokainen kesto on kirjoitettu siihen mitä se tekee: ei yhtään «transition:all».
 
    Kolme asiaa liikkuu, ja jokaisella on tehtävä:
 
@@ -600,7 +600,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 
    Hover on kosketuslaitteella väärä tila: se jää päälle napautuksen jälkeen ja
    kortti näyttää valitulta vaikkei ole. Siksi portti, ja siksi painallus on
-   erikseen — se on ainoa osoitinpalaute jonka puhelin saa. */
+   erikseen: se on ainoa osoitinpalaute jonka puhelin saa. */
 @media (hover: hover) and (pointer: fine){
   .btn-1:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
   .btn-2:hover{border-color:var(--ink)}
@@ -738,7 +738,7 @@ var SOURCES = {
      kohtaa: seinään kiinnitetty terassi, L-muoto, PIK palkin kylkeen, maapohja-,
      kaltevuus- ja autokatoskysymysten poisto, 1,5 m vähimmäisväli (T21, auki). */
   BCE:      { label:'BCE:n palaute laskurista, 1.10.2026', tier:'ok' },
-  GEN:      { label:'Generon oletus – ei sallittu sääntömoottorissa', tier:'warn' },
+  GEN:      { label:'Generon oletus, ei sallittu sääntömoottorissa', tier:'warn' },
   /* Tarkistuslaskelmat eivät ole sääntöjä: ne raportoidaan, mutta eivät valitse
      tuotetta. Erillinen koodi, jotta ne erottuvat sääntömoottorin lähteistä. */
   LASKENTA: { label:'Laskurin oma tarkistuslaskelma, ei BCE:n sääntö', tier:'warn' },
@@ -754,12 +754,12 @@ var SOURCES = {
    Kuvat kytketty 18.9.2026. Ne eivät ole BCE:n toimittamia vaan piirretty
    generaattorilla (docs/wireframes/tuotekuva.js ja tarvikekuva.js), ja ne ovat
    samasta kamerasta kuin sivuston kuvat. Polku on suhteellinen, joten laskuri
-   ei ole enää yksi tiedosto — se avautuu yhä kaksoisklikkaamalla, mutta vain
+   ei ole enää yksi tiedosto: se avautuu yhä kaksoisklikkaamalla, mutta vain
    repon sisällä. Jos laskuri lähetetään yksinään, kuvat eivät tule mukana.
 
    Rivillä on perheen SUURIN koko, ei perhekuva: perhekuva on 5,5:1 leveä eikä
    lue 84 pikselissä. Kaiverrettu tuotekoodi on siinä koossa alle pikselin, joten
-   kuva ei väitä korkeutta — korkeuden kertoo rivin oma teksti. */
+   kuva ei väitä korkeutta: korkeuden kertoo rivin oma teksti. */
 var PILLARS = {
   AP: {
     short:'AP-pilari',
@@ -804,9 +804,9 @@ var PILLARS = {
 
 /* --- tarvikkeet ----------------------------------------------------------- */
 var ACCESSORIES = {
-  'PIK-90-140':  { name:'Pilarikenkä PIK 90–140 mm', use:'Kahden lankun palkki (90–140 mm). Kenkä ruuvataan palkin kylkeen, säädettävä sivu- ja korkeussuunnassa.', src:'SITE', tier:'ok', short:'PIK 90–140', img:"../kuvat/tarvikekuva-pik-90-140.svg" },
-  'PIK-50-70':   { name:'Pieni pilarikenkä PIK 50–70 mm', use:'Yhden lankun palkki (50–70 mm). Kenkä ruuvataan palkin kylkeen, ja se jää näkyviin.', src:'SITE', tier:'ok', short:'PIK 50–70', img:"../kuvat/tarvikekuva-pik-50-70.svg" },
-  'P-PIK-50x70': { name:'Pieni L-mallinen pilarikenkä P-PIK 50 × 70 mm (piilokiinnike)', use:'50–70 mm lankut, kiinnike ei näy ulospäin.', src:'SITE', tier:'ok', short:'P-PIK 50×70', img:"../kuvat/tarvikekuva-p-pik-50x70.svg" },
+  'PIK-90-140':  { name:'Pilarikenkä PIK 90-140 mm', use:'Kahden lankun palkki (90-140 mm). Kenkä ruuvataan palkin kylkeen, säädettävä sivu- ja korkeussuunnassa.', src:'SITE', tier:'ok', short:'PIK 90-140', img:"../kuvat/tarvikekuva-pik-90-140.svg" },
+  'PIK-50-70':   { name:'Pieni pilarikenkä PIK 50-70 mm', use:'Yhden lankun palkki (50-70 mm). Kenkä ruuvataan palkin kylkeen, ja se jää näkyviin.', src:'SITE', tier:'ok', short:'PIK 50-70', img:"../kuvat/tarvikekuva-pik-50-70.svg" },
+  'P-PIK-50x70': { name:'Pieni L-mallinen pilarikenkä P-PIK 50 × 70 mm (piilokiinnike)', use:'50-70 mm lankut, kiinnike ei näy ulospäin.', src:'SITE', tier:'ok', short:'P-PIK 50×70', img:"../kuvat/tarvikekuva-p-pik-50x70.svg" },
   'TL-100x100':  { name:'Teräslaatta TL 100 × 100 × 6, M20', use:'Rakenne asennetaan laatan päälle. Kaksi reikää vastakkaisissa nurkissa.', src:'SITE', tier:'ok', short:'TL 100×100', img:"../kuvat/tarvikekuva-tl-100x100.svg" },
   'TL-150x150':  { name:'Teräslaatta TL 150 × 150 × 8, M20', use:'Järeät tolpat, jotka eivät sovi pilarikenkään. 9 mm reiät neljässä kulmassa.', src:'SITE', tier:'ok', short:'TL 150×150', img:"../kuvat/tarvikekuva-tl-150x150.svg" },
   'TL-100x175':  { name:'Teräslaatta TL 100 × 175 × 6, M20', use:'Kiinnityspisteet ulottuvat pilarin ulkopuolelle, voidaan kiinnittää jälkikäteen.', src:'SITE', tier:'ok', short:'TL 100×175', img:"../kuvat/tarvikekuva-tl-100x175.svg" },
@@ -824,13 +824,14 @@ function defaultRules(){
     /* Kestopuu 2018: tukien väli pääpalkin alla, q = 2,0 kN/m², C18. Taulukon alaraja. */
     spacingByBeam:      { '48x123':1.4, '48x148':1.6, '48x198':2.0 },   /* KESTOPUU, ok */
     spacingUnknownBeam: null,                                           /* PUUTTUU: tulos haarukkana */
+    minSpacing:         1.5,                                            /* BCE 3.11.2026 (T21 c): voittaa palkin välin */
     areaLimit:          { sauna:30, piha:30, mokki:30, terassi:null },  /* RAKL; terassille ei lakirajaa */
     liveLoad:           { terassi:2.0, piha:2.0, sauna:2.0, mokki:2.0 }, /* KESTOPUU q = 2,0 kN/m² */
-    /* Rakenteen omapaino luokittain. Luokka on kysymys, luku on sääntö — siksi
-       nimet ovat täällä ja arvot tyhjinä, kuten lumivyöhykkeillä. Niin kauan kuin
-       luku puuttuu, kuormatarkistuksessa on vain hyötykuorma, ja tulos sanoo sen.
-       PUUTTUU (T19): BCE antaa kN/m². */
-    selfWeightByClass:  { terassi:null, rakennus:null },
+    /* Rakenteen omapaino luokittain. Luokka on kysymys, luku on sääntö. Jos työpaja
+       tyhjentää luvun, kuormatarkistuksessa on vain hyötykuorma, ja tulos sanoo sen. */
+    /* BCE 3.11.2026 (T19): avoin terassi 0,6, puuterassi kevyellä katolla 1,2,
+       kevyt puurakennus jossa lattia, katto ja seinät 2,0 kN/m². */
+    selfWeightByClass:  { terassi:0.6, katettu:1.2, rakennus:2.0 },
     selfWeight:         null,                                           /* PUUTTUU: yleisarvo, ohittaa luokan jos annettu */
     /* Lumi on enää vertailuluku: katettu terassi kertoo, paljonko sen kuormasta puuttuu.
        Autokatos, jonka kuorma se oli, poistui BCE:n palautteesta 1.10.2026. */
@@ -839,8 +840,8 @@ function defaultRules(){
     capacity:           { AP:10, TP:16, KP:30, PP:null },               /* KRQ, varovaisin rivi */
     heightRange:        { AP:[200,400], TP:[200,600], KP:[400,1000], PP:[600,600] }, /* SITE, KRQ */
     heightSplitRule:    null,                                           /* PUUTTUU (T4) */
-    /* Kysymyskatto on 5, mutta polku on 1.10.2026 alkaen 2–8 ruutua (21.9. 2–9): rakenteen
-       omapaino oli yhdeksäs. Katto ei ole voimassa missään — se ei rajoita steps():iä
+    /* Kysymyskatto on 5, mutta polku on 1.10.2026 alkaen 2-8 ruutua (21.9. 2-9): rakenteen
+       omapaino oli yhdeksäs. Katto ei ole voimassa missään: se ei rajoita steps():iä
        eikä mitään muutakaan, vaan on jäänyt tänne muistuttamaan alkuperäisestä
        tavoitteesta. Joko luku päivitetään tai polku lyhennetään; kumpikin on päätös
        eikä korjaus, joten se on työpajan listalla eikä tässä. */
@@ -946,26 +947,28 @@ var FI = {
 
   'k7.h':'Kuinka raskas rakenne pilarien päälle tulee?',
   'k7.lead':'Rakenteen oma paino on se osa kuormasta, jota hyötykuorma ei kata.',
-  'k7.terassi':'Avoin terassi',                  'k7.terassi.d':'kansi ja runko, ei kattoa eikä seiniä',
-  'k7.rakennus':'Katettu tai seinällinen rakennus', 'k7.rakennus.d':'sauna, piharakennus, mökki, lasitettu terassi',
+  /* Luokat BCE:n sanoin 3.11.2026 (T19). */
+  'k7.terassi':'Avoin terassi',            'k7.terassi.d':'kansi ja runko, ei kattoa eikä seiniä',
+  'k7.katettu':'Terassi kevyellä katolla', 'k7.katettu.d':'katos tai lasitus, ei seiniä',
+  'k7.rakennus':'Kevyt puurakennus',       'k7.rakennus.d':'lattia, seinät ja katto: sauna, piharakennus, mökki',
   'k7.itse':'Määritä itse',                      'k7.itse.d':'syötä omapaino kN/m²',
   'k7.itse.lbl':'Omapaino',
   'k7.short':'rakenteen paino',
   'k7.src.itse':'asiakkaan antama',
-  'k7.src.luokka':'työpajan luku luokalle {luokka}',
+  'k7.src.luokka':'BCE:n luku luokalle {luokka}',
 
   'r.h':'Tarvitset nämä',
   'r.h.n':'Tarvitset {n} pilaria',
-  'r.h.range':'Tarvitset {n1}–{n2} pilaria',
+  'r.h.range':'Tarvitset {n1}-{n2} pilaria',
   'r.notes.h':'Ennen kuin ostat',
   'ui.need':'Valitse ensin {what}.',
   'k2.cover.short':'tuleeko katos tai lasitus',
   'k2.heated.short':'käytetäänkö mökkiä ympäri vuoden',
   'k5.beam.short':'palkin koko',
   'k5.fixing.short':'miten palkki kiinnitetään',
-  'r.lead':'{building} {w} × {l} m · pilarit {cols} × {rows} ruudukkoon, noin {sp} m välein',
-  'r.lead.range':'{building} {koko} · {n1}–{n2} pilaria palkkikoon mukaan',
-  'r.lead.muoto':'{building} {koko} · pilarit noin {sp} m välein',
+  'r.lead':'{building} {w} × {l} m · pilarit {cols} × {rows} ruudukkoon, väli {sw} × {sl} m',
+  'r.lead.range':'{building} {koko} · {n1}-{n2} pilaria palkkikoon mukaan',
+  'r.lead.muoto':'{building} {koko} · pilarien väli enintään {sp} m',
   'r.lead.wall':', seinän puolelle ei pilareita',
   'r.koko':'{w} × {l} m',
   'r.koko.l':'L-muoto, {area} m²',
@@ -976,19 +979,19 @@ var FI = {
   'r.cap.plain':'{kN} kN per pilari',
   'r.cap.miss':'Kantavuutta ei ole ilmoitettu missään lähteessä',
   'r.kpl':'kpl',
-  'r.heights.short':'Korkeus {min}–{max} mm',
+  'r.heights.short':'Korkeus {min}-{max} mm',
   'r.heights':'Pilarin korkeus valitaan lattian korkeudesta maasta: siitä vähennetään palkin korkeus ja kiinnikkeen osuus. Kiinnikkeen säätövara hoitaa loppuerot. Sinä valitset lattiakorkeuden, me tarkistamme jaon.',
   'r.height.fixed':'Korkeus {h} mm',
   'r.alt':'Kevyempi vaihtoehto: {n} × {family}-pilari, nostettavissa yksin.',
   'r.choice':'Vaihtoehto',
   'r.qty':'{n} kpl',
-  'r.qtyrange':'{n1}–{n2} kpl',
+  'r.qtyrange':'{n1}-{n2} kpl',
   'r.diagram.range':'Kaavio näyttää väljimmän vaihtoehdon ({sp} m).',
   'r.diagram.alt':'Pohjapiirros ylhäältä: {n} pilaria {w} × {l} metrin alueella.',
   'r.how':'Näin laskimme',
   'r.install':'Asennusjärjestys',
   'r.cta.mail':'Lähetä lista sähköpostiini',
-  /* Sivukartan sääntö: "Mistä ostat", ei "Jälleenmyyjät" — käyttäjän kysymys hänen
+  /* Sivukartan sääntö: "Mistä ostat", ei "Jälleenmyyjät": käyttäjän kysymys hänen
      sanoillaan. Osoite on prototyypin tiedosto; tuotannossa se on /mista-ostat/. */
   'r.cta.store':'Katso mistä ostat',
   'r.cta.store.url':'../wireframes/bce_mista-ostat_spec.html',
@@ -1044,19 +1047,22 @@ var FI = {
   'how.family.kp':'Kuorma {pp} kN ylittää TP:n kantavuuden → KP.',
   'how.mokki.tp':'BCE ohjaa pienmökit TP:hen; raja päätetään.',
   'how.spacing':'Palkki {beam} → tukien väli {sp} m (Kestopuu, taulukon alaraja). Ruudukko {cols} × {rows} = {n} pilaria, väli {sw} × {sl} m.',
+  'how.spacing.same':'Palkkikokoa ei ole valittu, mutta pilareita tulee {n} kaikilla palkeilla, koska BCE:n vähimmäisväli {min} m ratkaisee määrän.',
+  'how.spacing.min':'BCE:n sääntö: pilarien väli on aina vähintään {min} m. Siksi väli on {vali} m, vaikka palkin {beam} taulukkoarvo on {sp} m.',
+  'n.spacing.min':'Pilarien väli on {vali} m, enemmän kuin {beam} -palkin taulukkoarvo {sp} m. Varmista palkin kestävyys tai valitse järeämpi palkki.',
   'how.spacing.muoto':'Palkki {beam} → tukien väli enintään {sp} m (Kestopuu, taulukon alaraja). Jokainen sivu jaetaan omalla välillään, joten pisimmät välit ovat {sw} ja {sl} m ja pilareita tulee {n}.',
   'how.shape.l':'L-muoto: vaakaosan syvyys {a} m ja pystyosan leveys {b} m, yhteensä {area} m². Sisänurkka saa aina oman pilarin.',
   'how.wall':'Terassi on kiinni rakennuksessa, joten seinän linjalle ei tule pilareita ({m} kpl vähemmän). Seinä kantaa puolet viereisestä pilarivälistä, joten pilareille jää {a} m² kokonaisalasta {area} m².',
   'how.routa':'Maapohjaa ei kysytä: pilarien alle tehdään aina routaeristys ja vakaa, tiivistetty pohja.',
-  'how.height.range':'{family}-pilarin korkeusalue on {min}–{max} mm. Maaston korkeuseroa ei kysytä, joten korkeus valitaan lattiakorkeuden mukaan.',
-  'how.spacing.range':'Palkkikokoa ei ole valittu. Tukien väli on {sp1}–{sp2} m palkin mukaan, joten pilareita tarvitaan {n1}–{n2}. Kuormatarkistus tehdään pienimmällä määrällä ({n1}).',
-  'how.load.sw':'Hyötykuorma {live} kN/m² (Kestopuu) + rakenteen omapaino {sw} kN/m² (työpaja) = {q} kN/m² × {area} m² / {n} pilaria = {pp} kN per pilari. {family} kantaa varovaisimmalla arvolla {cap} kN (Kronqvist).',
+  'how.height.range':'{family}-pilarin korkeusalue on {min}-{max} mm. Maaston korkeuseroa ei kysytä, joten korkeus valitaan lattiakorkeuden mukaan.',
+  'how.spacing.range':'Palkkikokoa ei ole valittu. Tukien väli on {sp1}-{sp2} m palkin mukaan, joten pilareita tarvitaan {n1}-{n2}. Kuormatarkistus tehdään pienimmällä määrällä ({n1}).',
+  'how.load.sw':'Hyötykuorma {live} kN/m² (Kestopuu) + rakenteen omapaino {sw} kN/m² = {q} kN/m² × {area} m² / {n} pilaria = {pp} kN per pilari. {family} kantaa varovaisimmalla arvolla {cap} kN (Kronqvist).',
   'how.load':'Hyötykuorma {q} kN/m² (Kestopuu) × {area} m² / {n} pilaria = {pp} kN per pilari. {family} kantaa varovaisimmalla arvolla {cap} kN (Kronqvist). Rakenteen omapaino puuttuu laskusta.',
   'how.height.miss':'Korkeuksia ei jaeta laskurissa. Pilarin korkeus seuraa lattiakorkeutta: lattia maasta miinus palkin korkeus miinus kiinnikkeen osuus, ja kiinnikkeen säätövara hoitaa loppuerot. Laskurilla on näistä vain palkin korkeus.',
   'how.height.rule':'Korkeudet jaettiin työpajassa päätetyllä säännöllä ({rule}).',
-  'how.acc.piilo':'Piilotettu kiinnike → P-PIK 50 × 70, joka on tarkoitettu 50–70 mm lankuille.',
+  'how.acc.piilo':'Piilotettu kiinnike → P-PIK 50 × 70, joka on tarkoitettu 50-70 mm lankuille.',
   'how.acc.pik':'Palkin paksuus {mm} mm → {code}. Pilarikengän ura mittaa paksuutta, ei korkeutta. Mitta on luettu tuotekuvasta, ei BCE:n säännöstä, joten valinta on päättelyä.',
-  'how.acc.pik.piilo':'Piilokiinnike P-PIK 50 × 70 on tarkoitettu 50–70 mm paksulle puulle. Ilmoitettu {mm} mm ei mahdu siihen, eikä paksummalle piilokiinnikkeelle ole tuotetta missään lähteessä.',
+  'how.acc.pik.piilo':'Piilokiinnike P-PIK 50 × 70 on tarkoitettu 50-70 mm paksulle puulle. Ilmoitettu {mm} mm ei mahdu siihen, eikä paksummalle piilokiinnikkeelle ole tuotetta missään lähteessä.',
   'how.acc.pak':'Palkki {beam} lasketaan satulaan → {code}. Satulan korkeus on se mitta, joka ratkaisee koon: 148 mm mahtuu 150:een, 198 mm ei. Luettu tuotekuvasta, ei BCE:n säännöstä, joten valinta on päättelyä.',
   'how.acc.eos':'Palkkikoko puuttuu, joten kiinnikkeestä näytetään molemmat vaihtoehdot.',
   'how.acc.palkki':'Vaakapalkki pilarin kylkeen → palkkikenkä PAK. Kumpi koko, 100 × 150 vai 100 × 200, ei ratkea mistään lähteestä, joten molemmat näytetään. Päätös T8.',
@@ -1064,14 +1070,14 @@ var FI = {
   'how.acc.nostokorva':'Yksi nostokorva riittää: se siirretään pilarista toiseen.',
   'how.pak':'PAK-palkkikengän valintasääntöä ei ole missään lähteessä, joten laskuri ei ehdota sitä.',
   'how.self':'Rakenteen omapaino {sw} kN/m², {mista}. Se lasketaan hyötykuorman päälle.',
-  'how.self.miss':'Rakenteen omapainolle ei ole lukua luokassa {luokka}, joten kuormassa on vain hyötykuorma {live} kN/m². Todellinen omapaino on suuruusluokkaa 2–5 kN/m², eli kuormatarkistus on alaraja eikä tulos.',
+  'how.self.miss':'Rakenteen omapainolle ei ole lukua luokassa {luokka}, joten kuormassa on vain hyötykuorma {live} kN/m². BCE:n luvut ovat 0,6, 1,2 ja 2,0 kN/m² rakenteen mukaan, eli kuormatarkistus on alaraja eikä tulos.',
   'how.self.ask':'Rakenteen painoa ei ole valittu, joten kuormassa on vain hyötykuorma {live} kN/m².',
 
   'install.1':'Kaiva koko rakennuksen alta häiriintymättömään moreenipohjaan, vähintään metri rakennuksen ulkoreunojen yli. Perusmaan kallistus vähintään 5 %.',
   'install.2':'Aseta suodatinkangas perusmaan päälle. Salaojaputket kaivannon ulkoreunaan.',
-  'install.3':'Lisää 20–30 cm kantavaa murskesoraa, tiivistä täryttimellä.',
+  'install.3':'Lisää 20-30 cm kantavaa murskesoraa, tiivistä täryttimellä.',
   'install.4':'Aseta XPS-routaeriste sorapatjan päälle, kallista rakennuksesta poispäin.',
-  'install.5':'Lisää 5–10 cm tasoitussoraa, tarkista korkeus tasolaserilla tai vatupassilla.',
+  'install.5':'Lisää 5-10 cm tasoitussoraa, tarkista korkeus tasolaserilla tai vatupassilla.',
   'install.6':'Kierrä nostokorva pilariin ja nosta pilari paikoilleen. Naru pilarien linjaan.',
   'install.7':'Kiinnitä tarvikkeet valmiisiin kierteisiin ja säädä korkeus.',
 
@@ -1094,7 +1100,7 @@ var FI = {
   'eng.cover.snow':'Katettu tai lasitettu terassi ohjataan KP:lle lumen takia, mutta kuormana on vain hyötykuorma {q} kN/m². Lumikuormana katto laskettaisiin arvolla {snow} kN/m².',
   'eng.mokki.load':'Mökin kuormana on terassin hyötykuorma {q} kN/m² (Kestopuu). Katon lumikuorma sekä katon ja seinien omapaino eivät ole mukana.',
   'eng.spacing.q':'Palkkivälin taulukko on laadittu hyötykuormalle 2,0 kN/m². Laskennassa käytetty kuorma on {q} kN/m², joten jakoväli ei enää vastaa palkin kestävyyttä.',
-  'n.self.miss':'Kuormatarkistuksessa on mukana vain hyötykuorma. Rakenteen oma paino on suuruusluokkaa 2–5 kN/m², joten tarkistus on alaraja eikä lopullinen mitoitus.',
+  'n.self.miss':'Kuormatarkistuksessa on mukana vain hyötykuorma. Rakenteen oma paino on BCE:n mukaan 0,6 tai 2,0 kN/m² rakenteesta riippuen, joten tarkistus on alaraja eikä lopullinen mitoitus.',
   'disclaimer':'Laskuri antaa suosituksen yleisimpiin tilanteisiin. Pilarien kantavuus perustuu valmistajan rakennesuunnittelijan mitoitukseen. Maapohjan kantavuus, routasuojaus, salaojitus ja maanpinnan korkeus suunnitellaan aina kohteen mukaan. Jos olet epävarma, kysy meiltä: vastaamme tunnin sisällä arkisin.'
 };
 
@@ -1104,7 +1110,7 @@ function prefixAll(obj, p){ var o = {}, k; for (k in obj) o[k] = obj[k] ? p + ob
 var I18N = { fi: FI, sv: prefixAll(FI, '[sv] '), en: prefixAll(FI, '[en] ') };
 
 function nf(v, lang, dec){
-  if (v === null || v === undefined || v !== v) return '–';
+  if (v === null || v === undefined || v !== v) return '-';
   var s;
   /* Kaksi desimaalia, päättävät nollat pois. Yksi desimaali riitti copylle mutta
      valehteli kaavoissa: 1,33 × 1,25 = 1,67 ei näytä oikealta muodossa 1,3 × 1,3 = 1,7. */
@@ -1131,9 +1137,18 @@ function fmt(key, vars, lang){
 
 /* --- apurit --------------------------------------------------------------- */
 function r6(x){ return Math.round(x * 1e6) / 1e6; }
-function gridFor(w, l, sp){
-  var cols = Math.max(2, Math.ceil(r6(w / sp)) + 1);
-  var rows = Math.max(2, Math.ceil(r6(l / sp)) + 1);
+/* Välien määrä yhdelle mitalle. Ensin palkin sallima väli (Kestopuu), sitten BCE:n
+   vähimmäisväli: jos väli jäisi alle sen, välejä harvennetaan niin, että väli on
+   vähintään minSp. BCE valitsi tämän 3.11.2026 (T21, vaihtoehto c) tietäen, että
+   palkin sallima väli silloin ylittyy, ja tulos sanoo sen ääneen. */
+function baysFor(len, sp, minSp){
+  var bays = Math.max(1, Math.ceil(r6(len / sp)));
+  if (minSp && r6(len / bays) < minSp - 1e-9) bays = Math.max(1, Math.floor(r6(len / minSp)));
+  return bays;
+}
+function gridFor(w, l, sp, minSp){
+  var cols = Math.max(1, baysFor(w, sp, minSp)) + 1;
+  var rows = Math.max(1, baysFor(l, sp, minSp)) + 1;
   return { cols:cols, rows:rows, n:cols * rows,
            spacing_w:r6(w / (cols - 1)), spacing_l:r6(l / (rows - 1)), nominal_spacing:sp };
 }
@@ -1158,7 +1173,7 @@ function heightsOf(f, R){
 
    Suunta (6.10.2026): puuttuva kulma voi olla missä tahansa neljästä kulmasta.
    Laskenta tehdään aina yllä kuvatussa perusasennossa ja tulos peilataan lopuksi
-   (fx: vasen–oikea, fy: ylä–ala). Peilaus ei muuta pilarimäärää eikä kuormaa,
+   (fx: vasen-oikea, fy: ylä-ala). Peilaus ei muuta pilarimäärää eikä kuormaa,
    vain sen, missä pilarit ja seinä kuvassa ovat. */
 var MUODOT = ['vapaa', 'seina', 'nurkka', 'l-vapaa', 'l-seina'];
 /* Puuttuvan kulman paikka: y = ylhäällä, a = alhaalla, o = oikealla, v = vasemmalla. */
@@ -1188,12 +1203,12 @@ function peilaa(sh, p){
 /* Jakoväli yhdelle akselille. Jokainen osuus jaetaan erikseen, jotta L:n
    sisänurkka saa aina pilarin; suorakaiteella osuuksia on yksi ja tulos on sama
    kuin gridFor():n. */
-function axisLines(segs, sp){
+function axisLines(segs, sp, minSp){
   var v = [0];
   segs.forEach(function(sg){
     var len = r6(sg[1] - sg[0]);
     if (len <= 1e-9) return;
-    var bays = Math.max(1, Math.ceil(r6(len / sp)));
+    var bays = baysFor(len, sp, minSp);
     for (var k = 1; k <= bays; k++) v.push(r6(sg[0] + len * k / bays));
   });
   return v;
@@ -1210,12 +1225,12 @@ function onWall(x, y, walls){
 /* Pilaripisteet ja niiden kuormitusalat. Piste kantaa neljänneksen jokaisesta
    viereisestä ruudusta, joka on pohjan sisällä: nurkkapilari neljänneksen ruudusta,
    reunapilari puolikkaan, sisäpilari kokonaisen ja L:n sisänurkka kolme neljäsosaa.
-   Seinälle osuva piste jätetään pois, ja sen ala jää seinän kannettavaksi — muiden
+   Seinälle osuva piste jätetään pois, ja sen ala jää seinän kannettavaksi: muiden
    pilarien ala ei muutu, koska seinä ottaa puolet viereisestä välistä.
    Suorakaiteella ilman seinää tulos on sama kuin gridFor():lla. */
-function layoutFor(sh, sp){
-  var xs = sh.kind === 'L' ? axisLines([[0, sh.b], [sh.b, sh.w]], sp) : axisLines([[0, sh.w]], sp);
-  var ys = sh.kind === 'L' ? axisLines([[0, sh.l - sh.a], [sh.l - sh.a, sh.l]], sp) : axisLines([[0, sh.l]], sp);
+function layoutFor(sh, sp, minSp){
+  var xs = sh.kind === 'L' ? axisLines([[0, sh.b], [sh.b, sh.w]], sp, minSp) : axisLines([[0, sh.w]], sp, minSp);
+  var ys = sh.kind === 'L' ? axisLines([[0, sh.l - sh.a], [sh.l - sh.a, sh.l]], sp, minSp) : axisLines([[0, sh.l]], sp, minSp);
   var inside = function(cx, cy){ return sh.kind !== 'L' || cx <= sh.b + 1e-9 || cy >= sh.l - sh.a - 1e-9; };
   var cell = function(i, j){
     if (i < 0 || j < 0 || i >= xs.length - 1 || j >= ys.length - 1) return 0;
@@ -1252,7 +1267,7 @@ function weightRange(f, R){
   for (var i = 0; i < hs.length; i++) if (w[hs[i]] != null) a.push(w[hs[i]]);
   if (!a.length) return null;
   var mn = Math.min.apply(null, a), mx = Math.max.apply(null, a);
-  return (mn === mx) ? String(mn) : (mn + '–' + mx);
+  return (mn === mx) ? String(mn) : (mn + '-' + mx);
 }
 
 /* --- compute -------------------------------------------------------------- */
@@ -1279,7 +1294,7 @@ function compute(state, R, lang){
   };
   for (var s = 1; s <= 7; s++) out.install.push({ text:t('install.' + s), tier:'ok', src:'OPAS' });
 
-  /* Vaihe 0 – tolppa: oma lyhyt polku, ei kuormatarkistusta eikä tarvikkeita. */
+  /* Vaihe 0, tolppa: oma lyhyt polku, ei kuormatarkistusta eikä tarvikkeita. */
   if (state.building === 'tolppa'){
     out.family = 'PP';
     out.pillars = [{ family:'PP', qty:state.poles, heights:heightsOf('PP', R), heightRule:null }];
@@ -1296,7 +1311,7 @@ function compute(state, R, lang){
                 walls:shape.walls.map(function(w){ return [peilaa(shape, w[0]), peilaa(shape, w[1])]; }) };
   var bname = t('b.' + state.building);
 
-  /* Vaihe 1 – kieltäytyminen ennen laskentaa. Korkeusero ja ympärivuotinen mökki
+  /* Vaihe 1, kieltäytyminen ennen laskentaa. Korkeusero ja ympärivuotinen mökki
      routivalla maalla eivät enää kieltäydy: BCE poisti molemmat kysymykset 1.10.2026. */
   var lim = R.areaLimit[state.building];
   if (lim !== null && lim !== undefined && area > lim){
@@ -1305,7 +1320,7 @@ function compute(state, R, lang){
   }
   if (state.building === 'mokki' && state.heated === 'ympari') note('warn', 'n.mokki.lupa');
 
-  /* Vaihe 2 – tuoteperhe BCE:n käyttökohteista. */
+  /* Vaihe 2, tuoteperhe BCE:n käyttökohteista. */
   var fam = null, candidate = null;
   if (state.building === 'terassi' && state.cover === 'kyllä'){
     fam = 'KP';
@@ -1319,22 +1334,30 @@ function compute(state, R, lang){
     candidate = 'AP|TP';
   }
 
-  /* Vaihe 3 – jakoväli ja määrä. */
+  /* Vaihe 3, jakoväli ja määrä. */
   var n = null, grid = null, range = null, lay = null;
   var sp = (state.beam && R.spacingByBeam[state.beam] !== undefined) ? R.spacingByBeam[state.beam] : R.spacingUnknownBeam;
   if (sp === null || sp === undefined){
     var vals = [];
     for (var bk in R.spacingByBeam) if (typeof R.spacingByBeam[bk] === 'number') vals.push(R.spacingByBeam[bk]);
     var sp1 = Math.min.apply(null, vals), sp2 = Math.max.apply(null, vals);
-    var gLoose = layoutFor(shape, sp2), gDense = layoutFor(shape, sp1);
-    range = { n1:gLoose.n, n2:gDense.n, sp1:sp1, sp2:sp2, gridLoose:gLoose, gridDense:gDense };
+    var gLoose = layoutFor(shape, sp2, R.minSpacing), gDense = layoutFor(shape, sp1, R.minSpacing);
     lay = gLoose;
     n = gLoose.n;                    /* kuormatarkistus pienimmällä pilarimäärällä */
     out.refine = true;
-    how('how.spacing.range', { sp1:sp1, sp2:sp2, n1:range.n1, n2:range.n2 }, 'miss', 'PUUTTUU');
+    if (gLoose.n === gDense.n){
+      /* Vähimmäisväli (T21) tekee määrästä usein palkista riippumattoman. Silloin
+         haarukka olisi "12-12", joten tulos on yksi luku ja palkki jää auki vain
+         kiinnikkeen kannalta. */
+      grid = gLoose;
+      how('how.spacing.same', { n:n, min:R.minSpacing }, tierOf(R, 'minSpacing', 'ok'), srcOf(R, 'minSpacing', 'BCE'));
+    } else {
+      range = { n1:gLoose.n, n2:gDense.n, sp1:sp1, sp2:sp2, gridLoose:gLoose, gridDense:gDense };
+      how('how.spacing.range', { sp1:sp1, sp2:sp2, n1:range.n1, n2:range.n2 }, 'miss', 'PUUTTUU');
+    }
     note('warn', 'n.beam.eos');
   } else {
-    grid = lay = layoutFor(shape, sp);
+    grid = lay = layoutFor(shape, sp, R.minSpacing);
     n = grid.n;
     var spTier = tierOf(R, 'spacingByBeam.' + state.beam, 'ok'),
         spSrc  = srcOf(R, 'spacingByBeam.' + state.beam, 'KESTOPUU');
@@ -1346,6 +1369,15 @@ function compute(state, R, lang){
       how('how.spacing.muoto', { beam:t('k5.' + state.beam), sp:sp, n:n, sw:grid.spacing_w, sl:grid.spacing_l },
           spTier, spSrc);
   }
+  /* T21: kun BCE:n vähimmäisväli harvensi välit yli palkin taulukkoarvon, se sanotaan
+     sekä perusteluissa että asiakkaalle. Haarukassa palkkia ei ole valittu, joten
+     vertailukohtaa ei ole. */
+  if (grid && sp != null && R.minSpacing && Math.max(grid.spacing_w, grid.spacing_l) > sp + 1e-9){
+    var vali = Math.max(grid.spacing_w, grid.spacing_l);
+    how('how.spacing.min', { min:R.minSpacing, vali:vali, sp:sp, beam:t('k5.' + state.beam) },
+        tierOf(R, 'minSpacing', 'ok'), srcOf(R, 'minSpacing', 'BCE'));
+    note('warn', 'n.spacing.min', { vali:vali, sp:sp, beam:t('k5.' + state.beam) });
+  }
   if (shape.kind === 'L')
     how('how.shape.l', { a:shape.a, b:shape.b, area:area }, 'warn', 'LASKENTA');
   if (shape.walls.length){
@@ -1353,7 +1385,7 @@ function compute(state, R, lang){
     note('info', 'n.wall');
   }
 
-  /* Vaihe 4 – kuorma ja tuoteperheen lopullinen valinta. */
+  /* Vaihe 4, kuorma ja tuoteperheen lopullinen valinta. */
   var q, liveOnly = null, selfW = null, massLahde = null;
   q = R.liveLoad[state.building];
   if (q === null || q === undefined) q = 0;
@@ -1409,7 +1441,10 @@ function compute(state, R, lang){
   how(selfW != null ? 'how.load.sw' : 'how.load',
       { q:q, live:liveOnly, sw:selfW, area:lay.supported, n:n, pp:pp, family:fam, cap:R.capacity[fam] },
       state.building === 'mokki' ? 'warn' : tierOf(R, 'liveLoad.' + state.building, 'ok'),
-      selfW != null ? (R._workshopSrc || 'Työpaja') : srcOf(R, 'liveLoad.' + state.building, 'KESTOPUU'));
+      selfW == null ? srcOf(R, 'liveLoad.' + state.building, 'KESTOPUU')
+        : massLahde === 'itse' ? 'ASIAKAS'
+        : massLahde === 'luokka' ? srcOf(R, 'selfWeightByClass.' + state.mass, 'BCE')
+        : (R._workshopSrc || 'Työpaja'));
   /* Omapaino omalle riville: se on ainoa kuorman osa, jonka asiakas itse valitsee,
      ja ainoa jonka puuttuminen tekee tarkistuksesta alarajan. */
   if (selfW != null){
@@ -1417,7 +1452,7 @@ function compute(state, R, lang){
         { sw:selfW, mista: massLahde === 'itse' ? t('k7.src.itse')
                          : t('k7.src.luokka', { luokka:t('k7.' + state.mass) }) },
         massLahde === 'itse' ? 'ok' : tierOf(R, 'selfWeightByClass.' + state.mass, 'ok'),
-        massLahde === 'itse' ? 'ASIAKAS' : (R._workshopSrc || 'Työpaja'));
+        massLahde === 'itse' ? 'ASIAKAS' : srcOf(R, 'selfWeightByClass.' + state.mass, 'BCE'));
   } else {
     how(state.mass ? 'how.self.miss' : 'how.self.ask',
         { luokka: state.mass ? t('k7.' + state.mass) : '', live:liveOnly }, 'miss', 'PUUTTUU');
@@ -1427,7 +1462,7 @@ function compute(state, R, lang){
       'ok', srcOf(R, 'heightRange.' + fam, 'SITE'));
   how('how.routa', null, 'ok', 'BCE');
 
-  /* Vaihe 5 – korkeudet. Ilman työpajan sääntöä tämä on PUUTTUU (T4). */
+  /* Vaihe 5, korkeudet. Ilman työpajan sääntöä tämä on PUUTTUU (T4). */
   var hs = heightsOf(fam, R);
   if (!R.heightSplitRule){
     var p = { family:fam, qty:n, heights:hs, heightRule:null };
@@ -1450,7 +1485,7 @@ function compute(state, R, lang){
     how('how.height.rule', { rule:String(mode) }, 'ok', R._workshopSrc || 'Työpaja');
   }
 
-  /* Vaihe 6 – tarvikkeet. */
+  /* Vaihe 6, tarvikkeet. */
   var acc = function(code, extra){
     var a = ACCESSORIES[code];
     var o = { code:code, qty:n, name:a.name, use:a.use, src:a.src, tier:a.tier };
@@ -1490,7 +1525,7 @@ function compute(state, R, lang){
   out.accessories.push({ code:'NOSTOKORVA', qty:1, name:ACCESSORIES.NOSTOKORVA.name,
                          use:ACCESSORIES.NOSTOKORVA.use, src:'SITE', tier:'ok' });
   how('how.acc.nostokorva', null, 'ok', 'SITE');
-  /* T8. Rivi kertoo, ettei PAK:ia ehdoteta — se olisi väärin silloin kun käyttäjä
+  /* T8. Rivi kertoo, ettei PAK:ia ehdoteta: se olisi väärin silloin kun käyttäjä
      valitsi juuri sen, joten rivi jää pois siltä haaralta. */
   if (state.fixing !== 'palkki') how('how.pak', null, 'miss', 'PUUTTUU');
 
@@ -1510,7 +1545,7 @@ function compute(state, R, lang){
     eng('eng.ap', null, 'miss', 'PUUTTUU');
   if (row) eng('eng.soil', { soil:row.soil_kNm2 }, 'miss', 'PUUTTUU');
   if (!R.heightSplitRule){
-    var beamMm = (state.beam && /^48x(\d+)$/.test(state.beam)) ? state.beam.split('x')[1] : '–';
+    var beamMm = (state.beam && /^48x(\d+)$/.test(state.beam)) ? state.beam.split('x')[1] : '-';
     eng('eng.height.inputs', { beam:beamMm, fill:PILLARS[fam].fill_mm }, 'miss', 'PUUTTUU');
     eng('eng.height.q', null, 'warn', 'LASKENTA');
   }
@@ -1520,7 +1555,7 @@ function compute(state, R, lang){
   if (liveOnly !== null && Math.abs(liveOnly - 2.0) > 1e-9)
     eng('eng.spacing.q', { q:q }, 'warn', 'KESTOPUU');
 
-  /* Vaihe 7 – huomiot. */
+  /* Vaihe 7, huomiot. */
   note('info', 'n.routa');
   if (fam === 'KP')            note('info', 'n.kp.lift', { kg:weightRange('KP', R) });
   if (lim !== null && lim !== undefined && area <= lim) note('info', 'n.rakl', { limit:lim });
@@ -1545,7 +1580,7 @@ if (typeof module !== 'undefined' && module.exports){
 var TYOPAJA = document.documentElement.getAttribute('data-tila') === 'tyopaja';
 /* Ruudunvaihdon tila. VIIME_RUUTU erottaa ruudunvaihdon uudelleenpiirrosta:
    render() ajetaan myös jokaisesta säätimen napautuksesta, eikä siirtymä saa
-   toistua silloin — se olisi välähdys jokaisesta plussasta. */
+   toistua silloin: se olisi välähdys jokaisesta plussasta. */
 var VIIME_RUUTU = null, SUUNTA = 'eteen', EDELLINEN_OSUUS = 0, NYKY_OSUUS = 0;
 var LANG = 'fi', WS = false, SCREEN = 'start', RESULT = null, HIST = [], SENT = null;
 var state = freshState();
@@ -1581,7 +1616,7 @@ var wsEl  = document.getElementById('ws');
    sen: kahta kysymystä ei panna samaan ruutuun. Ruutuja on **kahdesta yhdeksään**
    rakennustyypin mukaan (1.10.2026 alkaen tolppa 2, rakennukset 6, mökki 7, terassi 8), ja koska jokaisella
    on tasan yksi kysymys, jokainen etenee
-   klikkauksesta itsestään — Jatka-painike jää vain mittaruudulle, joka ei ole klikki.
+   klikkauksesta itsestään: Jatka-painike jää vain mittaruudulle, joka ei ole klikki.
    Napautusmäärä ei kasvanut: poistuneet Jatka-painikkeet korvaavat uudet ruudut.
 
    Mitat ovat yhä viimeisenä. Perustelu on luettavissa koodista: state.w ja state.l
@@ -1639,7 +1674,7 @@ function next(){
 function back(){
   if (!HIST.length) return;
   /* Paluu on epäröinnin ainoa suora mittari. Ilman tätä tapahtumaa palatun askeleen
-     erottaa datassa vain siitä, että laskuri_step toistuu samalla askeleella — ja se
+     erottaa datassa vain siitä, että laskuri_step toistuu samalla askeleella: ja se
      tulkinta menee rikki heti kun askeljärjestys muuttuu rakennustyypin mukaan. */
   push('laskuri_back', { askel:SCREEN, paluu:HIST[HIST.length - 1], askel_nro:stepNo(SCREEN) });
   SCREEN = HIST.pop();
@@ -1703,7 +1738,7 @@ function opt(key, val, tk, dk, on, kuva){
    numerokenttä hylkää pilkullisen arvon ja näyttää tyhjää. Puolikkaat metrit katosivat
    siis kentästä kokonaan, vaikka arvo oli tallessa kuvassa ja pinta-alassa.
    inputmode="decimal" antaa yhä numeronäppäimistön, ja rajat tarkistaa numLimits()
-   muutoskäsittelijässä — attribuuttien min ja max eivät olleet ainoa vahti. */
+   muutoskäsittelijässä: attribuuttien min ja max eivät olleet ainoa vahti. */
 function stepper(key, label, val, min, max, stepv, unit, nimeton){
   var id = 'num-' + key;
   /* nimeton: kuva nimeää mitan itse mittaviivallaan, joten nimilappu olisi toistoa.
@@ -1865,7 +1900,7 @@ function rPalkki(){
 }
 /* Palkin paksuus. Kysytään tuumina, koska rautakaupassa puhutaan niin ja koska se on
    ainoa mitta, jonka rakentaja tietää ilman mittanauhaa: yksi lauta, kaksi rinnakkain
-   vai järeä palkki. Tämä valitsee pilarikengän mallin — ura mittaa paksuutta, ei
+   vai järeä palkki. Tämä valitsee pilarikengän mallin: ura mittaa paksuutta, ei
    korkeutta, ja ilman tätä laskuri oletti vaieten yhden laudan. */
 function rPaksuus(){
   var o = '';
@@ -1875,10 +1910,11 @@ function rPaksuus(){
 /* Rakenteen omapaino. Kysymys on olemassa, luvut eivät: kaksi luokkaa on tyhjiä
    työpajavakioita, ja Määritä itse on ainoa haara, joka tuottaa luvun tänään.
    Ilman tätä ruutua kuormatarkistuksessa oli vain hyötykuorma 2,0 kN/m², vaikka
-   rakenteen oma paino on 2–5 — eli näytetty marginaali oli kolminkertainen
+   rakenteen oma paino on 2-5: eli näytetty marginaali oli kolminkertainen
    todelliseen nähden, ja isoimmissa tapauksissa perhekin väärä. */
 function rMassa(){
   var o = opt('mass', 'terassi',  'k7.terassi',  'k7.terassi.d',  state.mass === 'terassi')
+        + opt('mass', 'katettu',  'k7.katettu',  'k7.katettu.d',  state.mass === 'katettu')
         + opt('mass', 'rakennus', 'k7.rakennus', 'k7.rakennus.d', state.mass === 'rakennus')
         + opt('mass', 'itse',     'k7.itse',     'k7.itse.d',     state.mass === 'itse');
   var sisus = '<div class="scr">' + nav('massa') + '<h2>' + esc(t('k7.h')) + '</h2>'
@@ -1989,7 +2025,7 @@ function planSVG(o){
   /* Muoto: suorakaide tai L, ja seinät. Ilman o.shape piirros on vapaa suorakaide. */
   var sh = o.shape || { kind:'rect', walls:[], a:L, b:W, id:'vapaa' };
   /* Kaikki muodon pisteet lasketaan perusasennossa ja peilataan suuntaan, samalla
-     funktiolla kuin moottori peilaa pilarit — kuva ja pilarit eivät voi erota. */
+     funktiolla kuin moottori peilaa pilarit: kuva ja pilarit eivät voi erota. */
   var P = function(p){ return peilaa(sh, p); };
   var poly = (sh.kind === 'L'
     ? [[0, 0], [sh.b, 0], [sh.b, L - sh.a], [W, L - sh.a], [W, L], [0, L]]
@@ -2168,7 +2204,7 @@ function k2fig(){ return k2plan() + k2ala(); }
 /* --- tulos ---------------------------------------------------------------- */
 function qtyNum(o){
   if (o.qty != null) return num(o.qty);
-  if (o.qtyRange) return num(o.qtyRange[0]) + '–' + num(o.qtyRange[1]);
+  if (o.qtyRange) return num(o.qtyRange[0]) + '-' + num(o.qtyRange[1]);
   return '';
 }
 /* Kuvapaikka, kunnes tuotekuva on olemassa. Kun DATAan kirjoitetaan img-polku,
@@ -2199,8 +2235,9 @@ function rResult(){
              : t('r.koko', { w:num(state.w), l:num(state.l) });
     var seina = r.shape && r.shape.walls.length;
     if (r.range) leadTxt = t('r.lead.range', { building:bn, koko:koko, n1:r.range.n1, n2:r.range.n2 });
-    else if (r.shape.kind === 'L' || seina) leadTxt = t('r.lead.muoto', { building:bn, koko:koko, sp:num(r.grid.nominal_spacing) });
-    else leadTxt = t('r.lead', { building:bn, w:num(state.w), l:num(state.l), cols:r.grid.cols, rows:r.grid.rows, sp:num(r.grid.nominal_spacing) });
+    else if (r.shape.kind === 'L' || seina) leadTxt = t('r.lead.muoto', { building:bn, koko:koko, sp:num(Math.max(r.grid.spacing_w, r.grid.spacing_l)) });
+    else leadTxt = t('r.lead', { building:bn, w:num(state.w), l:num(state.l), cols:r.grid.cols, rows:r.grid.rows,
+                                 sw:num(r.grid.spacing_w), sl:num(r.grid.spacing_l) });
     if (seina) leadTxt += t('r.lead.wall');
   }
 
@@ -2230,7 +2267,7 @@ function rResult(){
   });
   if (r.alternative){
     o += '<p class="palt">' + esc(t('r.alt', {
-      n:r.alternative.qty || (r.alternative.qtyRange ? r.alternative.qtyRange[0] + '–' + r.alternative.qtyRange[1] : ''),
+      n:r.alternative.qty || (r.alternative.qtyRange ? r.alternative.qtyRange[0] + '-' + r.alternative.qtyRange[1] : ''),
       family:r.alternative.family })) + '</p>';
   }
   o += '</div>';
@@ -2341,7 +2378,7 @@ function rHandoff(){
 }
 
 /* =========================================================================
-   TYÖPAJANÄKYMÄ. Sisältö on Miro-taulun korteista (build spec, liite A–D).
+   TYÖPAJANÄKYMÄ. Sisältö on Miro-taulun korteista (build spec, liite A-D).
    Vain fi: kortit ovat lähdeaineistoa, ei tuotteen käyttöliittymätekstiä.
    ========================================================================= */
 var ANNOTATIONS = {
@@ -2392,17 +2429,17 @@ var ANNOTATIONS = {
         ['Miksi oma ruutu','Yksi kysymys per ruutu. Rakennusvalinnan alla se oli toinen kysymys samassa ruudussa.']],
     sources:[{tier:'ok',src:'OPAS',text:'Kohta 02: lasitus tai katto vaatii riittävän kantavat pilarit.'},
              {tier:'ok',src:'BCE',text:'Maapohjaa ei kysytä: pilarien alle tarvitaan aina routaeristys ja vakaa pohja. Routivan maan kieltäytyminen poistui samalla.'}],
-    decisions:[{id:'T1',text:'Ehdollinen ruutu tekee polun pituudesta vaihtelevan (2–8 ruutua). Hyväksytäänkö?'}] },
+    decisions:[{id:'T1',text:'Ehdollinen ruutu tekee polun pituudesta vaihtelevan (2-8 ruutua). Hyväksytäänkö?'}] },
 
   paksuus: { title:'Runko · Palkin paksuus', mode:'ask',
     kv:[['Vaikuttaa','Pilarikengän malliin. Ura mittaa paksuutta, ei korkeutta.'],
         ['Asiakas tietää','Kyllä, jos on piirtänyt rungon. Kysytään tuumina, koska rautakaupassa puhutaan niin.'],
         ['Miksi lisättiin','Ilman tätä sääntö oli näkyvä kiinnitys → PIK 50-70, mikä pätee vain yhdelle 48 mm laudalle. Kahden laudan palkki (96 mm) sai väärän tarvikkeen.']],
-    sources:[{tier:'ok',src:'SITE',text:'PIK 50–70 on tarkoitettu 50–70 mm puutavaralle, PIK 90–140 puolestaan 90–140 mm:lle.'},
+    sources:[{tier:'ok',src:'SITE',text:'PIK 50-70 on tarkoitettu 50-70 mm puutavaralle, PIK 90-140 puolestaan 90-140 mm:lle.'},
              {tier:'warn',src:'SITE',text:'Ura-mitat on luettu tuotekuvista. Sääntö paksuus → kengän malli on päättelyä, ei BCE:n kirjaamaa ohjetta.'},
-             {tier:'miss',src:'',text:'48 mm on alle PIK 50–70:n nimellisen 50 mm alarajan. Höyläämätön mitta on 50, joten käytännössä se sopii, mutta yleisin yhdistelmä nojaa tähän tulkintaan.'}],
+             {tier:'miss',src:'',text:'48 mm on alle PIK 50-70:n nimellisen 50 mm alarajan. Höyläämätön mitta on 50, joten käytännössä se sopii, mutta yleisin yhdistelmä nojaa tähän tulkintaan.'}],
     decisions:[{id:'T8',text:'Vahvistaako BCE säännön paksuus → kengän malli, ja mikä on 48 mm:n virallinen kanta?'},
-               {id:'',text:'Kahden laudan palkki (96 mm) mahtuu sekä PIK 90–140:n uraan että PAK:n satulaan. Kumpaa BCE suosittelee?'}] },
+               {id:'',text:'Kahden laudan palkki (96 mm) mahtuu sekä PIK 90-140:n uraan että PAK:n satulaan. Kumpaa BCE suosittelee?'}] },
 
   liitos: { title:'Runko · Miten palkki kiinnitetään', mode:'ask',
     kv:[['Vaikuttaa','Tarvikkeeseen. Tämä on ratkaiseva akseli, ei pilariperhe.'],
@@ -2410,7 +2447,7 @@ var ANNOTATIONS = {
         ['Korvasi','Vanhan näkyvä/piilo-parin. Kaksi ensimmäistä vaihtoehtoa ovat samat arvot.'],
         ['Löydös','Ilman tätä kysymystä neljä yhdeksästä tarvikkeesta ei ollut minkään polun lopputulos.']],
     sources:[{tier:'ok',src:'BCE',text:'PIK-malleja käytetään useimmiten terassin kiinnitykseen: kenkä palkin kylkeen.'},
-             {tier:'ok',src:'SITE',text:'PIK 50–70 näkyvä, P-PIK 50×70 piilokiinnike, PAK palkkikenkä, TL tasainen alusta.'},
+             {tier:'ok',src:'SITE',text:'PIK 50-70 näkyvä, P-PIK 50×70 piilokiinnike, PAK palkkikenkä, TL tasainen alusta.'},
              {tier:'warn',src:'SITE',text:'Sivuston copy sanoo PAK:sta että palkki ripustetaan pilarin kylkeen, mutta tuotekuvan geometriassa satula aukeaa ylöspäin ja palkki lasketaan siihen. Laskuri noudattaa kuvaa; sivuston sanamuoto on korjattava.'},
              {tier:'miss',src:'',text:'PAK:n ja teräslaatan kokosääntö puuttuu: laskuri luettelee vaihtoehdot eikä valitse.'},
              {tier:'miss',src:'',text:'P-PIK:n piilokiinnikkeisyys on ristiriidassa tuotekuvan geometrian kanssa. Siksi vaihtoehdolla ei ole havainnekuvaa.'}],
@@ -2421,9 +2458,9 @@ var ANNOTATIONS = {
 
   palkki: { title:'Runko · Palkin koko', mode:'ask',
     kv:[['Vaikuttaa','Jakoväliin (palkki) ja kiinnikkeeseen (näkyvyys, tolpan koko).'],
-        ['Asiakas tietää','Harvoin tässä vaiheessa. En tiedä valitsee 48x148 ja PIK 90–140.'],
+        ['Asiakas tietää','Harvoin tässä vaiheessa. En tiedä valitsee 48x148 ja PIK 90-140.'],
         ['Lähde','Kestopuun taulukko, tarvikesivu.']],
-    sources:[{tier:'ok',src:'KESTOPUU',text:'Tukien väli palkkikoon mukaan, q = 2,0 kN/m², C18: 48x123 1,4–1,5 m, 48x148 1,6–2,2 m, 48x198 2,0–2,4 m. Laskuri käyttää alarajaa.'},
+    sources:[{tier:'ok',src:'KESTOPUU',text:'Tukien väli palkkikoon mukaan, q = 2,0 kN/m², C18: 48x123 1,4-1,5 m, 48x148 1,6-2,2 m, 48x198 2,0-2,4 m. Laskuri käyttää alarajaa.'},
              {tier:'warn',src:'',text:'Tuumamerkinnät 2×5, 2×6 ja 2×8 ovat kauppanimiä sahatavaran karkeasta mitasta (50×125, 50×150, 50×200), eivät höylätystä. Yleinen käytäntö, mutta ei BCE:n eikä Kestopuun kirjaama: varmistettava ennen julkaisua.'}],
     decisions:[{id:'T21',text:'BCE: pilarien väli aina vähintään 1,5 m. Nykyinen alaraja (1,4 / 1,6 / 2,0 m) ei salli sitä: 48×123 ei koskaan, 48×148 13 mitassa 28:sta. Yläraja (1,5 / 2,2 / 2,4 m) jättäisi ristiriidan yhteen mittaan. Kumpi, ja poistetaanko 48×123?'},
                {id:'T3',text:'Hyväksytäänkö Kestopuun taulukko BCE:n sääntönä, ja alaraja vai yläraja? Ratkeaa samalla kuin T21.'},
@@ -2434,15 +2471,15 @@ var ANNOTATIONS = {
     kv:[['Tehtävä','Yksi lista, jonka voi näyttää tiskillä. Ei vaihtoehtoja.'],
         ['Läpinäkyvyys','Näin laskimme avaa jokaisen säännön.'],
         ['CTA-hierarkia','1. Sähköposti (liidi). 2. Myymälä (osto). 3. Asiantuntija. Sivusto ei myy.']],
-    sources:[{tier:'ok',src:'KRQ',text:'TP 16–30 kN, KP 30–70 kN, AP 10 kN epäkeskisyyden mukaan. Esitteen 1 600 kg = 16 kN rivi.'},
-             {tier:'ok',src:'YM',text:'Lumikuorma maassa 2,0–3,5 kN/m² alueittain.'},
+    sources:[{tier:'ok',src:'KRQ',text:'TP 16-30 kN, KP 30-70 kN, AP 10 kN epäkeskisyyden mukaan. Esitteen 1 600 kg = 16 kN rivi.'},
+             {tier:'ok',src:'YM',text:'Lumikuorma maassa 2,0-3,5 kN/m² alueittain.'},
              {tier:'ok',src:'OPAS',text:'Asennusjärjestys 7 vaiheessa.'},
              {tier:'miss',src:'',text:'Ristiriita: opas laittaa XPS:n sorapatjan päälle, Kronqvistin perustapaus on eriste laatan yläpuolella.'}],
     decisions:[{id:'T2',text:'Vastuu: opas ohjaa määrän suunnittelijalle, laskuri tekee sen itse. Varovaisin kapasiteettirivi.'},
                {id:'T6',text:'AP vai TP kun molemmat kelpaavat, ja pienmökin raja.'},
                {id:'',text:'Rakenteen omapaino puuttuu kuormatarkistuksesta.'},
                {id:'T13',text:'Kuorma jaetaan tasan, mutta sisäpilari kantaa oman ruutunsa: jopa 2,25× keskiarvo. Kumpi ratkaisee tuotteen?'},
-               {id:'T14',text:'Taulukon kN/m² ei ole johdettavissa kN-arvosta ja pohjalaatan mitoista yhdellä kertoimella (suhde 1,07–1,36). Mitä luku tarkalleen tarkoittaa?'},
+               {id:'T14',text:'Taulukon kN/m² ei ole johdettavissa kN-arvosta ja pohjalaatan mitoista yhdellä kertoimella (suhde 1,07-1,36). Mitä luku tarkalleen tarkoittaa?'},
                {id:'T15',text:'Tarkistuslaskelmat näkyvät nyt vain työpajanäkymässä. Halutaanko ne ammattilaiselle asiakasnäkymään?'}] },
 
   lead: { title:'Liidi · Sähköposti ja postinumero', mode:null,
@@ -2474,18 +2511,18 @@ var ANNOTATIONS = {
 };
 
 var PRODUCT_RULES = [
-  ['Terassi','TP tai AP kuorman mukaan · KP jos katos/lasitus','palkin mukaan 1,4 / 1,6 / 2,0 m · eos = haarukka · seinän puolelle ei pilareita · L kahtena osana','PIK palkin kylkeen 50–70 / 90–140 paksuuden mukaan · piilo P-PIK 50×70 · eos = molemmat'],
+  ['Terassi','TP tai AP kuorman mukaan · KP jos katos/lasitus','palkin mukaan 1,4 / 1,6 / 2,0 m · eos = haarukka · seinän puolelle ei pilareita · L kahtena osana','PIK palkin kylkeen 50-70 / 90-140 paksuuden mukaan · piilo P-PIK 50×70 · eos = molemmat'],
   ['Pihasauna','TP tai AP','palkin mukaan','kysytään'],
   ['Piharakennus','TP tai AP','palkin mukaan','kysytään'],
   ['Mökki','KP (pienmökin TP-raja PUUTTUU)','palkin mukaan','kysytään'],
-  ['Tolppa','PP-600','1 per tolppa','–']
+  ['Tolppa','PP-600','1 per tolppa','-']
 ];
 var DECISIONS = [
   ['T1','Kysymysjärjestys'], ['T2','Mitoitus vai suositus'], ['T3','Jakoväli'],
   ['T4','Korkeuserosta korkeuteen ja täyttö'], ['T6','AP:n paikka'],
   ['T8','Kiinnikelogiikka ja PAK'], ['T9','Kieltäytymisrajat'],
   ['T10','Liidin reitti'], ['T11','Jälleenmyyjälista'], ['T12','Markkinat FI/SE/NO/INT'],
-  /* T13–T15 tulivat koeponnistuksesta 18.9.2026, eivät alkuperäisestä speksistä. */
+  /* T13-T15 tulivat koeponnistuksesta 18.9.2026, eivät alkuperäisestä speksistä. */
   ['T13','Kuormitusala: ratkaiseeko keskiarvo vai sisäpilarin ruutu'],
   ['T14','Mitä taulukon kN/m² tarkoittaa: kysymys Kronqvistille'],
   ['T15','Näytetäänkö tarkistuslaskelmat myös asiakasnäkymässä'],
@@ -2493,7 +2530,7 @@ var DECISIONS = [
   ['T16','Näkyykö kantavuus kuluttajalle kilonewtoneina vai ei lainkaan'],
   /* T18 tuli korkeustekstin uudelleenkirjoituksesta 18.9.2026. */
   ['T18','Kiinnikkeen rakennekorkeus ja säätövara millimetreinä, ja kysytäänkö lattiakorkeus'],
-  /* T21–T22 tulivat BCE:n palautteesta 1.10.2026. T5, T7 ja T17 ratkesivat samalla:
+  /* T21-T22 tulivat BCE:n palautteesta 1.10.2026. T5, T7 ja T17 ratkesivat samalla:
      maapohja- ja korkeuserokysymys sekä autokatos poistuivat. */
   ['T21','1,5 m vähimmäisväli ja palkkitaulukko: alaraja vai yläraja, ja jääkö 48 × 123'],
   ['T22','Kantaako sokkeli seinän puoleisen reunan aina']
@@ -2534,8 +2571,10 @@ var TUNE = [
   { p:'liveLoad.piha',        l:'Hyötykuorma piharakennus (kN/m²)', src:'KESTOPUU', tier:'ok' },
   { p:'liveLoad.sauna',       l:'Hyötykuorma pihasauna (kN/m²)', src:'KESTOPUU', tier:'ok' },
   { p:'liveLoad.mokki',       l:'Hyötykuorma mökki (kN/m²)', src:'KESTOPUU', tier:'warn' },
-  { p:'selfWeightByClass.terassi',  l:'Omapaino: avoin terassi (kN/m²)', src:'', tier:'miss' },
-  { p:'selfWeightByClass.rakennus', l:'Omapaino: katettu tai seinällinen rakennus (kN/m²)', src:'', tier:'miss' },
+  { p:'minSpacing',            l:'Pilarien vähimmäisväli (m)', src:'BCE', tier:'ok' },
+  { p:'selfWeightByClass.terassi',  l:'Omapaino: avoin terassi (kN/m²)', src:'BCE', tier:'ok' },
+  { p:'selfWeightByClass.katettu',  l:'Omapaino: terassi kevyellä katolla (kN/m²)', src:'BCE', tier:'ok' },
+  { p:'selfWeightByClass.rakennus', l:'Omapaino: kevyt puurakennus (kN/m²)', src:'BCE', tier:'ok' },
   { p:'selfWeight',           l:'Rakenteen omapaino, yleisarvo (kN/m², ohittaa luokan)', src:'', tier:'miss' },
   { p:'snowShape',            l:'Lumen muotokerroin μ1', src:'YM', tier:'ok' },
   { p:'snowDefault',          l:'Lumen oletusarvo (kN/m²)', src:'YM', tier:'ok' },
@@ -2584,7 +2623,7 @@ function tunePanel(){
 function testPicker(){
   var o = TESTCASES.map(function(c){ return '<option value="' + c.id + '">' + esc(c.label) + '</option>'; }).join('');
   return '<div class="picker"><label for="tc" class="lbl">Lataa esimerkki</label>'
-    + '<select id="tc"><option value="">–</option>' + o + '</select>'
+    + '<select id="tc"><option value="">-</option>' + o + '</select>'
     + '<button class="smallbtn" type="button" data-act="loadcase">Aja</button>'
     + '<p class="fine">Esimerkin lataus palauttaa sääntövakiot lähteiden arvoihin.</p></div>';
 }
@@ -2593,7 +2632,7 @@ function howBlock(){
   var o = '<h3>Näin laskimme, lähteineen</h3><ul class="srcs">';
   RESULT.how.forEach(function(h){
     /* PUUTTUU-rivillä lähdesarake jää tyhjäksi: chip kertoo saman asian. */
-    o += '<li><span class="code">' + esc(h.src === 'PUUTTUU' ? '–' : h.src) + '</span><span>' + chip(h.tier) + esc(h.text) + '</span></li>';
+    o += '<li><span class="code">' + esc(h.src === 'PUUTTUU' ? '-' : h.src) + '</span><span>' + chip(h.tier) + esc(h.text) + '</span></li>';
   });
   return o + '</ul>';
 }
@@ -2608,7 +2647,7 @@ function swimNodes(){
      ja paksuus ja massa ovat 2 vaikka massa kysytään vasta mittojen edellä. Molemmat
      kuvaavat sitä, mitä pilarin päälle tulee, eli Runko-vaihetta.
      Jokainen steps():n ruutu on oltava tässä. Jos ei ole, cur jää −1 eikä yksikään
-     solmu saa tilaa "käsillä nyt" — kaavio näyttää siltä ettei missään olla. */
+     solmu saa tilaa "käsillä nyt": kaavio näyttää siltä ettei missään olla. */
   var cur = ({ rakennus:0, lisa:0, muoto:1, liitos:2, palkki:2,
                paksuus:2, massa:2, mitat:3,
                result:4, lead:4, sent:4, handoff:4 })[SCREEN];
@@ -2639,7 +2678,7 @@ function swimNodes(){
   if (b === 'terassi') A(3, 1, 'Seinän rivi pois', !!state.shape);
   if (b !== 'tolppa') A(3, 2, 'Jakoväli palkista', !!state.beam);
   A(3, 4, (r && !r.handoff)
-      ? 'n = ' + (r.pillars[0].qty != null ? num(r.pillars[0].qty) : r.pillars[0].qtyRange.join('–'))
+      ? 'n = ' + (r.pillars[0].qty != null ? num(r.pillars[0].qty) : r.pillars[0].qtyRange.join('-'))
       : 'n = c · r', !!(r && !r.handoff));
 
   if (b !== 'tolppa'){
@@ -2800,7 +2839,7 @@ function engBlock(){
   if (!RESULT || !RESULT.engineering || !RESULT.engineering.length) return '';
   var o = '<h3>' + esc(t('eng.h')) + '</h3><ul class="srcs">';
   RESULT.engineering.forEach(function(e){
-    o += '<li><span class="code">' + esc(e.src === 'PUUTTUU' ? '–' : e.src) + '</span><span>' + chip(e.tier) + esc(e.text) + '</span></li>';
+    o += '<li><span class="code">' + esc(e.src === 'PUUTTUU' ? '-' : e.src) + '</span><span>' + chip(e.tier) + esc(e.text) + '</span></li>';
   });
   return o + '</ul>';
 }
@@ -2817,7 +2856,7 @@ function renderWS(){
       return '<div><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>';
     }).join('') + '</div>';
     o += '<h3>Lähteet</h3><ul class="srcs">' + a.sources.map(function(s){
-      return '<li><span class="code">' + esc(s.src || '–') + '</span><span>' + chip(s.tier) + esc(s.text) + '</span></li>';
+      return '<li><span class="code">' + esc(s.src || '-') + '</span><span>' + chip(s.tier) + esc(s.text) + '</span></li>';
     }).join('') + '</ul>';
     o += '<h3>Työpajassa päätettävää</h3><ul class="dec">' + a.decisions.map(function(d){
       return '<li>' + (d.id ? '<span class="tid">' + esc(d.id) + '</span>' : '') + esc(d.text) + '</li>';
@@ -2888,7 +2927,7 @@ function render(){ renderPhone(); renderWS(); }
 /* --- ruudun paikka ---------------------------------------------------------
    Jokainen ruutu alkaa samasta kohdasta. Aiemmin vieritys oli scrollIntoView
    block:'nearest', joka jättää sivun paikalleen jos paneeli on edes osittain
-   näkyvissä — silloin lyhyt ruutu alkoi keskeltä ja pitkä ylhäältä, ja askel ja
+   näkyvissä: silloin lyhyt ruutu alkoi keskeltä ja pitkä ylhäältä, ja askel ja
    paluupainike olivat joka kerta eri kohdassa.
 
    Aloitusruutu on poikkeus: sinne tullaan sivun ylälaidasta, eikä laskuri saa
@@ -2944,7 +2983,7 @@ phone.addEventListener('click', function(e){
       state.thickness = null; state.fixing = null; state.shape = null;
       /* Omapaino nollataan muiden mukana: luokat on nimetty rakennuksen kielellä
          (avoin terassi / katettu tai seinällinen), joten terassille annettu vastaus
-         olisi saunalla sekä väärä että näkymätön — ruutu on jo ohitettu. */
+         olisi saunalla sekä väärä että näkymätön: ruutu on jo ohitettu. */
       state.mass = null; state.massValue = 0;
       state.poles = 2;
     }
@@ -2965,7 +3004,7 @@ phone.addEventListener('click', function(e){
     /* Jokaisella klikkiruudulla on tasan yksi kysymys, joten valinta vie eteenpäin
        eikä erillistä Jatkaa tarvita. Viive jättää valinnan näkyviin hetkeksi.
        Poikkeus luetaan ruudulta eikä koodata tänne: jos valinta toi ruutuun oman
-       painikkeen — kuten omapainon Määritä itse tuo lukukentän ja Jatkan — ruutu ei
+       painikkeen (kuten omapainon Määritä itse tuo lukukentän ja Jatkan) ruutu ei
        ole vielä valmis, ja eteneminen jää painikkeen varaan. Ilman tätä lukukenttä
        ehti näkyä 150 millisekuntia eikä siihen päässyt koskaan kirjoittamaan. */
     if (!phone.querySelector('[data-act="next"]')) setTimeout(next, 150);
@@ -3138,7 +3177,7 @@ function renderLangs(){
 /* Kuoren apurivillä on sivuston oma kielivalinta (FI · SV · EN). Prototyypissä se
    on koriste kaikilla muilla sivuilla, mutta tällä sivulla kieli on olemassa:
    laskuri on käännetty kolmelle kielelle. Kaksi kielivalitsinta samalla sivulla
-   olisi virhe, ja niistä väärä olisi se, joka ei tee mitään — siksi kuoren valinta
+   olisi virhe, ja niistä väärä olisi se, joka ei tee mitään: siksi kuoren valinta
    kytketään laskuriin eikä laskurin omaa valintaa näytetä tuotantotilassa. */
 function kuorenKielet(){
   return [].slice.call(document.querySelectorAll('.urow .lang a'));
@@ -3146,7 +3185,7 @@ function kuorenKielet(){
 
 /* Kieli on valmis, kun sen sanakirja ei ole etuliitetty paikanpitäjä (prefixAll).
    Ehto luetaan sanakirjasta eikä listasta, jotta valitsin kasvaa itsestään sinä
-   päivänä kun käännös tulee — eikä kukaan joudu muistamaan tätä kohtaa.
+   päivänä kun käännös tulee: eikä kukaan joudu muistamaan tätä kohtaa.
 
    Tuotantotilassa keskeneräistä kieltä ei tarjota lainkaan. «[sv] Montako
    pilaria» on oikea tieto työpajalle ja rikki asiakkaalle, ja tämä sivu on
@@ -3199,7 +3238,7 @@ wsBtn.addEventListener('click', function(){
 });
 /* Säätöpaneelin tila muistetaan istunnon yli, mutta vain työpajatilassa. Ilman
    ehtoa yksi työpajassa jäänyt kytkin seuraa mukana samassa istunnossa avattuun
-   sivuun ja avaa säätöpaneelin asiakkaan sivulle — se on työkalun sisus, ei sivu. */
+   sivuun ja avaa säätöpaneelin asiakkaan sivulle: se on työkalun sisus, ei sivu. */
 try {
   if (TYOPAJA && sessionStorage.getItem('bce-ws') === '1'){
     WS = true; wsBtn.setAttribute('aria-pressed','true');
