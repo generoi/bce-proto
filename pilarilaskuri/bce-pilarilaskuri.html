@@ -439,7 +439,15 @@ img.pimg{width:84px;object-fit:contain;border:0;background:none}
 .pchoice{display:block;font-size:var(--fs-fine);font-weight:600;letter-spacing:.06em;
   text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
 /* Vaihtoehto ei ole tuoterivi: se on huomautus tuoteriviin. */
-.palt{margin:0;padding:10px var(--s3);background:var(--paper-2);font-size:var(--fs-small)}
+.palt{margin:0;padding:10px var(--s3);background:var(--paper-2);font-size:var(--fs-small);
+  display:flex;align-items:center;gap:var(--s3)}
+.palt p{margin:0;flex:1 1 auto;min-width:0}
+.palt a{color:var(--ink);font-weight:600}
+/* Vaihtopainike: ikoni ja lyhyt sana, 44 px osuma-alue. Toissijainen, joten ei oranssi. */
+.pvaihda{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;
+  border:1px solid var(--rule-2);border-radius:var(--r-ctl);background:var(--surface);color:var(--ink);
+  font:inherit;font-weight:600;cursor:pointer}
+.pvaihda:hover{border-color:var(--ink)}
 .group .palt{margin-top:var(--s3)}
 .note{border:1px solid var(--rule-2);border-radius:var(--r-card);background:var(--paper-2);
   padding:10px var(--s3);margin:0 0 var(--s2);font-size:var(--fs-small)}
@@ -669,7 +677,7 @@ details > *:not(summary){margin-bottom:var(--s4)}
 (function(){
   var tyopaja = /(^|[?&])tyopaja=1(&|$)/.test(location.search);
   document.documentElement.setAttribute('data-tila', tyopaja ? 'tyopaja' : 'tuotanto');
-  if (tyopaja) document.title = 'BCE-pilarilaskuri \u2013 ty\u00f6pajaprototyyppi v0.2';
+  if (tyopaja) document.title = 'BCE-pilarilaskuri | ty\u00f6pajaprototyyppi v0.2';
 })();
 </script>
 
@@ -983,6 +991,12 @@ var FI = {
   'r.heights':'Pilarin korkeus valitaan lattian korkeudesta maasta: siitä vähennetään palkin korkeus ja kiinnikkeen osuus. Kiinnikkeen säätövara hoitaa loppuerot. Sinä valitset lattiakorkeuden, me tarkistamme jaon.',
   'r.height.fixed':'Korkeus {h} mm',
   'r.alt':'Kevyempi vaihtoehto: {n} × {family}-pilari, nostettavissa yksin.',
+  /* Vaihtorivi 6.11.2026: perhe on linkki tuotesivulle, ja painike vaihtaa sen listan
+     pilariksi. Korkeusalue kertoo, mitä kevyemmässä menettää. */
+  'r.alt.ap':'Kevyempi vaihtoehto: {link}, korkeus {min}-{max} mm, nostettavissa yksin.',
+  'r.alt.tp':'Suositeltu: {link}, korkeus {min}-{max} mm.',
+  'r.alt.vaihda':'Vaihda',
+  'r.alt.vaihda.aria':'Vaihda listan pilariksi {family}-pilari',
   'r.choice':'Vaihtoehto',
   'r.qty':'{n} kpl',
   'r.qtyrange':'{n1}-{n2} kpl',
@@ -1043,6 +1057,7 @@ var FI = {
   'how.family.site':'{building} → {family} (BCE:n käyttökohteet).',
   'how.family.cover':'Katettu tai lasitettu terassi kantaa lunta → KP.',
   'how.family.aptp':'Kuorma {pp} kN mahtuu sekä AP:n että TP:n kantavuuteen. Tulos näyttää TP:n ja tarjoaa AP:n kevyempänä vaihtoehtona.',
+  'how.family.ap.valittu':'Valittu AP-pilari. BCE suosittelee TP:tä, mutta AP kelpaa, koska kuorma {pp} kN mahtuu sen kantavuuteen {cap} kN.',
   'how.family.tp':'Kuorma {pp} kN ylittää AP:n kantavuuden → TP.',
   'how.family.kp':'Kuorma {pp} kN ylittää TP:n kantavuuden → KP.',
   'how.mokki.tp':'BCE ohjaa pienmökit TP:hen; raja päätetään.',
@@ -1413,10 +1428,14 @@ function compute(state, R, lang){
   if (candidate === 'AP|TP'){
     var apOk = fits('AP'), tpOk = fits('TP');
     if (apOk && tpOk){
-      fam = 'TP';
+      /* BCE 3.11.2026 (T6): TP on suositus ja AP vaihtoehto. Asiakas voi vaihtaa
+         AP:hen tuloksesta (state.perhe), jolloin TP jää vaihtoehdoksi suosituksena. */
+      fam = state.perhe === 'AP' ? 'AP' : 'TP';
       /* Haarukkatuloksessa vaihtoehdolla ei ole yhtä lukua, vaan sama haarukka. */
-      out.alternative = { family:'AP', qty: range ? null : n, qtyRange: range ? [range.n1, range.n2] : null };
+      out.alternative = { family: fam === 'AP' ? 'TP' : 'AP', suositus: fam === 'AP',
+                          qty: range ? null : n, qtyRange: range ? [range.n1, range.n2] : null };
       how('how.family.aptp', { pp:pp }, 'ok', 'KRQ');
+      if (fam === 'AP') how('how.family.ap.valittu', { pp:pp, cap:R.capacity.AP }, 'ok', 'BCE');
     } else if (tpOk){
       fam = 'TP';
       how('how.family.tp', { pp:pp }, 'ok', 'KRQ');
@@ -1591,7 +1610,7 @@ function freshState(){
      vastauksena, jota asiakas ei antanut. Nolla tarkoittaa "ei annettu". */
   /* la ja lb ovat L-muodon osien syvyys ja leveys. null = muotoa ei ole valittu,
      jolloin ne asetetaan vasta L:n valinnassa, ks. pick. */
-  return { building:null, w:4, l:3, cover:null, heated:null, poles:2, shape:null, la:null, lb:null, lsuunta:'yo',
+  return { building:null, w:4, l:3, cover:null, heated:null, poles:2, shape:null, la:null, lb:null, lsuunta:'yo', perhe:null,
            beam:null, thickness:null, fixing:null, mass:null, massValue:0,
            postcode:'', email:'', tips:false, contact:'', message:'' };
 }
@@ -2015,6 +2034,9 @@ function planSVG(o){
   /* Reunatilassa (L:n mittaruutu) arvot istuvat reunoilla eikä mittaviivoilla, joten
      marginaali tarvitaan joka puolelle puolikkaan arvolapun verran. */
   if (o.reunat){ padL = 26; padT = 20; padR = 26; padB = 20; }
+  /* Tuloksessa yhden välin mitta yläreunaan ja oikeaan reunaan, ja mittakaavapalkki
+     pois: välin mitta kertoo saman asian käyttökelpoisemmin (Olli 6.11.2026). */
+  if (o.valit){ padT = 34; padR = 52; padB = 40; }
   var vw = Math.round(fw + padL + padR), vh = Math.round(fh + padT + padB);
   var oy = F ? F - L : 0;                     /* alue kiinni kentän alareunassa */
   var FX = function(m){ return padL + m * sc; }, FY = function(m){ return padT + m * sc; };
@@ -2122,7 +2144,32 @@ function planSVG(o){
 
   /* Mittakaavapalkki. Kokonaispituus pyöristetään tuttuun lukuun (1, 2, 5, 10, 20, 50 m),
      jottei palkissa lue 2,5 m silloin kun 2 m kertoo saman asian selvemmin. */
-  if (F){
+  if (o.valit){
+    /* Välin mitat: jokainen eri pituinen väli kerran, ensimmäisestä esiintymästä.
+       Tasajaossa se on yksi mitta kumpaankin suuntaan; L-muodossa osuuksilla voi
+       olla eri väli, ja silloin kumpikin näytetään. */
+    var nahty = {}, kk;
+    var vali = function(a, b, vaaka){
+      var d = Math.round((b - a) * 100) / 100;
+      if (d <= 0 || nahty[(vaaka ? 'x' : 'y') + d]) return '';
+      nahty[(vaaka ? 'x' : 'y') + d] = 1;
+      if (vaaka){
+        var y0 = Y(0) - 12;
+        return '<line class="dim" x1="' + f1(X(a)) + '" y1="' + y0 + '" x2="' + f1(X(b)) + '" y2="' + y0 + '"/>'
+          + '<line class="dim" x1="' + f1(X(a)) + '" y1="' + (y0 - 4) + '" x2="' + f1(X(a)) + '" y2="' + (y0 + 4) + '"/>'
+          + '<line class="dim" x1="' + f1(X(b)) + '" y1="' + (y0 - 4) + '" x2="' + f1(X(b)) + '" y2="' + (y0 + 4) + '"/>'
+          + '<text class="dimtx" x="' + f1(X((a + b) / 2)) + '" y="' + (y0 - 6) + '" text-anchor="middle">' + esc(num(d)) + ' m</text>';
+      }
+      var x0 = X(W) + 12;
+      return '<line class="dim" x1="' + x0 + '" y1="' + f1(Y(a)) + '" x2="' + x0 + '" y2="' + f1(Y(b)) + '"/>'
+        + '<line class="dim" x1="' + (x0 - 4) + '" y1="' + f1(Y(a)) + '" x2="' + (x0 + 4) + '" y2="' + f1(Y(a)) + '"/>'
+        + '<line class="dim" x1="' + (x0 - 4) + '" y1="' + f1(Y(b)) + '" x2="' + (x0 + 4) + '" y2="' + f1(Y(b)) + '"/>'
+        + '<text class="dimtx" transform="translate(' + (x0 + 16) + ',' + f1(Y((a + b) / 2)) + ') rotate(-90)" text-anchor="middle">'
+        + esc(num(d)) + ' m</text>';
+    };
+    for (kk = 1; kk < o.valit.xs.length; kk++) g += vali(o.valit.xs[kk - 1], o.valit.xs[kk], true);
+    for (kk = 1; kk < o.valit.ys.length; kk++) g += vali(o.valit.ys[kk - 1], o.valit.ys[kk], false);
+  } else if (F){
     /* Kiinteässä kentässä ruutu itse on mittakaava: mittakaavapalkki olisi toistoa,
        ja ruudun kokoteksti oli toistoa sekin. Kumpaakaan ei piirretä. */
   } else {
@@ -2159,7 +2206,7 @@ function diagram(){
   var gap = Infinity, k;
   for (k = 1; k < g.xs.length; k++) gap = Math.min(gap, g.xs[k] - g.xs[k - 1]);
   for (k = 1; k < g.ys.length; k++) gap = Math.min(gap, g.ys[k] - g.ys[k - 1]);
-  return planSVG({ w:state.w, l:state.l, pts:g.pts, gap:gap, shape:shapeOf(state),
+  return planSVG({ w:state.w, l:state.l, pts:g.pts, gap:gap, shape:shapeOf(state), valit:{ xs:g.xs, ys:g.ys },
     caption: r.range ? '<p class="fine">' + esc(t('r.diagram.range', { sp:num(r.range.sp2) })) + '</p>' : '' });
 }
 /* Kuva ja sen kaksi säädintä yhtenä ruudukkona, ks. .mitat CSS:ssä. */
@@ -2202,6 +2249,14 @@ function k2ala(){
 function k2fig(){ return k2plan() + k2ala(); }
 
 /* --- tulos ---------------------------------------------------------------- */
+/* Perhesivut prototyypissä. Polut ovat samat kuin kuoren SPEC.map: TP:llä on sivu,
+   muut osoittavat luurankosivulle siihen asti kunnes niiden sivu tehdään. */
+var PERHESIVU = {
+  TP: '../wireframes/bce_tp_spec.html',
+  AP: '../wireframes/bce_sivu_spec.html?s=ap',
+  KP: '../wireframes/bce_sivu_spec.html?s=kp',
+  PP: '../wireframes/bce_sivu_spec.html?s=pp'
+};
 function qtyNum(o){
   if (o.qty != null) return num(o.qty);
   if (o.qtyRange) return num(o.qtyRange[0]) + '-' + num(o.qtyRange[1]);
@@ -2266,9 +2321,19 @@ function rResult(){
                 title:P.name, specs:[P.role, hr] });
   });
   if (r.alternative){
-    o += '<p class="palt">' + esc(t('r.alt', {
-      n:r.alternative.qty || (r.alternative.qtyRange ? r.alternative.qtyRange[0] + '-' + r.alternative.qtyRange[1] : ''),
-      family:r.alternative.family })) + '</p>';
+    /* Linkki rakennetaan erikseen, koska t() palauttaa tekstiä ja esc() pakenisi
+       tagin. Paikka merkitään tekstiin ja korvataan valmiilla linkillä. */
+    var af = r.alternative.family, hr = RULES.heightRange[af] || [];
+    var linkki = '<a href="' + esc(PERHESIVU[af]) + '" data-act="perhesivu" data-perhe="' + af + '">'
+               + esc(PILLARS[af].short || af + '-pilari') + '</a>';
+    var lause = esc(t(r.alternative.suositus ? 'r.alt.tp' : 'r.alt.ap',
+                      { link:'\u0001', min:hr[0], max:hr[1] })).replace('\u0001', linkki);
+    o += '<div class="palt"><p>' + lause + '</p>'
+      +  '<button class="pvaihda" type="button" data-act="perhe" data-val="' + af + '"'
+      +  ' aria-label="' + esc(t('r.alt.vaihda.aria', { family:af })) + '">'
+      +  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
+      +  '<path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      +  '<span>' + esc(t('r.alt.vaihda')) + '</span></button></div>';
   }
   o += '</div>';
 
@@ -2984,7 +3049,7 @@ phone.addEventListener('click', function(e){
       /* Omapaino nollataan muiden mukana: luokat on nimetty rakennuksen kielellä
          (avoin terassi / katettu tai seinällinen), joten terassille annettu vastaus
          olisi saunalla sekä väärä että näkymätön: ruutu on jo ohitettu. */
-      state.mass = null; state.massValue = 0;
+      state.mass = null; state.massValue = 0; state.perhe = null;
       state.poles = 2;
     }
     /* L tarvitsee tilaa kahdelle osalle. Oletusmitat 4 × 3 m tekisivät L:stä
@@ -3010,6 +3075,16 @@ phone.addEventListener('click', function(e){
     if (!phone.querySelector('[data-act="next"]')) setTimeout(next, 150);
     return;
   }
+  if (a === 'perhe'){
+    state.perhe = b.getAttribute('data-val');
+    push('laskuri_perhe_vaihto', { perhe:state.perhe, rakennus:state.building });
+    RESULT = compute(state, RULES, LANG);
+    render();
+    var pv = phone.querySelector('[data-act="perhe"]');
+    if (pv) pv.focus({ preventScroll:true });
+    return;
+  }
+  if (a === 'perhesivu'){ push('cta_pilariperhe', { perhe:b.getAttribute('data-perhe'), sijainti:'laskuri_tulos' }); return; }
   if (a === 'reuna'){
     state.reuna = b.getAttribute('data-val');
     render();
